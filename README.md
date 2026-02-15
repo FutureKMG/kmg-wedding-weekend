@@ -69,6 +69,7 @@ Detailed steps: `docs/supabase-setup.md`
 ## Testing and Build
 - `npm run test`
 - `npm run build`
+- `npm run check:mobile` (mobile viewport guardrails)
 
 ## Theme System
 - Tokens live in `src/styles/theme.css`
