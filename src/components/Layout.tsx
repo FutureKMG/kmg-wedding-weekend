@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
+import { DecoDivider } from './DecoDivider'
 
 const links = [
   { to: '/', label: 'Home' },
@@ -20,17 +21,20 @@ export function Layout() {
   }
 
   return (
-    <div className="app-frame">
+    <div className="app-frame reveal">
       <header className="site-header">
-        <div>
-          <p className="eyebrow">Kara & Kevin</p>
-          <h1 className="title">Wedding Weekend Companion</h1>
+        <div className="brand-lockup">
+          <p className="eyebrow">Fenway Weekend</p>
+          <h1 className="title">Kara & Kevin</h1>
+          <p className="subtitle">Wedding Companion</p>
           <p className="muted">Welcome, {guest?.firstName ?? 'Guest'}</p>
         </div>
         <button className="secondary-button" onClick={handleLogout}>
           Log out
         </button>
       </header>
+
+      <DecoDivider />
 
       <nav className="tabs" aria-label="App sections">
         {links.map((link) => (

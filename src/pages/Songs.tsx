@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { z } from 'zod'
+import { PageIntro } from '../components/PageIntro'
 import { apiRequest } from '../lib/apiClient'
 
 const songRequestSchema = z.object({
@@ -45,12 +46,13 @@ export function SongsPage() {
 
   return (
     <section className="stack">
-      <article className="card">
-        <h2>Song Request</h2>
-        <p className="muted">Share one song to keep the dance floor moving.</p>
-      </article>
+      <PageIntro
+        eyebrow="Music"
+        title="Song Request"
+        description="Share a song to keep the dance floor moving."
+      />
 
-      <form className="card stack" onSubmit={handleSubmit}>
+      <form className="card stack reveal" onSubmit={handleSubmit}>
         <label className="field">
           Song title
           <input

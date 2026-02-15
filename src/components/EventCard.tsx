@@ -9,7 +9,7 @@ export function EventCard({
   isCurrent: boolean
 }) {
   return (
-    <article className={isCurrent ? 'card card-current' : 'card'}>
+    <article className={isCurrent ? 'card card-current reveal' : 'card reveal'}>
       <p className="eyebrow">{formatEventClock(event.startAt)}</p>
       <h3>{event.title}</h3>
       <p className="muted">{event.location}</p>

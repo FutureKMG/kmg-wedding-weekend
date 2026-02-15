@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
+import { DecoDivider } from '../components/DecoDivider'
+import { HeroImage } from '../components/HeroImage'
 
 type LocationState = {
   from?: {
@@ -42,39 +44,54 @@ export function LoginPage() {
   }
 
   return (
-    <main className="login-shell">
-      <section className="login-card">
-        <p className="eyebrow">Kara & Kevin</p>
-        <h1>Step Into the Evening</h1>
-        <p className="muted">March 14, 2026 • Fenway Hotel</p>
+    <main className="login-shell reveal">
+      <section className="login-stage">
+        <div className="invite-hero-panel">
+          <HeroImage alt="Fenway-inspired watercolor invitation artwork" className="invite-hero-media" />
+          <div className="invite-hero-copy">
+            <p className="eyebrow">March 14, 2026</p>
+            <h2>Fenway Hotel, Dunedin</h2>
+            <p className="muted">
+              A watercolor weekend with art deco charm, warm light, and the people we love.
+            </p>
+          </div>
+        </div>
 
-        <form onSubmit={handleSubmit} className="stack">
-          <label className="field">
-            First name
-            <input
-              autoComplete="given-name"
-              value={firstName}
-              onChange={(event) => setFirstName(event.target.value)}
-              required
-            />
-          </label>
+        <section className="login-card">
+          <p className="eyebrow">Kara & Kevin</p>
+          <h1>Step Into the Evening</h1>
+          <p className="muted">Please enter your first and last name to continue.</p>
 
-          <label className="field">
-            Last name
-            <input
-              autoComplete="family-name"
-              value={lastName}
-              onChange={(event) => setLastName(event.target.value)}
-              required
-            />
-          </label>
+          <DecoDivider />
 
-          {error && <p className="error-text">{error}</p>}
+          <form onSubmit={handleSubmit} className="stack">
+            <label className="field">
+              First name
+              <input
+                autoComplete="given-name"
+                value={firstName}
+                onChange={(event) => setFirstName(event.target.value)}
+                required
+              />
+            </label>
 
-          <button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Checking guest list...' : 'Enter the Weekend'}
-          </button>
-        </form>
+            <label className="field">
+              Last name
+              <input
+                autoComplete="family-name"
+                value={lastName}
+                onChange={(event) => setLastName(event.target.value)}
+                required
+              />
+            </label>
+
+            {error && <p className="error-text">{error}</p>}
+
+            <button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Checking guest list...' : 'Enter the Weekend'}
+            </button>
+          </form>
+        </section>
       </section>
     </main>
   )

@@ -2,7 +2,7 @@ import type { GuideItem } from '../types'
 
 export function GuideCard({ item }: { item: GuideItem }) {
   return (
-    <article className="card">
+    <article className="card reveal">
       <p className="eyebrow">{item.category}</p>
       <h3>{item.title}</h3>
       <p className="muted">{item.description}</p>

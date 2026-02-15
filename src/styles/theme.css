@@ -1,0 +1,155 @@
+@import url('https://fonts.googleapis.com/css2?family=Marcellus&family=Source+Sans+3:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Raw palette */
+  --plum: #8a336f;
+  --lavender: #d2b7d2;
+  --blush: #eaaddc;
+  --sea-glass: #a2c8e7;
+  --sage: #a3d9c5;
+  --teal: #3d7486;
+  --champagne: #d8c794;
+
+  /* Semantic usage */
+  --bg-canvas: #f6f0e7;
+  --bg-canvas-soft: #fbf8f3;
+  --bg-surface: rgba(255, 250, 245, 0.86);
+  --bg-surface-strong: rgba(255, 250, 245, 0.96);
+  --text-primary: #1f4b5b;
+  --text-secondary: #466775;
+  --text-muted: #5c7885;
+  --accent-primary: var(--plum);
+  --accent-secondary: var(--teal);
+  --accent-soft: var(--lavender);
+  --border-soft: rgba(61, 116, 134, 0.28);
+  --border-strong: rgba(61, 116, 134, 0.45);
+  --focus-ring: rgba(138, 51, 111, 0.42);
+  --success: #2f7564;
+  --error: #a04461;
+
+  --radius-s: 10px;
+  --radius-m: 16px;
+  --radius-l: 24px;
+
+  --shadow-soft: 0 10px 30px rgba(24, 43, 51, 0.12);
+  --shadow-raised: 0 18px 42px rgba(24, 43, 51, 0.18);
+
+  --space-1: 0.35rem;
+  --space-2: 0.65rem;
+  --space-3: 1rem;
+  --space-4: 1.4rem;
+  --space-5: 2rem;
+  --space-6: 2.8rem;
+
+  --font-display: 'Marcellus', serif;
+  --font-body: 'Source Sans 3', sans-serif;
+
+  --fs-display: clamp(2.1rem, 6vw, 3.4rem);
+  --fs-h1: clamp(1.8rem, 4.4vw, 2.6rem);
+  --fs-h2: clamp(1.4rem, 3vw, 2rem);
+  --fs-h3: clamp(1.12rem, 2vw, 1.4rem);
+  --fs-body: 1rem;
+  --fs-label: 0.92rem;
+  --fs-caption: 0.84rem;
+
+  --motion-fast: 160ms;
+  --motion-base: 260ms;
+  --motion-slow: 420ms;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  color: var(--text-primary);
+  background:
+    radial-gradient(circle at 13% 10%, rgba(138, 51, 111, 0.14), transparent 40%),
+    radial-gradient(circle at 88% 16%, rgba(61, 116, 134, 0.12), transparent 38%),
+    radial-gradient(circle at 40% 86%, rgba(163, 217, 197, 0.2), transparent 40%),
+    linear-gradient(168deg, #f8f3ec 0%, #f4ece2 40%, #f7f1ea 100%);
+  background-attachment: fixed;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      35deg,
+      rgba(255, 255, 255, 0.04) 0,
+      rgba(255, 255, 255, 0.04) 1px,
+      transparent 1px,
+      transparent 12px
+    ),
+    radial-gradient(circle at 35% 22%, rgba(234, 173, 220, 0.16), transparent 45%);
+  mix-blend-mode: soft-light;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
+}
+
+p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+@keyframes fadeRise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reveal {
+  animation: fadeRise var(--motion-slow) ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -10,6 +10,7 @@ Mobile-first React app for an immersive wedding weekend companion with name-base
 - Song request submission
 - Wedding Feed + Full Gallery photo experience
 - Upload toggle to post on the public-in-app Wedding Feed
+- Global art deco watercolor visual system aligned to Fenway palette
 - Vercel-ready API routes and deployment config
 
 ## Stack
@@ -66,6 +67,17 @@ Detailed steps: `docs/supabase-setup.md`
 ## Testing and Build
 - `npm run test`
 - `npm run build`
+
+## Theme System
+- Tokens live in `src/styles/theme.css`
+- Component/layout styling lives in `src/index.css`
+- Invite hero assets live in `public/theme`
+- Regenerate hero assets from source artwork:
+  - `npm run theme:assets`
+  - Optional custom source path:
+  - `npm run theme:assets -- \"/absolute/path/to/Invite Image.heic\"`
+
+Detailed guidance: `docs/theme-guide.md`
 
 ## Deployment
 GitHub and Vercel steps are in `docs/deploy.md`.

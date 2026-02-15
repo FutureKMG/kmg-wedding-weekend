@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
-import { apiRequest } from '../lib/apiClient'
 import { EventCard } from '../components/EventCard'
+import { PageIntro } from '../components/PageIntro'
+import { apiRequest } from '../lib/apiClient'
 import { getTimelineState } from '../lib/time'
 import type { WeddingEvent } from '../types'
 
@@ -33,12 +34,14 @@ export function TimelinePage() {
 
   return (
     <section className="stack">
-      <article className="card">
-        <h2>Wedding Day Timeline</h2>
+      <PageIntro
+        eyebrow="Wedding Day"
+        title="Timeline"
+        description="Keep an eye on what is happening now and what is next."
+      >
         {timelineState.currentEvent ? (
           <p className="muted">
-            Happening now: {timelineState.currentEvent.title} at{' '}
-            {timelineState.currentEvent.location}
+            Happening now: {timelineState.currentEvent.title} at {timelineState.currentEvent.location}
           </p>
         ) : timelineState.nextEvent ? (
           <p className="muted">
@@ -47,7 +50,7 @@ export function TimelinePage() {
         ) : (
           <p className="muted">The formal timeline has wrapped for tonight.</p>
         )}
-      </article>
+      </PageIntro>
 
       {error && <p className="error-text">{error}</p>}
 

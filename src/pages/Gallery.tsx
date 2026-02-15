@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
 import { createClient } from '@supabase/supabase-js'
-import { apiRequest } from '../lib/apiClient'
+import { PageIntro } from '../components/PageIntro'
 import { PhotoGrid } from '../components/PhotoGrid'
+import { apiRequest } from '../lib/apiClient'
 import type { PhotoItem } from '../types'
 
 type GalleryScope = 'feed' | 'all'
@@ -104,14 +105,13 @@ export function GalleryPage() {
 
   return (
     <section className="stack">
-      <article className="card">
-        <h2>Wedding Feed & Full Gallery</h2>
-        <p className="muted">
-          Wedding Feed shows guest-shared highlights. Full Gallery includes every upload.
-        </p>
-      </article>
+      <PageIntro
+        eyebrow="Memories"
+        title="Wedding Feed & Full Gallery"
+        description="Wedding Feed shows guest-shared highlights. Full Gallery includes every upload."
+      />
 
-      <form className="card stack" onSubmit={handleUpload}>
+      <form className="card stack reveal" onSubmit={handleUpload}>
         <label className="field">
           Add caption (optional)
           <input value={caption} onChange={(event) => setCaption(event.target.value)} />
@@ -152,7 +152,7 @@ export function GalleryPage() {
         </button>
       </form>
 
-      <div className="gallery-tabs" role="tablist" aria-label="Photo views">
+      <div className="gallery-tabs reveal" role="tablist" aria-label="Photo views">
         <button
           type="button"
           className={activeScope === 'feed' ? 'gallery-tab gallery-tab-active' : 'gallery-tab'}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { GuideCard } from '../components/GuideCard'
+import { PageIntro } from '../components/PageIntro'
 import { apiRequest } from '../lib/apiClient'
 import type { GuideItem } from '../types'
 
@@ -24,10 +25,11 @@ export function GuidePage() {
 
   return (
     <section className="stack">
-      <article className="card">
-        <h2>Dunedin and Tampa Guide</h2>
-        <p className="muted">A few hand-picked spots to round out the weekend.</p>
-      </article>
+      <PageIntro
+        eyebrow="Explore"
+        title="Dunedin & Tampa Guide"
+        description="A few hand-picked spots to round out the weekend."
+      />
 
       {error && <p className="error-text">{error}</p>}
 

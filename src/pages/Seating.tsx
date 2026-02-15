@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { PageIntro } from '../components/PageIntro'
 import { apiRequest } from '../lib/apiClient'
 
 export function SeatingPage() {
@@ -22,14 +23,17 @@ export function SeatingPage() {
 
   return (
     <section className="stack">
-      <article className="card">
-        <h2>Your Table</h2>
+      <PageIntro
+        eyebrow="Reception"
+        title="Your Table"
+        description="Your assignment is ready for a smooth arrival."
+      >
         {tableLabel ? (
           <p className="table-callout">{tableLabel}</p>
         ) : (
           <p className="muted">Your table assignment has not been posted yet.</p>
         )}
-      </article>
+      </PageIntro>
 
       {error && <p className="error-text">{error}</p>}
     </section>
