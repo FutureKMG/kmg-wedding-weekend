@@ -22,7 +22,7 @@ export default async function handler(req, res) {
   let query = supabase
     .from('photos')
     .select(
-      'id, caption, storage_path, created_at, is_feed_post, guests(first_name,last_name)',
+      'id, guest_id, caption, storage_path, created_at, is_feed_post, guests(first_name,last_name)',
     )
     .order('created_at', { ascending: false })
 
@@ -37,7 +37,7 @@ export default async function handler(req, res) {
     hasFeedColumn = false
     ;({ data, error } = await supabase
       .from('photos')
-      .select('id, caption, storage_path, created_at, guests(first_name,last_name)')
+      .select('id, guest_id, caption, storage_path, created_at, guests(first_name,last_name)')
       .order('created_at', { ascending: false }))
   }
 
@@ -67,6 +67,7 @@ export default async function handler(req, res) {
         uploadedBy: fullName,
         createdAt: photo.created_at,
         isFeedPost: hasFeedColumn ? Boolean(photo.is_feed_post) : true,
+        isOwner: photo.guest_id === guest.id,
       }
     }),
   )

@@ -10,6 +10,8 @@ Mobile-first React app for an immersive wedding weekend companion with name-base
 - Song request submission
 - Wedding Feed + Full Gallery photo experience
 - Upload toggle to post on the public-in-app Wedding Feed
+- Multi-photo upload in one action
+- Guests can delete only photos they uploaded
 - Global art deco watercolor visual system aligned to Fenway palette
 - Vercel-ready API routes and deployment config
 
@@ -65,6 +67,8 @@ Detailed steps: `docs/supabase-setup.md`
 - `POST /api/photos/upload-url`
 - `POST /api/photos/complete`
   - Accepts: `path`, optional `caption`, optional `shareToFeed`
+- `POST /api/photos/delete`
+  - Accepts: `photoId` (only photo owner can delete)
 
 ## Testing and Build
 - `npm run test`

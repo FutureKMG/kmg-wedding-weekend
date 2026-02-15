@@ -441,6 +441,20 @@ button:disabled {
   gap: 0.25rem;
 }
 
+.photo-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.photo-delete-button {
+  min-height: 44px;
+  padding: 0.4rem 0.7rem;
+  font-size: var(--fs-caption);
+}
+
 .photo-modal-backdrop {
   position: fixed;
   inset: 0;

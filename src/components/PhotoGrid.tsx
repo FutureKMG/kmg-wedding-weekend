@@ -1,7 +1,17 @@
 import { useEffect, useState } from 'react'
 import type { PhotoItem } from '../types'
 
-export function PhotoGrid({ photos }: { photos: PhotoItem[] }) {
+type PhotoGridProps = {
+  photos: PhotoItem[]
+  onDeletePhoto?: (photoId: string) => Promise<void>
+  deletingPhotoId?: string | null
+}
+
+export function PhotoGrid({
+  photos,
+  onDeletePhoto,
+  deletingPhotoId = null,
+}: PhotoGridProps) {
   const [activePhoto, setActivePhoto] = useState<PhotoItem | null>(null)
 
   useEffect(() => {
@@ -38,7 +48,27 @@ export function PhotoGrid({ photos }: { photos: PhotoItem[] }) {
             </button>
             <figcaption>
               {photo.caption ? <p>{photo.caption}</p> : null}
-              <p className="muted">Shared by {photo.uploadedBy}</p>
+              <div className="photo-meta-row">
+                <p className="muted">Shared by {photo.uploadedBy}</p>
+                {photo.isOwner && onDeletePhoto ? (
+                  <button
+                    type="button"
+                    className="secondary-button photo-delete-button"
+                    disabled={deletingPhotoId === photo.id}
+                    onClick={async () => {
+                      const shouldDelete = window.confirm(
+                        'Delete this photo from your gallery uploads?',
+                      )
+                      if (!shouldDelete) {
+                        return
+                      }
+                      await onDeletePhoto(photo.id)
+                    }}
+                  >
+                    {deletingPhotoId === photo.id ? 'Deleting...' : 'Delete'}
+                  </button>
+                ) : null}
+              </div>
             </figcaption>
           </figure>
         ))}
@@ -75,7 +105,28 @@ export function PhotoGrid({ photos }: { photos: PhotoItem[] }) {
 
             <div className="photo-modal-caption">
               {activePhoto.caption ? <p>{activePhoto.caption}</p> : null}
-              <p className="muted">Shared by {activePhoto.uploadedBy}</p>
+              <div className="photo-meta-row">
+                <p className="muted">Shared by {activePhoto.uploadedBy}</p>
+                {activePhoto.isOwner && onDeletePhoto ? (
+                  <button
+                    type="button"
+                    className="secondary-button photo-delete-button"
+                    disabled={deletingPhotoId === activePhoto.id}
+                    onClick={async () => {
+                      const shouldDelete = window.confirm(
+                        'Delete this photo from your gallery uploads?',
+                      )
+                      if (!shouldDelete) {
+                        return
+                      }
+                      await onDeletePhoto(activePhoto.id)
+                      setActivePhoto(null)
+                    }}
+                  >
+                    {deletingPhotoId === activePhoto.id ? 'Deleting...' : 'Delete'}
+                  </button>
+                ) : null}
+              </div>
             </div>
           </div>
         </div>

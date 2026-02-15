@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { PageIntro } from '../components/PageIntro'
 import { PhotoGrid } from '../components/PhotoGrid'
@@ -21,10 +21,13 @@ export function GalleryPage() {
   const [allPhotos, setAllPhotos] = useState<PhotoItem[]>([])
   const [activeScope, setActiveScope] = useState<GalleryScope>('feed')
   const [caption, setCaption] = useState('')
-  const [file, setFile] = useState<File | null>(null)
+  const [files, setFiles] = useState<File[]>([])
   const [shareToFeed, setShareToFeed] = useState(true)
   const [error, setError] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
   const [isUploading, setIsUploading] = useState(false)
+  const [deletingPhotoId, setDeletingPhotoId] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const canUpload = useMemo(() => Boolean(supabaseClient), [])
 
@@ -51,8 +54,8 @@ export function GalleryPage() {
   async function handleUpload(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    if (!file) {
-      setError('Please choose a photo to upload.')
+    if (files.length === 0) {
+      setError('Please choose one or more photos to upload.')
       return
     }
 
@@ -62,43 +65,91 @@ export function GalleryPage() {
     }
 
     setError('')
+    setSuccessMessage('')
     setIsUploading(true)
 
     try {
-      const uploadPayload = await apiRequest<{
-        path: string
-        token: string
-      }>('/api/photos/upload-url', {
-        method: 'POST',
-        body: JSON.stringify({ filename: file.name }),
-      })
+      let completedUploads = 0
+      const failedUploads: string[] = []
 
-      const { error: uploadError } = await supabaseClient.storage
-        .from(photoBucketName)
-        .uploadToSignedUrl(uploadPayload.path, uploadPayload.token, file, {
-          contentType: file.type,
-          upsert: false,
-        })
+      for (const selectedFile of files) {
+        try {
+          const uploadPayload = await apiRequest<{
+            path: string
+            token: string
+          }>('/api/photos/upload-url', {
+            method: 'POST',
+            body: JSON.stringify({ filename: selectedFile.name }),
+          })
 
-      if (uploadError) {
-        throw new Error(uploadError.message)
+          const { error: uploadError } = await supabaseClient.storage
+            .from(photoBucketName)
+            .uploadToSignedUrl(uploadPayload.path, uploadPayload.token, selectedFile, {
+              contentType: selectedFile.type,
+              upsert: false,
+            })
+
+          if (uploadError) {
+            throw new Error(uploadError.message)
+          }
+
+          await apiRequest('/api/photos/complete', {
+            method: 'POST',
+            body: JSON.stringify({ path: uploadPayload.path, caption, shareToFeed }),
+          })
+
+          completedUploads += 1
+        } catch {
+          failedUploads.push(selectedFile.name)
+        }
       }
 
-      await apiRequest('/api/photos/complete', {
-        method: 'POST',
-        body: JSON.stringify({ path: uploadPayload.path, caption, shareToFeed }),
-      })
-
       setCaption('')
-      setFile(null)
+      setFiles([])
       setShareToFeed(true)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
       await loadPhotoCollections()
+
+      if (failedUploads.length > 0) {
+        setError(
+          `Uploaded ${completedUploads} of ${files.length} photos. Failed: ${failedUploads.join(', ')}`,
+        )
+      } else {
+        setSuccessMessage(
+          files.length === 1
+            ? 'Photo uploaded successfully.'
+            : `${files.length} photos uploaded successfully.`,
+        )
+      }
     } catch (requestError) {
       const message =
         requestError instanceof Error ? requestError.message : 'Could not upload photo'
       setError(message)
     } finally {
       setIsUploading(false)
+    }
+  }
+
+  async function handleDeletePhoto(photoId: string) {
+    setError('')
+    setSuccessMessage('')
+    setDeletingPhotoId(photoId)
+
+    try {
+      await apiRequest('/api/photos/delete', {
+        method: 'POST',
+        body: JSON.stringify({ photoId }),
+      })
+      await loadPhotoCollections()
+      setSuccessMessage('Photo deleted.')
+    } catch (requestError) {
+      const message =
+        requestError instanceof Error ? requestError.message : 'Could not delete photo'
+      setError(message)
+    } finally {
+      setDeletingPhotoId(null)
     }
   }
 
@@ -121,11 +172,19 @@ export function GalleryPage() {
         <label className="field">
           Choose photo
           <input
+            ref={fileInputRef}
             type="file"
             accept="image/*"
-            onChange={(event) => setFile(event.target.files?.[0] ?? null)}
+            multiple
+            onChange={(event) => setFiles(Array.from(event.target.files ?? []))}
           />
         </label>
+
+        {files.length > 0 ? (
+          <p className="muted small-text">
+            {files.length} {files.length === 1 ? 'photo selected' : 'photos selected'}
+          </p>
+        ) : null}
 
         <label className="checkbox-field">
           <input
@@ -147,9 +206,14 @@ export function GalleryPage() {
         )}
 
         {error && <p className="error-text">{error}</p>}
+        {successMessage && <p className="success-text">{successMessage}</p>}
 
         <button type="submit" disabled={isUploading || !canUpload}>
-          {isUploading ? 'Uploading...' : 'Upload Photo'}
+          {isUploading
+            ? `Uploading ${files.length} ${files.length === 1 ? 'photo' : 'photos'}...`
+            : files.length > 1
+              ? `Upload ${files.length} Photos`
+              : 'Upload Photo'}
         </button>
       </form>
 
@@ -172,7 +236,11 @@ export function GalleryPage() {
         </button>
       </div>
 
-      <PhotoGrid photos={visiblePhotos} />
+      <PhotoGrid
+        photos={visiblePhotos}
+        deletingPhotoId={deletingPhotoId}
+        onDeletePhoto={handleDeletePhoto}
+      />
     </section>
   )
 }

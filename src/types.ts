@@ -37,4 +37,5 @@ export type PhotoItem = {
   uploadedBy: string
   createdAt: string
   isFeedPost: boolean
+  isOwner: boolean
 }
