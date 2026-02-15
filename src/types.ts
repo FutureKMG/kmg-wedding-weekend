@@ -36,4 +36,5 @@ export type PhotoItem = {
   caption: string | null
   uploadedBy: string
   createdAt: string
+  isFeedPost: boolean
 }

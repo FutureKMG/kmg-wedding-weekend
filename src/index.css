@@ -215,6 +215,23 @@ button:disabled {
   resize: vertical;
 }
 
+.checkbox-field {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  color: var(--text-main);
+}
+
+.checkbox-field input[type='checkbox'] {
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.2rem;
+}
+
+.small-text {
+  font-size: 0.9rem;
+}
+
 .inline-link {
   color: var(--gold);
   text-decoration: underline;
@@ -258,6 +275,23 @@ button:disabled {
   padding: 0.65rem;
   display: grid;
   gap: 0.3rem;
+}
+
+.gallery-tabs {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.gallery-tab {
+  background: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--border);
+}
+
+.gallery-tab-active {
+  background: rgba(198, 165, 108, 0.14);
+  border-color: var(--gold);
 }
 
 @media (min-width: 720px) {

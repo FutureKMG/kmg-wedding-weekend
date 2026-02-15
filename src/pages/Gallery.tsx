@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { apiRequest } from '../lib/apiClient'
 import { PhotoGrid } from '../components/PhotoGrid'
 import type { PhotoItem } from '../types'
+
+type GalleryScope = 'feed' | 'all'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -13,28 +15,36 @@ const supabaseClient =
     : null
 
 export function GalleryPage() {
-  const [photos, setPhotos] = useState<PhotoItem[]>([])
+  const [feedPhotos, setFeedPhotos] = useState<PhotoItem[]>([])
+  const [allPhotos, setAllPhotos] = useState<PhotoItem[]>([])
+  const [activeScope, setActiveScope] = useState<GalleryScope>('feed')
   const [caption, setCaption] = useState('')
   const [file, setFile] = useState<File | null>(null)
+  const [shareToFeed, setShareToFeed] = useState(true)
   const [error, setError] = useState('')
   const [isUploading, setIsUploading] = useState(false)
 
   const canUpload = useMemo(() => Boolean(supabaseClient), [])
 
-  useEffect(() => {
-    void loadPhotos()
-  }, [])
-
-  async function loadPhotos() {
+  const loadPhotoCollections = useCallback(async () => {
     try {
-      const payload = await apiRequest<{ photos: PhotoItem[] }>('/api/photos')
-      setPhotos(payload.photos)
+      setError('')
+      const [feedPayload, allPayload] = await Promise.all([
+        apiRequest<{ photos: PhotoItem[] }>('/api/photos?scope=feed'),
+        apiRequest<{ photos: PhotoItem[] }>('/api/photos?scope=all'),
+      ])
+      setFeedPhotos(feedPayload.photos)
+      setAllPhotos(allPayload.photos)
     } catch (requestError) {
       const message =
         requestError instanceof Error ? requestError.message : 'Could not load gallery'
       setError(message)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    void loadPhotoCollections()
+  }, [loadPhotoCollections])
 
   async function handleUpload(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -74,12 +84,13 @@ export function GalleryPage() {
 
       await apiRequest('/api/photos/complete', {
         method: 'POST',
-        body: JSON.stringify({ path: uploadPayload.path, caption }),
+        body: JSON.stringify({ path: uploadPayload.path, caption, shareToFeed }),
       })
 
       setCaption('')
       setFile(null)
-      await loadPhotos()
+      setShareToFeed(true)
+      await loadPhotoCollections()
     } catch (requestError) {
       const message =
         requestError instanceof Error ? requestError.message : 'Could not upload photo'
@@ -89,11 +100,15 @@ export function GalleryPage() {
     }
   }
 
+  const visiblePhotos = activeScope === 'feed' ? feedPhotos : allPhotos
+
   return (
     <section className="stack">
       <article className="card">
-        <h2>Photo Gallery</h2>
-        <p className="muted">Upload your photos to the shared weekend gallery.</p>
+        <h2>Wedding Feed & Full Gallery</h2>
+        <p className="muted">
+          Wedding Feed shows guest-shared highlights. Full Gallery includes every upload.
+        </p>
       </article>
 
       <form className="card stack" onSubmit={handleUpload}>
@@ -111,6 +126,19 @@ export function GalleryPage() {
           />
         </label>
 
+        <label className="checkbox-field">
+          <input
+            type="checkbox"
+            checked={shareToFeed}
+            onChange={(event) => setShareToFeed(event.target.checked)}
+          />
+          <span>Share with everyone & post on the wedding feed?</span>
+        </label>
+
+        <p className="muted small-text">
+          Yes: photo appears in Wedding Feed and Full Gallery. No: photo appears only in Full Gallery.
+        </p>
+
         {!canUpload && (
           <p className="error-text">
             Uploading requires `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
@@ -124,7 +152,26 @@ export function GalleryPage() {
         </button>
       </form>
 
-      <PhotoGrid photos={photos} />
+      <div className="gallery-tabs" role="tablist" aria-label="Photo views">
+        <button
+          type="button"
+          className={activeScope === 'feed' ? 'gallery-tab gallery-tab-active' : 'gallery-tab'}
+          onClick={() => setActiveScope('feed')}
+          aria-selected={activeScope === 'feed'}
+        >
+          Wedding Feed ({feedPhotos.length})
+        </button>
+        <button
+          type="button"
+          className={activeScope === 'all' ? 'gallery-tab gallery-tab-active' : 'gallery-tab'}
+          onClick={() => setActiveScope('all')}
+          aria-selected={activeScope === 'all'}
+        >
+          Full Gallery ({allPhotos.length})
+        </button>
+      </div>
+
+      <PhotoGrid photos={visiblePhotos} />
     </section>
   )
 }

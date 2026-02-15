@@ -6,6 +6,7 @@ import { getSupabaseAdminClient } from '../_lib/supabaseAdmin.js'
 const completeSchema = z.object({
   path: z.string().trim().min(1).max(500),
   caption: z.string().trim().max(160).optional(),
+  shareToFeed: z.boolean().optional(),
 })
 
 export default async function handler(req, res) {
@@ -26,11 +27,23 @@ export default async function handler(req, res) {
   }
 
   const supabase = getSupabaseAdminClient()
-  const { error } = await supabase.from('photos').insert({
+  const insertPayload = {
     guest_id: guest.id,
     storage_path: parsed.data.path,
     caption: parsed.data.caption ?? null,
-  })
+    is_feed_post: parsed.data.shareToFeed ?? true,
+  }
+
+  let { error } = await supabase.from('photos').insert(insertPayload)
+
+  if (error?.message?.includes('is_feed_post')) {
+    const fallbackPayload = {
+      guest_id: guest.id,
+      storage_path: parsed.data.path,
+      caption: parsed.data.caption ?? null,
+    }
+    ;({ error } = await supabase.from('photos').insert(fallbackPayload))
+  }
 
   if (error) {
     return sendJson(res, 500, { message: 'Could not save photo metadata' })

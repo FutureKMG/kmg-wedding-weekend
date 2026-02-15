@@ -46,12 +46,14 @@ create table if not exists public.photos (
   guest_id uuid not null references public.guests(id) on delete cascade,
   storage_path text not null unique,
   caption text,
+  is_feed_post boolean not null default true,
   created_at timestamptz not null default now()
 );
 
 create index if not exists idx_guests_full_name_norm on public.guests(full_name_norm);
 create index if not exists idx_song_requests_guest_id on public.song_requests(guest_id);
 create index if not exists idx_photos_guest_id on public.photos(guest_id);
+create index if not exists idx_photos_is_feed_post_created_at on public.photos(is_feed_post, created_at desc);
 
 alter table public.guests enable row level security;
 alter table public.events enable row level security;
