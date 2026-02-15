@@ -9,6 +9,7 @@ type GalleryScope = 'feed' | 'all'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const photoBucketName = import.meta.env.VITE_PHOTO_BUCKET_NAME ?? 'wedding-photos'
 
 const supabaseClient =
   supabaseUrl && supabaseAnonKey
@@ -73,7 +74,7 @@ export function GalleryPage() {
       })
 
       const { error: uploadError } = await supabaseClient.storage
-        .from('wedding-photos')
+        .from(photoBucketName)
         .uploadToSignedUrl(uploadPayload.path, uploadPayload.token, file, {
           contentType: file.type,
           upsert: false,

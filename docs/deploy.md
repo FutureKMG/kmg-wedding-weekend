@@ -19,8 +19,10 @@
    - `SUPABASE_SERVICE_ROLE_KEY`
    - `SUPABASE_ANON_KEY`
    - `SESSION_SECRET`
+   - `PHOTO_BUCKET_NAME` (use your exact Supabase bucket name)
    - `VITE_SUPABASE_URL` (same as `SUPABASE_URL`)
    - `VITE_SUPABASE_ANON_KEY` (same as `SUPABASE_ANON_KEY`)
+   - `VITE_PHOTO_BUCKET_NAME` (same as `PHOTO_BUCKET_NAME`)
 3. Deploy.
 4. Smoke test:
    - login

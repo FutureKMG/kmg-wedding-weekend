@@ -37,10 +37,11 @@ export default async function handler(req, res) {
 
   const safeFilename = sanitizeFilename(parsed.data.filename)
   const path = `${guest.id}/${Date.now()}-${safeFilename}`
+  const bucketName = process.env.PHOTO_BUCKET_NAME ?? 'wedding-photos'
 
   const supabase = getSupabaseAdminClient()
   const { data, error } = await supabase.storage
-    .from('wedding-photos')
+    .from(bucketName)
     .createSignedUploadUrl(path)
 
   if (error || !data) {

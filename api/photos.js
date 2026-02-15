@@ -12,6 +12,7 @@ export default async function handler(req, res) {
     return unauthorized(res)
   }
 
+  const bucketName = process.env.PHOTO_BUCKET_NAME ?? 'wedding-photos'
   const scope = Array.isArray(req.query?.scope)
     ? req.query.scope[0]
     : req.query?.scope
@@ -52,7 +53,7 @@ export default async function handler(req, res) {
         : 'Guest'
 
       const { data: signed, error: signedError } = await supabase.storage
-        .from('wedding-photos')
+        .from(bucketName)
         .createSignedUrl(photo.storage_path, 60 * 60)
 
       if (signedError || !signed) {

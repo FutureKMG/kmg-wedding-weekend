@@ -33,10 +33,12 @@ Server/API:
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `SUPABASE_ANON_KEY`
 - `SESSION_SECRET`
+- `PHOTO_BUCKET_NAME` (defaults to `wedding-photos`)
 
 Frontend:
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
+- `VITE_PHOTO_BUCKET_NAME` (defaults to `wedding-photos`)
 
 ## Database Setup
 1. Run SQL in Supabase:

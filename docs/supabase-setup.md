@@ -22,6 +22,10 @@
 ## Suggested upload policy
 Set `can_upload=false` for any guest entries you want to block from photo uploads.
 
+If you use a different bucket name (for example `Wedding_Photos`), set:
+- `PHOTO_BUCKET_NAME=<your_bucket_name>`
+- `VITE_PHOTO_BUCKET_NAME=<your_bucket_name>`
+
 ## Photo Feed scope
 - Wedding Feed: only photos with `is_feed_post=true`
 - Full Gallery: all photos
