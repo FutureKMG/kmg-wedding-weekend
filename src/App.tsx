@@ -8,6 +8,7 @@ import { LoginPage } from './pages/Login'
 import { SeatingPage } from './pages/Seating'
 import { SongsPage } from './pages/Songs'
 import { TimelinePage } from './pages/Timeline'
+import { WelcomePartyPage } from './pages/WelcomeParty'
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
       >
         <Route path="/" element={<HomePage />} />
         <Route path="/timeline" element={<TimelinePage />} />
+        <Route path="/welcome-party" element={<WelcomePartyPage />} />
         <Route path="/guide" element={<GuidePage />} />
         <Route path="/seating" element={<SeatingPage />} />
         <Route path="/songs" element={<SongsPage />} />

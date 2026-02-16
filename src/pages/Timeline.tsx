@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { EventCard } from '../components/EventCard'
 import { PageIntro } from '../components/PageIntro'
+import { WelcomePartyCard } from '../components/WelcomePartyCard'
 import { apiRequest } from '../lib/apiClient'
 import { getTimelineState } from '../lib/time'
 import type { WeddingEvent } from '../types'
@@ -55,6 +56,7 @@ export function TimelinePage() {
       {error && <p className="error-text">{error}</p>}
 
       <div className="stack">
+        <WelcomePartyCard />
         {events.map((event) => (
           <EventCard
             key={event.id}

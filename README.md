@@ -5,6 +5,7 @@ Mobile-first React app for an immersive wedding weekend companion with name-base
 ## Features
 - First + last name login (no password)
 - Wedding-day timeline with live "happening now" indicator
+- Featured Welcome Party timeline card linking to `/welcome-party`
 - Local Dunedin/Tampa guide
 - Private seating lookup
 - Song request submission
@@ -13,6 +14,7 @@ Mobile-first React app for an immersive wedding weekend companion with name-base
 - Multi-photo upload in one action
 - Guests can delete only photos they uploaded
 - Global art deco watercolor visual system aligned to Fenway palette
+- Phillies-inspired Welcome Party microsite with directions + calendar actions
 - Vercel-ready API routes and deployment config
 
 ## Stack
@@ -79,10 +81,17 @@ Detailed steps: `docs/supabase-setup.md`
 - Tokens live in `src/styles/theme.css`
 - Component/layout styling lives in `src/index.css`
 - Invite hero assets live in `public/theme`
+- Welcome party hero assets live in `public/theme`
 - Regenerate hero assets from source artwork:
   - `npm run theme:assets`
+  - `npm run theme:welcome-assets`
   - Optional custom source path:
   - `npm run theme:assets -- \"/absolute/path/to/Invite Image.heic\"`
+  - `npm run theme:welcome-assets -- \"/absolute/path/to/IMG_4425_websize.jpg\"`
+
+## Welcome Party Content Edits
+- Update copy, dates, and links in `src/content/welcomeParty.ts`
+- Timeline featured card and page both read from that content model
 
 Detailed guidance: `docs/theme-guide.md`
 

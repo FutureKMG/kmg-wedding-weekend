@@ -42,16 +42,30 @@ Prefer semantic tokens in component CSS; avoid using raw tokens directly in page
 Generated files live in `public/theme`:
 - `invite-hero.avif|webp|png`
 - `invite-hero-mobile.avif|webp|png`
+- `welcome-party-hero.avif|webp|png`
+- `welcome-party-hero-mobile.avif|webp|png`
 - `deco-divider.svg`
 
 Regenerate from source artwork:
 - `npm run theme:assets`
 - or `npm run theme:assets -- "/Users/kara/Desktop/Invite Image.heic"`
+- `npm run theme:welcome-assets`
+- or `npm run theme:welcome-assets -- "/Users/kara/Downloads/IMG_4425_websize.jpg"`
 
 ## Reusable UI primitives
 - `HeroImage` for responsive hero artwork with AVIF/WebP/PNG fallback
 - `PageIntro` for consistent section headers
 - `DecoDivider` for subtle deco separators
+- `BaseballStitchDivider` for thin baseball-thread section breaks
+
+## Welcome Party accents
+- Welcome Party route styles are localized in `src/index.css` under `.welcome-*` selectors.
+- Phillies palette accents used there:
+  - `#E81828` (red highlights)
+  - `#F8F4ED` (ticket cream)
+  - `#2B2B2B` (charcoal text)
+  - `#C6A75E` (soft gold details)
+- Keep these accents scoped to Welcome Party UI so the global wedding theme remains cohesive.
 
 ## Do / Don’t
 Do:
