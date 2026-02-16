@@ -1,7 +1,8 @@
 export const DASHBOARD_TEXT_DEFAULTS = {
-  'layout.eyebrow': 'Fenway Weekend',
-  'layout.title': 'Kara & Kevin',
-  'layout.subtitle': 'Wedding Companion',
+  'layout.eyebrow': 'The Gilmore Wedding Weekend',
+  'layout.meta': 'March 13-15 · Tampa, Florida',
+  'layout.title': 'Welcome, {GuestFirstName}.',
+  'layout.subtitle': 'Your personal concierge for the weekend.',
 
   'home.hero.title': 'Your personal concierge for the weekend.',
   'home.hero.body':
@@ -76,6 +77,7 @@ export const DASHBOARD_TEXT_EDITOR_SECTIONS: DashboardTextSection[] = [
     title: 'Header',
     fields: [
       { key: 'layout.eyebrow', label: 'Header eyebrow' },
+      { key: 'layout.meta', label: 'Header date/location line' },
       { key: 'layout.title', label: 'Header title' },
       { key: 'layout.subtitle', label: 'Header subtitle' },
     ],

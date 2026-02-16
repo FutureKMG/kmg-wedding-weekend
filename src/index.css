@@ -158,6 +158,14 @@ button:disabled {
   gap: 0.35rem;
 }
 
+.header-meta {
+  margin: 0;
+  font-size: var(--fs-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
 .title {
   font-size: clamp(2rem, 5vw, 3rem);
   line-height: 1.04;

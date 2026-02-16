@@ -27,6 +27,8 @@ export function Layout() {
     () => mergeDashboardText(contentOverrides),
     [contentOverrides],
   )
+  const headerGuestName = guest?.firstName ?? 'Guest'
+  const headerTitle = text['layout.title'].replace('{GuestFirstName}', headerGuestName)
 
   const links = useMemo(() => {
     const baseLinks = [
@@ -55,7 +57,8 @@ export function Layout() {
       <header className="site-header">
         <div className="brand-lockup">
           <p className="eyebrow">{text['layout.eyebrow']}</p>
-          <h1 className="title">{text['layout.title']}</h1>
+          <p className="header-meta">{text['layout.meta']}</p>
+          <h1 className="title">{headerTitle}</h1>
           <p className="subtitle">{text['layout.subtitle']}</p>
         </div>
         <button className="secondary-button" onClick={handleLogout}>
