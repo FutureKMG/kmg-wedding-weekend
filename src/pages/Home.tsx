@@ -1,10 +1,49 @@
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DecoDivider } from '../components/DecoDivider'
 import { HeroImage } from '../components/HeroImage'
+import { apiRequest } from '../lib/apiClient'
 import { useAuth } from '../lib/auth'
+import type { PhotoItem } from '../types'
 
 export function HomePage() {
   const { guest } = useAuth()
+  const [feedPhotos, setFeedPhotos] = useState<PhotoItem[]>([])
+  const [feedError, setFeedError] = useState('')
+
+  const loadFeedPhotos = useCallback(async () => {
+    try {
+      const payload = await apiRequest<{ photos: PhotoItem[] }>('/api/photos?scope=feed')
+      setFeedPhotos(payload.photos.slice(0, 18))
+      setFeedError('')
+    } catch {
+      setFeedError('Wedding Feed is loading. Check back in a moment.')
+    }
+  }, [])
+
+  useEffect(() => {
+    const kickoffTimer = window.setTimeout(() => {
+      void loadFeedPhotos()
+    }, 0)
+
+    const refreshInterval = window.setInterval(() => {
+      void loadFeedPhotos()
+    }, 15 * 60 * 1000)
+
+    return () => {
+      window.clearTimeout(kickoffTimer)
+      window.clearInterval(refreshInterval)
+    }
+  }, [loadFeedPhotos])
+
+  const marqueePhotos = useMemo(() => {
+    if (feedPhotos.length === 0) {
+      return []
+    }
+    return [...feedPhotos, ...feedPhotos]
+  }, [feedPhotos])
+
+  const shouldAnimateFeed = feedPhotos.length > 1
 
   return (
     <section className="stack">
@@ -20,6 +59,51 @@ export function HomePage() {
         </div>
 
         <HeroImage alt="Fenway watercolor scene" className="home-hero-media" />
+      </article>
+
+      <article className="card home-feed reveal">
+        <div className="home-feed-head">
+          <p className="eyebrow">Live Moments</p>
+          <h3>Wedding Feed is Playing</h3>
+          <p className="muted">A continuous stream of guest highlights from the weekend.</p>
+        </div>
+
+        {feedPhotos.length > 0 ? (
+          <div className="home-feed-marquee" aria-label="Wedding Feed carousel">
+            <div
+              className={
+                shouldAnimateFeed
+                  ? 'home-feed-track home-feed-track-animated'
+                  : 'home-feed-track'
+              }
+            >
+              {marqueePhotos.map((photo, index) => (
+                <Link
+                  key={`${photo.id}-${index}`}
+                  to="/gallery"
+                  className="home-feed-photo"
+                  aria-label={`View photo shared by ${photo.uploadedBy} in the gallery`}
+                >
+                  <img
+                    src={photo.imageUrl}
+                    alt={photo.caption ?? 'Wedding moment'}
+                    loading="lazy"
+                  />
+                  <span className="home-feed-credit">{photo.uploadedBy}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="home-feed-empty">
+            <p className="muted">
+              {feedError || 'No feed photos yet. Upload one from Gallery to start the live reel.'}
+            </p>
+            <Link to="/gallery" className="inline-link">
+              Open Gallery
+            </Link>
+          </div>
+        )}
       </article>
 
       <div className="quick-grid">
