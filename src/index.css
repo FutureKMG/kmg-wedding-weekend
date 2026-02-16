@@ -719,6 +719,38 @@ button:disabled {
   margin-top: 0.35rem;
 }
 
+.flight-party {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.flight-party-title {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--fs-label);
+  font-weight: 700;
+}
+
+.flight-party-list {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.flight-party-item {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-s);
+  background: rgba(255, 250, 245, 0.82);
+  padding: 0.6rem;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.flight-party-name {
+  margin: 0;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
 .home-feed {
   display: grid;
   gap: var(--space-3);

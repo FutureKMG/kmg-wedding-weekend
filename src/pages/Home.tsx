@@ -5,7 +5,7 @@ import { DecoDivider } from '../components/DecoDivider'
 import { mergeDashboardText } from '../content/dashboardText'
 import { apiRequest } from '../lib/apiClient'
 import { useAuth } from '../lib/auth'
-import type { FeedUpdate, FlightDetail, PhotoItem } from '../types'
+import type { FeedUpdate, FlightDetail, FlightPartyMember, PhotoItem } from '../types'
 
 const tampaWeatherUrl =
   'https://api.open-meteo.com/v1/forecast?latitude=27.9506&longitude=-82.4572&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,is_day&daily=temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FNew_York&forecast_days=1'
@@ -90,6 +90,20 @@ function mapFlightDetailToForm(detail: FlightDetail | null): FlightFormState {
   }
 }
 
+function formatArrivalSummary(arrivalTime: string): string {
+  const arrivalDate = new Date(arrivalTime)
+  if (Number.isNaN(arrivalDate.getTime())) {
+    return 'Arrival time pending'
+  }
+
+  return arrivalDate.toLocaleString([], {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  })
+}
+
 export function HomePage() {
   const { guest } = useAuth()
   const [feedPhotos, setFeedPhotos] = useState<PhotoItem[]>([])
@@ -106,6 +120,7 @@ export function HomePage() {
   const [weather, setWeather] = useState<TampaWeather | null>(null)
   const [weatherError, setWeatherError] = useState('')
   const [flightDetail, setFlightDetail] = useState<FlightDetail | null>(null)
+  const [flightParty, setFlightParty] = useState<FlightPartyMember[]>([])
   const [flightForm, setFlightForm] = useState<FlightFormState>({
     arrivalAirport: 'TPA',
     arrivalTime: '',
@@ -179,17 +194,23 @@ export function HomePage() {
     setIsLoadingFlight(true)
 
     try {
-      const payload = await apiRequest<{ detail: FlightDetail | null; migrationRequired?: boolean }>(
+      const payload = await apiRequest<{
+        detail: FlightDetail | null
+        party?: FlightPartyMember[]
+        migrationRequired?: boolean
+      }>(
         '/api/flight-details',
       )
 
       if (payload.migrationRequired) {
         setFlightError('Flight details are not enabled yet. Ask Kara to run the latest migration.')
         setFlightDetail(null)
+        setFlightParty([])
         setFlightForm(mapFlightDetailToForm(null))
       } else {
         setFlightError('')
         setFlightDetail(payload.detail)
+        setFlightParty(payload.party ?? [])
         setFlightForm(mapFlightDetailToForm(payload.detail))
       }
     } catch (requestError) {
@@ -197,6 +218,7 @@ export function HomePage() {
         requestError instanceof Error ? requestError.message : 'Could not load your flight details'
       setFlightError(message)
       setFlightDetail(null)
+      setFlightParty([])
       setFlightForm(mapFlightDetailToForm(null))
     } finally {
       setIsLoadingFlight(false)
@@ -579,6 +601,34 @@ export function HomePage() {
               {text['home.flight.buttonSecondary']}
             </Link>
           </div>
+
+          <section className="flight-party">
+            <p className="flight-party-title">Shared arrivals</p>
+            {flightParty.length === 0 ? (
+              <p className="muted small-text">
+                When family or grouped guests add flights, they appear here.
+              </p>
+            ) : (
+              <div className="flight-party-list">
+                {flightParty.map((member) => (
+                  <article key={member.guestId} className="flight-party-item">
+                    <p className="flight-party-name">
+                      {member.firstName} {member.lastName}
+                    </p>
+                    <p className="muted small-text">
+                      {member.arrivalAirport} • {formatArrivalSummary(member.arrivalTime)}
+                    </p>
+                    {member.airline || member.flightNumber ? (
+                      <p className="muted small-text">
+                        {[member.airline, member.flightNumber].filter(Boolean).join(' ')}
+                      </p>
+                    ) : null}
+                    {member.notes ? <p className="muted small-text">{member.notes}</p> : null}
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
         </article>
       </div>
 

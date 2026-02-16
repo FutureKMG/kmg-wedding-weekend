@@ -57,3 +57,15 @@ export type FlightDetail = {
   notes: string | null
   updatedAt: string
 }
+
+export type FlightPartyMember = {
+  guestId: string
+  firstName: string
+  lastName: string
+  arrivalAirport: 'TPA' | 'PIE'
+  arrivalTime: string
+  airline: string | null
+  flightNumber: string | null
+  notes: string | null
+  updatedAt: string
+}

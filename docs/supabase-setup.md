@@ -20,13 +20,16 @@
 8. If your project was created before the flight details feature, run migration:
    - `supabase/migrations/2026-02-16-add-flight-details.sql`
    - This enables each guest to save their arrival airport/time and optional flight info.
-9. Create storage bucket:
+9. If you want manual travel-party grouping across different last names, run migration:
+   - `supabase/migrations/2026-02-16-add-flight-group-key.sql`
+   - Guests with matching `flight_group_key` can see each other's shared flight details.
+10. Create storage bucket:
    - Name: `wedding-photos`
    - Public bucket: `false`
-10. Run `supabase/seed.sql`.
-11. Import your guest CSV using `docs/guest-import-template.csv` columns.
-12. Manually fix any table labels or name spelling issues.
-13. Validate duplicates:
+11. Run `supabase/seed.sql`.
+12. Import your guest CSV using `docs/guest-import-template.csv` columns.
+13. Manually fix any table labels or name spelling issues.
+14. Validate duplicates:
    - `select full_name_norm, count(*) from guests group by full_name_norm having count(*) > 1;`
    - Ensure zero duplicates before launch.
 
@@ -40,6 +43,17 @@ Set `can_upload=false` for any guest entries you want to block from photo upload
 ## Suggested admin policy
 Grant dashboard-text edit rights by setting:
 - `is_admin=true` for the guest row(s) you trust to manage app copy.
+
+## Optional: travel-party manual grouping
+Use this if you want shared flight visibility for people beyond matching last names.
+
+```sql
+update public.guests
+set flight_group_key = 'kara-party'
+where full_name_norm in ('kara margraf', 'kevin gilmore');
+```
+
+Guests with the same `flight_group_key` will see one another's flight details in Travel Hub.
 
 If you use a different bucket name (for example `Wedding_Photos`), set:
 - `PHOTO_BUCKET_NAME=<your_bucket_name>`

@@ -8,6 +8,7 @@ create table if not exists public.guests (
   table_label text,
   can_upload boolean not null default true,
   is_admin boolean not null default false,
+  flight_group_key text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -78,6 +79,7 @@ create table if not exists public.flight_details (
 );
 
 create index if not exists idx_guests_full_name_norm on public.guests(full_name_norm);
+create index if not exists idx_guests_flight_group_key on public.guests(flight_group_key);
 create index if not exists idx_song_requests_guest_id on public.song_requests(guest_id);
 create index if not exists idx_photos_guest_id on public.photos(guest_id);
 create index if not exists idx_photos_is_feed_post_created_at on public.photos(is_feed_post, created_at desc);
