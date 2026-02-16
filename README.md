@@ -7,9 +7,12 @@ Mobile-first React app for an immersive wedding weekend companion with name-base
 - Wedding-day timeline with live "happening now" indicator
 - Featured Welcome Party timeline card linking to `/welcome-party`
 - Local Dunedin/Tampa guide
+- Live Tampa weather card on Home
+- One-tap Uber request quick action from Home
 - Private seating lookup
 - Song request submission
 - Wedding Feed + Full Gallery photo experience
+- Wedding Feed text updates from guests
 - Upload toggle to post on the public-in-app Wedding Feed
 - Multi-photo upload in one action
 - Guests can delete only photos they uploaded
@@ -48,6 +51,7 @@ Frontend:
 1. Run SQL in Supabase:
    - `supabase/schema.sql`
    - If your project already exists, also run `supabase/migrations/2026-02-15-add-photo-feed-flag.sql`
+   - If your project was created before text updates, run `supabase/migrations/2026-02-16-add-feed-updates.sql`
 2. Seed event + guide data:
    - `supabase/seed.sql`
 3. Import guest CSV using:
@@ -64,6 +68,8 @@ Detailed steps: `docs/supabase-setup.md`
 - `GET /api/guide`
 - `GET /api/seating`
 - `POST /api/song-requests`
+- `GET /api/feed-updates`
+- `POST /api/feed-updates`
 - `GET /api/photos`
   - Optional query: `scope=feed|all`
 - `POST /api/photos/upload-url`
@@ -83,11 +89,13 @@ Detailed steps: `docs/supabase-setup.md`
 - Invite hero assets live in `public/theme`
 - Welcome party hero assets live in `public/theme`
 - Regenerate hero assets from source artwork:
-  - `npm run theme:assets`
-  - `npm run theme:welcome-assets`
-  - Optional custom source path:
-  - `npm run theme:assets -- \"/absolute/path/to/Invite Image.heic\"`
-  - `npm run theme:welcome-assets -- \"/absolute/path/to/IMG_4425_websize.jpg\"`
+- `npm run theme:assets`
+- `npm run theme:welcome-assets`
+- `npm run theme:home-assets`
+- Optional custom source path:
+- `npm run theme:assets -- \"/absolute/path/to/Invite Image.heic\"`
+- `npm run theme:welcome-assets -- \"/absolute/path/to/IMG_4425_websize.jpg\"`
+- `npm run theme:home-assets -- --hero=\"/absolute/path/to/stained-glass.jpg\" --portraitOne=\"/absolute/path/to/portrait-1.jpg\" --portraitTwo=\"/absolute/path/to/portrait-2.jpg\"`
 
 ## Welcome Party Content Edits
 - Update copy, dates, and links in `src/content/welcomeParty.ts`

@@ -5,13 +5,16 @@
 3. If your project was created before the feed feature, run migration:
    - `supabase/migrations/2026-02-15-add-photo-feed-flag.sql`
    - This backfills existing photos into the Wedding Feed (`is_feed_post=true`).
-4. Create storage bucket:
+4. If your project was created before guest text updates, run migration:
+   - `supabase/migrations/2026-02-16-add-feed-updates.sql`
+   - This enables shared wedding feed text updates from logged-in guests.
+5. Create storage bucket:
    - Name: `wedding-photos`
    - Public bucket: `false`
-5. Run `supabase/seed.sql`.
-6. Import your guest CSV using `docs/guest-import-template.csv` columns.
-7. Manually fix any table labels or name spelling issues.
-8. Validate duplicates:
+6. Run `supabase/seed.sql`.
+7. Import your guest CSV using `docs/guest-import-template.csv` columns.
+8. Manually fix any table labels or name spelling issues.
+9. Validate duplicates:
    - `select full_name_norm, count(*) from guests group by full_name_norm having count(*) > 1;`
    - Ensure zero duplicates before launch.
 

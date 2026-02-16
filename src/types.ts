@@ -39,3 +39,11 @@ export type PhotoItem = {
   isFeedPost: boolean
   isOwner: boolean
 }
+
+export type FeedUpdate = {
+  id: string
+  message: string
+  createdAt: string
+  postedBy: string
+  isOwner: boolean
+}

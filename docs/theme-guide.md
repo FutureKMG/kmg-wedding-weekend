@@ -44,6 +44,9 @@ Generated files live in `public/theme`:
 - `invite-hero-mobile.avif|webp|png`
 - `welcome-party-hero.avif|webp|png`
 - `welcome-party-hero-mobile.avif|webp|png`
+- `home-lounge-hero(.avif|webp|png + mobile variants)`
+- `home-lounge-portrait-one(.avif|webp|png + mobile variants)`
+- `home-lounge-portrait-two(.avif|webp|png + mobile variants)`
 - `deco-divider.svg`
 
 Regenerate from source artwork:
@@ -51,6 +54,9 @@ Regenerate from source artwork:
 - or `npm run theme:assets -- "/Users/kara/Desktop/Invite Image.heic"`
 - `npm run theme:welcome-assets`
 - or `npm run theme:welcome-assets -- "/Users/kara/Downloads/IMG_4425_websize.jpg"`
+- `npm run theme:home-assets`
+- optional overrides:
+- `npm run theme:home-assets -- --hero="/path/hero.jpg" --portraitOne="/path/one.jpg" --portraitTwo="/path/two.jpg"`
 
 ## Reusable UI primitives
 - `HeroImage` for responsive hero artwork with AVIF/WebP/PNG fallback
@@ -66,6 +72,13 @@ Regenerate from source artwork:
   - `#2B2B2B` (charcoal text)
   - `#C6A75E` (soft gold details)
 - Keep these accents scoped to Welcome Party UI so the global wedding theme remains cohesive.
+
+## Home mood direction
+- Home page styling now blends:
+  - restored church architecture cues (stained-glass color glows)
+  - romantic cigar-lounge warmth (amber wood + brick tones)
+  - clear, user-friendly utility cards (weather + rides + feed actions)
+- Home-specific selectors are scoped under `.home-*` and `.home-cigar-*`.
 
 ## Do / Don’t
 Do:

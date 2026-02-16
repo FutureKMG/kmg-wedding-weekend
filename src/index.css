@@ -565,11 +565,24 @@ button:disabled {
   gap: var(--space-4);
   grid-template-columns: 1.1fr 0.9fr;
   align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.home-hero-cigar {
+  border-color: rgba(150, 68, 30, 0.35);
+  background:
+    radial-gradient(circle at 88% 0%, rgba(245, 171, 93, 0.2), transparent 40%),
+    radial-gradient(circle at 12% 92%, rgba(81, 28, 48, 0.17), transparent 42%),
+    linear-gradient(155deg, rgba(43, 25, 19, 0.16), rgba(22, 17, 14, 0.05)),
+    var(--bg-surface);
 }
 
 .home-hero-copy {
   display: grid;
   gap: 0.65rem;
+  position: relative;
+  z-index: 1;
 }
 
 .home-hero-copy h2 {
@@ -577,8 +590,64 @@ button:disabled {
 }
 
 .hero-note {
-  color: var(--text-secondary);
+  color: #6b3f35;
   font-size: var(--fs-label);
+  font-weight: 600;
+}
+
+.home-cigar-media-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  grid-template-rows: minmax(160px, 1fr) minmax(160px, 1fr);
+  gap: 0.6rem;
+  min-height: 360px;
+}
+
+.home-cigar-media {
+  display: block;
+  border-radius: var(--radius-s);
+  overflow: hidden;
+  border: 1px solid rgba(117, 67, 42, 0.35);
+  box-shadow: 0 16px 32px rgba(33, 22, 18, 0.2);
+  position: relative;
+}
+
+.home-cigar-media img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.home-cigar-media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 85% 10%, rgba(255, 178, 92, 0.24), transparent 35%),
+    linear-gradient(180deg, rgba(17, 11, 7, 0.02), rgba(17, 11, 7, 0.18));
+}
+
+.home-cigar-media-hero {
+  grid-row: 1 / span 2;
+}
+
+.home-utility-grid {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.home-weather-meta {
+  display: grid;
+  gap: 0.22rem;
+}
+
+.home-weather-temp {
+  font-size: clamp(2rem, 6vw, 2.8rem);
+  line-height: 1;
+  color: #6b2d29;
+  font-family: var(--font-display);
 }
 
 .home-feed {
@@ -686,12 +755,36 @@ button:disabled {
   gap: 0.4rem;
 }
 
-.home-hero-media {
-  display: block;
-  border-radius: var(--radius-m);
-  overflow: hidden;
-  min-height: 220px;
-  border: 1px solid rgba(61, 116, 134, 0.25);
+.home-feed-updates {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.1fr);
+  gap: 0.8rem;
+}
+
+.home-feed-updates .card {
+  padding: 0.95rem;
+}
+
+.home-text-feed-card {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.home-text-feed-list {
+  display: grid;
+  gap: 0.55rem;
+  max-height: 300px;
+  overflow: auto;
+  padding-right: 0.15rem;
+}
+
+.home-text-feed-item {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-s);
+  background: rgba(255, 250, 245, 0.86);
+  padding: 0.65rem;
+  display: grid;
+  gap: 0.35rem;
 }
 
 .quick-grid {
@@ -933,6 +1026,20 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 
+  .home-cigar-media-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: auto;
+    min-height: 0;
+  }
+
+  .home-cigar-media-hero {
+    grid-row: auto;
+  }
+
+  .home-feed-updates {
+    grid-template-columns: 1fr;
+  }
+
   .invite-hero-media {
     min-height: 220px;
   }
@@ -968,6 +1075,14 @@ button:disabled {
 
   .home-feed-photo {
     width: clamp(138px, 44vw, 190px);
+  }
+
+  .home-cigar-media-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-cigar-media {
+    min-height: 220px;
   }
 
   .welcome-scoreboard {
