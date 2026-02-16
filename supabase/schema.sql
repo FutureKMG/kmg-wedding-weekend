@@ -57,6 +57,13 @@ create table if not exists public.feed_updates (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.app_text_content (
+  content_key text primary key,
+  content_value text not null,
+  updated_by_guest_id uuid references public.guests(id) on delete set null,
+  updated_at timestamptz not null default now()
+);
+
 create index if not exists idx_guests_full_name_norm on public.guests(full_name_norm);
 create index if not exists idx_song_requests_guest_id on public.song_requests(guest_id);
 create index if not exists idx_photos_guest_id on public.photos(guest_id);
@@ -70,6 +77,7 @@ alter table public.guide_items enable row level security;
 alter table public.song_requests enable row level security;
 alter table public.photos enable row level security;
 alter table public.feed_updates enable row level security;
+alter table public.app_text_content enable row level security;
 
 -- Service-role API routes query these tables directly, so client-side access stays closed by default.
 create policy "deny all guests"
@@ -104,6 +112,12 @@ create policy "deny all photos"
 
 create policy "deny all feed updates"
   on public.feed_updates
+  for all
+  using (false)
+  with check (false);
+
+create policy "deny all app text content"
+  on public.app_text_content
   for all
   using (false)
   with check (false);

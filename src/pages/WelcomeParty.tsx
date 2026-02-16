@@ -9,7 +9,7 @@ import {
 const styleGuideItems = [
   {
     title: 'Casual + Comfortable',
-    detail: 'Lightweight fabrics and relaxed silhouettes are perfect.',
+    detail: 'Relaxed fits and lightweight fabrics are perfect for the ballpark.',
     icon: 'cap',
   },
   {
@@ -19,12 +19,12 @@ const styleGuideItems = [
   },
   {
     title: 'Phillies Red Welcome',
-    detail: 'If you have a pop of red, this is the place to wear it.',
+    detail: 'A subtle Phillies red accent is welcome if you want to lean in.',
     icon: 'red',
   },
   {
     title: 'Comfy Shoes',
-    detail: 'Choose easy shoes for walking and mingling in the terrace section.',
+    detail: 'Choose easy shoes for walking and mingling in the Picnic Terrace.',
     icon: 'shoe',
   },
 ] as const
@@ -144,6 +144,7 @@ export function WelcomePartyPage() {
             <p>{welcomePartyContent.buffetLabel}</p>
           </div>
         </div>
+        <p className="muted">{welcomePartyContent.attire}</p>
 
         <div className="welcome-ticket-actions">
           <a

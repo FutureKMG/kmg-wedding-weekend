@@ -28,7 +28,7 @@ export function GuidePage() {
       <PageIntro
         eyebrow="Explore"
         title="Dunedin & Tampa Guide"
-        description="A few hand-picked spots to round out the weekend."
+        description="Travel highlights from your Zola details: nearby airports, room block links, and local Dunedin favorites."
       />
 
       {error && <p className="error-text">{error}</p>}

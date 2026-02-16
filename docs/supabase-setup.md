@@ -8,13 +8,19 @@
 4. If your project was created before guest text updates, run migration:
    - `supabase/migrations/2026-02-16-add-feed-updates.sql`
    - This enables shared wedding feed text updates from logged-in guests.
-5. Create storage bucket:
+5. If your project already has older timeline/guide seed data, run migration:
+   - `supabase/migrations/2026-02-16-sync-zola-content.sql`
+   - This syncs events + guide items to the latest Zola details.
+6. If you want owner-only dashboard text editing in-app, run migration:
+   - `supabase/migrations/2026-02-16-add-app-text-content.sql`
+   - This enables editable card/dashboard text storage.
+7. Create storage bucket:
    - Name: `wedding-photos`
    - Public bucket: `false`
-6. Run `supabase/seed.sql`.
-7. Import your guest CSV using `docs/guest-import-template.csv` columns.
-8. Manually fix any table labels or name spelling issues.
-9. Validate duplicates:
+8. Run `supabase/seed.sql`.
+9. Import your guest CSV using `docs/guest-import-template.csv` columns.
+10. Manually fix any table labels or name spelling issues.
+11. Validate duplicates:
    - `select full_name_norm, count(*) from guests group by full_name_norm having count(*) > 1;`
    - Ensure zero duplicates before launch.
 

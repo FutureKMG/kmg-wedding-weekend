@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { Layout } from './components/Layout'
 import { ProtectedRoute } from './components/ProtectedRoute'
+import { ContentEditorPage } from './pages/ContentEditor'
 import { GalleryPage } from './pages/Gallery'
 import { GuidePage } from './pages/Guide'
 import { HomePage } from './pages/Home'
@@ -28,6 +29,7 @@ function App() {
         <Route path="/seating" element={<SeatingPage />} />
         <Route path="/songs" element={<SongsPage />} />
         <Route path="/gallery" element={<GalleryPage />} />
+        <Route path="/content-editor" element={<ContentEditorPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

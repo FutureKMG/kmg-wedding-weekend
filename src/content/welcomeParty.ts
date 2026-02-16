@@ -1,4 +1,4 @@
-const welcomePartyTitle = 'Welcome Party: Phillies vs. Orioles'
+const welcomePartyTitle = 'Welcome Party: Phillies vs. Orioles Spring Training Game'
 const welcomePartyLocationName = 'BayCare Ballpark'
 const welcomePartyAddress = '601 Old Coachman Road, Clearwater, FL 33765'
 const welcomePartyStartIso = '2026-03-13T12:00:00-05:00'
@@ -17,15 +17,16 @@ export const welcomePartyContent = {
   locationName: welcomePartyLocationName,
   locationAddress: welcomePartyAddress,
   sectionLabel: 'Private Picnic Terrace',
-  buffetLabel: 'All-you-can-eat from 12:00 PM - 2:00 PM',
+  buffetLabel: 'All-you-can-eat buffet from 12:00 PM - 2:00 PM',
   timelineMicrocopy: 'Tap for Game Details ->',
-  mapsUrl:
-    'https://maps.google.com/?q=BayCare+Ballpark+601+Old+Coachman+Road+Clearwater+FL+33765',
+  mapsUrl: 'https://maps.google.com/?cid=742843336731204491',
   icsFilename: 'kara-kevin-welcome-party.ics',
   description:
-    "Instead of a traditional \"Night Before,\" we're hosting a Game Before - the perfect way to ease into the weekend.",
+    "We can't wait to kick off the weekend with you at BayCare Ballpark. Instead of a traditional \"Night Before,\" we're hosting a \"Game Before\" to ease into the celebrations.",
   descriptionContinued:
-    "We've reserved a private section of the Picnic Terrace, where you can arrive anytime after gates open and settle in for an afternoon of sunshine, baseball, and cold drinks.",
+    "We've reserved a private section of the Picnic Terrace with an all-you-can-eat buffet from 12:00 PM to 2:00 PM. Arrive anytime after gates open for baseball, sunshine, and ballpark snacks.",
+  attire:
+    "Attire: Casual and comfortable. We'll be in a reserved part of the Picnic Terrace, so breezy outfits and comfy shoes are perfect for a sunny afternoon at the ballpark.",
 }
 
 function toGoogleDate(dateIso: string): string {

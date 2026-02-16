@@ -2,6 +2,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { DecoDivider } from '../components/DecoDivider'
+import { mergeDashboardText } from '../content/dashboardText'
 import { apiRequest } from '../lib/apiClient'
 import { useAuth } from '../lib/auth'
 import type { FeedUpdate, PhotoItem } from '../types'
@@ -18,6 +19,11 @@ const fenwayUberUrl = (() => {
   })
   return `https://m.uber.com/ul/?${params.toString()}`
 })()
+
+const fenwayRoomBlockUrl =
+  'https://www.marriott.com/event-reservations/reservation-link.mi?id=1740088122132&key=GRP&guestreslink2=true&app=resvlink'
+const nearbyHotelsUrl =
+  'https://hotelblocks.zola.com/Search/?City=Dunedin+FL&inDate=03/13/2026&outDate=03/15/2026'
 
 function weatherLabel(code: number, isDay: number): string {
   if (code === 0) {
@@ -59,11 +65,18 @@ export function HomePage() {
   const [feedPhotos, setFeedPhotos] = useState<PhotoItem[]>([])
   const [feedUpdates, setFeedUpdates] = useState<FeedUpdate[]>([])
   const [feedError, setFeedError] = useState('')
+  const [contentOverrides, setContentOverrides] = useState<Record<string, string>>({})
   const [updateDraft, setUpdateDraft] = useState('')
   const [updateError, setUpdateError] = useState('')
   const [isPostingUpdate, setIsPostingUpdate] = useState(false)
+  const [editingUpdateId, setEditingUpdateId] = useState<string | null>(null)
+  const [editingUpdateDraft, setEditingUpdateDraft] = useState('')
+  const [updatingUpdateId, setUpdatingUpdateId] = useState<string | null>(null)
+  const [deletingUpdateId, setDeletingUpdateId] = useState<string | null>(null)
   const [weather, setWeather] = useState<TampaWeather | null>(null)
   const [weatherError, setWeatherError] = useState('')
+
+  const text = useMemo(() => mergeDashboardText(contentOverrides), [contentOverrides])
 
   const loadWeddingFeed = useCallback(async () => {
     try {
@@ -121,6 +134,19 @@ export function HomePage() {
   }, [])
 
   useEffect(() => {
+    async function loadContentText() {
+      try {
+        const payload = await apiRequest<{ content: Record<string, string> }>('/api/content-text')
+        setContentOverrides(payload.content ?? {})
+      } catch {
+        setContentOverrides({})
+      }
+    }
+
+    void loadContentText()
+  }, [])
+
+  useEffect(() => {
     const startup = window.setTimeout(() => {
       void loadWeddingFeed()
       void loadWeather()
@@ -173,6 +199,8 @@ export function HomePage() {
         body: JSON.stringify({ message }),
       })
       setUpdateDraft('')
+      setEditingUpdateId(null)
+      setEditingUpdateDraft('')
       await loadWeddingFeed()
     } catch (requestError) {
       const messageText =
@@ -183,20 +211,79 @@ export function HomePage() {
     }
   }
 
+  function startEditingUpdate(update: FeedUpdate) {
+    setUpdateError('')
+    setEditingUpdateId(update.id)
+    setEditingUpdateDraft(update.message)
+  }
+
+  function cancelEditingUpdate() {
+    setEditingUpdateId(null)
+    setEditingUpdateDraft('')
+  }
+
+  async function handleSaveUpdate(updateId: string) {
+    const message = editingUpdateDraft.trim()
+    if (!message) {
+      setUpdateError('Update text cannot be empty.')
+      return
+    }
+
+    setUpdateError('')
+    setUpdatingUpdateId(updateId)
+
+    try {
+      await apiRequest('/api/feed-updates/update', {
+        method: 'POST',
+        body: JSON.stringify({ updateId, message }),
+      })
+      cancelEditingUpdate()
+      await loadWeddingFeed()
+    } catch (requestError) {
+      const messageText =
+        requestError instanceof Error ? requestError.message : 'Could not save update'
+      setUpdateError(messageText)
+    } finally {
+      setUpdatingUpdateId(null)
+    }
+  }
+
+  async function handleDeleteUpdate(updateId: string) {
+    const shouldDelete = window.confirm('Delete this feed update?')
+    if (!shouldDelete) {
+      return
+    }
+
+    setUpdateError('')
+    setDeletingUpdateId(updateId)
+
+    try {
+      await apiRequest('/api/feed-updates/delete', {
+        method: 'POST',
+        body: JSON.stringify({ updateId }),
+      })
+      if (editingUpdateId === updateId) {
+        cancelEditingUpdate()
+      }
+      await loadWeddingFeed()
+    } catch (requestError) {
+      const messageText =
+        requestError instanceof Error ? requestError.message : 'Could not delete update'
+      setUpdateError(messageText)
+    } finally {
+      setDeletingUpdateId(null)
+    }
+  }
+
   return (
     <section className="stack">
       <article className="card home-hero home-hero-cigar reveal">
         <div className="home-hero-copy">
           <p className="eyebrow">Welcome, {guest?.firstName}</p>
-          <h2>Your storybook weekend lounge</h2>
-          <p className="muted">
-            A romantic cathedral-meets-cigar-lounge mood with stained-glass glow, warm brick, and
-            everything guests need in one place.
-          </p>
+          <h2>{text['home.hero.title']}</h2>
+          <p className="muted">{text['home.hero.body']}</p>
           <DecoDivider />
-          <p className="hero-note">
-            Candlelit corners, stained glass, and fairytale Florida nights.
-          </p>
+          <p className="hero-note">{text['home.hero.note']}</p>
         </div>
 
         <div className="home-cigar-media-grid">
@@ -250,8 +337,8 @@ export function HomePage() {
 
       <div className="home-utility-grid">
         <article className="card reveal">
-          <p className="eyebrow">Live Weather</p>
-          <h3>Tampa Right Now</h3>
+          <p className="eyebrow">{text['home.weather.eyebrow']}</p>
+          <h3>{text['home.weather.title']}</h3>
           {weather ? (
             <div className="home-weather-meta">
               <p className="home-weather-temp">{weather.tempF}°F</p>
@@ -267,24 +354,35 @@ export function HomePage() {
         </article>
 
         <article className="card reveal">
-          <p className="eyebrow">Ride Ready</p>
-          <h3>Request an Uber</h3>
-          <p className="muted">
-            One tap to open Uber with pickup at your location and destination set to Fenway Hotel.
-          </p>
+          <p className="eyebrow">{text['home.uber.eyebrow']}</p>
+          <h3>{text['home.uber.title']}</h3>
+          <p className="muted">{text['home.uber.body']}</p>
           <a className="button-link" href={fenwayUberUrl} target="_blank" rel="noreferrer">
-            Open Uber
+            {text['home.uber.button']}
           </a>
+        </article>
+
+        <article className="card reveal">
+          <p className="eyebrow">{text['home.travel.eyebrow']}</p>
+          <h3>{text['home.travel.title']}</h3>
+          <p className="muted">{text['home.travel.bodyPrimary']}</p>
+          <p className="muted">{text['home.travel.bodySecondary']}</p>
+          <div className="button-row">
+            <a className="button-link secondary-button-link" href={fenwayRoomBlockUrl} target="_blank" rel="noreferrer">
+              {text['home.travel.buttonPrimary']}
+            </a>
+            <a className="button-link secondary-button-link" href={nearbyHotelsUrl} target="_blank" rel="noreferrer">
+              {text['home.travel.buttonSecondary']}
+            </a>
+          </div>
         </article>
       </div>
 
       <article className="card home-feed reveal">
         <div className="home-feed-head">
-          <p className="eyebrow">Live Moments</p>
-          <h3>Wedding Feed: Photos + Notes</h3>
-          <p className="muted">
-            See shared memories and quick text updates from guests across the weekend.
-          </p>
+          <p className="eyebrow">{text['home.feed.eyebrow']}</p>
+          <h3>{text['home.feed.title']}</h3>
+          <p className="muted">{text['home.feed.body']}</p>
         </div>
 
         {feedPhotos.length > 0 ? (
@@ -316,7 +414,7 @@ export function HomePage() {
         ) : (
           <div className="home-feed-empty">
             <p className="muted">
-              {feedError || 'No feed photos yet. Upload one from Gallery to start the live reel.'}
+              {feedError || text['home.feed.empty']}
             </p>
             <Link to="/gallery" className="inline-link">
               Open Gallery
@@ -327,18 +425,18 @@ export function HomePage() {
         <div className="home-feed-updates">
           <form className="card stack" onSubmit={handlePostUpdate}>
             <label className="field">
-              Share a quick update
+              {text['home.feed.postLabel']}
               <textarea
                 value={updateDraft}
                 onChange={(event) => setUpdateDraft(event.target.value)}
                 maxLength={280}
-                placeholder="Example: We just arrived at cocktail hour and it looks incredible."
+                placeholder={text['home.feed.postPlaceholder']}
               />
             </label>
             <p className="muted small-text">{updateDraft.trim().length}/280</p>
             {updateError ? <p className="error-text">{updateError}</p> : null}
             <button type="submit" disabled={isPostingUpdate}>
-              {isPostingUpdate ? 'Posting...' : 'Post Update'}
+              {isPostingUpdate ? 'Posting...' : text['home.feed.postButton']}
             </button>
           </form>
 
@@ -346,17 +444,70 @@ export function HomePage() {
             <p className="eyebrow">Text Updates</p>
             {feedUpdates.length === 0 ? (
               <p className="muted">
-                {feedError || 'No text updates yet. Be the first to post one.'}
+                {feedError || text['home.feed.noTextUpdates']}
               </p>
             ) : (
               <div className="home-text-feed-list">
                 {feedUpdates.map((update) => (
                   <article key={update.id} className="home-text-feed-item">
-                    <p>{update.message}</p>
+                    {editingUpdateId === update.id ? (
+                      <label className="field">
+                        Edit your update
+                        <textarea
+                          value={editingUpdateDraft}
+                          onChange={(event) => setEditingUpdateDraft(event.target.value)}
+                          maxLength={280}
+                        />
+                      </label>
+                    ) : (
+                      <p>{update.message}</p>
+                    )}
                     <p className="muted small-text">
                       {update.postedBy} •{' '}
                       {formatDistanceToNow(new Date(update.createdAt), { addSuffix: true })}
                     </p>
+                    {update.isOwner ? (
+                      <div className="feed-update-actions">
+                        {editingUpdateId === update.id ? (
+                          <>
+                            <button
+                              type="button"
+                              className="secondary-button"
+                              disabled={updatingUpdateId === update.id}
+                              onClick={() => void handleSaveUpdate(update.id)}
+                            >
+                              {updatingUpdateId === update.id ? 'Saving...' : 'Save'}
+                            </button>
+                            <button
+                              type="button"
+                              className="secondary-button"
+                              disabled={updatingUpdateId === update.id}
+                              onClick={cancelEditingUpdate}
+                            >
+                              Cancel
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              type="button"
+                              className="secondary-button"
+                              onClick={() => startEditingUpdate(update)}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              className="secondary-button"
+                              disabled={deletingUpdateId === update.id}
+                              onClick={() => void handleDeleteUpdate(update.id)}
+                            >
+                              {deletingUpdateId === update.id ? 'Deleting...' : 'Delete'}
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    ) : null}
                   </article>
                 ))}
               </div>
@@ -367,29 +518,29 @@ export function HomePage() {
 
       <div className="quick-grid">
         <Link to="/timeline" className="card quick-link reveal">
-          <p className="eyebrow">Now & Next</p>
-          <h3>Wedding Timeline</h3>
-          <p className="muted">See what is happening now and what is coming up next.</p>
+          <p className="eyebrow">{text['home.quick.timeline.eyebrow']}</p>
+          <h3>{text['home.quick.timeline.title']}</h3>
+          <p className="muted">{text['home.quick.timeline.body']}</p>
         </Link>
         <Link to="/guide" className="card quick-link reveal">
-          <p className="eyebrow">Around Town</p>
-          <h3>Local Guide</h3>
-          <p className="muted">Curated Dunedin and Tampa recommendations for guests.</p>
+          <p className="eyebrow">{text['home.quick.guide.eyebrow']}</p>
+          <h3>{text['home.quick.guide.title']}</h3>
+          <p className="muted">{text['home.quick.guide.body']}</p>
         </Link>
         <Link to="/seating" className="card quick-link reveal">
-          <p className="eyebrow">Reception</p>
-          <h3>Seating</h3>
-          <p className="muted">Find your table assignment quickly.</p>
+          <p className="eyebrow">{text['home.quick.seating.eyebrow']}</p>
+          <h3>{text['home.quick.seating.title']}</h3>
+          <p className="muted">{text['home.quick.seating.body']}</p>
         </Link>
         <Link to="/songs" className="card quick-link reveal">
-          <p className="eyebrow">Dance Floor</p>
-          <h3>Song Requests</h3>
-          <p className="muted">Share a song for the DJ list.</p>
+          <p className="eyebrow">{text['home.quick.songs.eyebrow']}</p>
+          <h3>{text['home.quick.songs.title']}</h3>
+          <p className="muted">{text['home.quick.songs.body']}</p>
         </Link>
         <Link to="/gallery" className="card quick-link reveal">
-          <p className="eyebrow">Memories</p>
-          <h3>Wedding Feed & Gallery</h3>
-          <p className="muted">Post to the feed or browse every photo from the weekend.</p>
+          <p className="eyebrow">{text['home.quick.gallery.eyebrow']}</p>
+          <h3>{text['home.quick.gallery.title']}</h3>
+          <p className="muted">{text['home.quick.gallery.body']}</p>
         </Link>
       </div>
     </section>

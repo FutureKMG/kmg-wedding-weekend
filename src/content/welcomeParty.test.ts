@@ -20,7 +20,7 @@ describe('welcome party calendar helpers', () => {
     const ics = getWelcomePartyIcsText()
 
     expect(ics).toContain('BEGIN:VCALENDAR')
-    expect(ics).toContain('SUMMARY:Welcome Party: Phillies vs. Orioles')
+    expect(ics).toContain(`SUMMARY:${welcomePartyContent.title}`)
     expect(ics).toContain('DTSTART:')
     expect(ics).toContain('DTEND:')
   })

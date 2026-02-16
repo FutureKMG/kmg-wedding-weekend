@@ -11,6 +11,9 @@ set
   start_at = excluded.start_at,
   end_at = excluded.end_at;
 
+delete from public.events
+where sort_order > 4;
+
 insert into public.guide_items (title, category, description, address, maps_url, sort_order)
 values
   (

@@ -3,6 +3,7 @@ export type GuestProfile = {
   firstName: string
   tableLabel: string | null
   canUpload: boolean
+  canEditContent: boolean
 }
 
 export type WeddingEvent = {

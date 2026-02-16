@@ -6,16 +6,17 @@ Mobile-first React app for an immersive wedding weekend companion with name-base
 - First + last name login (no password)
 - Wedding-day timeline with live "happening now" indicator
 - Featured Welcome Party timeline card linking to `/welcome-party`
-- Local Dunedin/Tampa guide
+- Local Dunedin/Tampa guide synced from Zola travel details
 - Live Tampa weather card on Home
 - One-tap Uber request quick action from Home
 - Private seating lookup
 - Song request submission
 - Wedding Feed + Full Gallery photo experience
-- Wedding Feed text updates from guests
+- Wedding Feed text updates from guests (add/edit/delete own updates)
 - Upload toggle to post on the public-in-app Wedding Feed
 - Multi-photo upload in one action
-- Guests can delete only photos they uploaded
+- Guests can edit/delete only photos they uploaded
+- Owner-only dashboard text editor (`/content-editor`) for Kara Margraf
 - Global art deco watercolor visual system aligned to Fenway palette
 - Phillies-inspired Welcome Party microsite with directions + calendar actions
 - Vercel-ready API routes and deployment config
@@ -52,6 +53,8 @@ Frontend:
    - `supabase/schema.sql`
    - If your project already exists, also run `supabase/migrations/2026-02-15-add-photo-feed-flag.sql`
    - If your project was created before text updates, run `supabase/migrations/2026-02-16-add-feed-updates.sql`
+   - If your project has older seed content, run `supabase/migrations/2026-02-16-sync-zola-content.sql`
+   - If you want in-app dashboard text editing, run `supabase/migrations/2026-02-16-add-app-text-content.sql`
 2. Seed event + guide data:
    - `supabase/seed.sql`
 3. Import guest CSV using:
@@ -70,11 +73,17 @@ Detailed steps: `docs/supabase-setup.md`
 - `POST /api/song-requests`
 - `GET /api/feed-updates`
 - `POST /api/feed-updates`
+- `POST /api/feed-updates/update`
+- `POST /api/feed-updates/delete`
+- `GET /api/content-text`
+- `POST /api/content-text/save` (Kara-only)
 - `GET /api/photos`
   - Optional query: `scope=feed|all`
 - `POST /api/photos/upload-url`
 - `POST /api/photos/complete`
   - Accepts: `path`, optional `caption`, optional `shareToFeed`
+- `POST /api/photos/update`
+  - Accepts: `photoId`, optional `caption`, optional `shareToFeed`
 - `POST /api/photos/delete`
   - Accepts: `photoId` (only photo owner can delete)
 

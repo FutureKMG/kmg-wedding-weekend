@@ -4,15 +4,22 @@ import type { PhotoItem } from '../types'
 type PhotoGridProps = {
   photos: PhotoItem[]
   onDeletePhoto?: (photoId: string) => Promise<void>
+  onUpdatePhoto?: (photoId: string, payload: { caption: string; shareToFeed: boolean }) => Promise<void>
   deletingPhotoId?: string | null
+  updatingPhotoId?: string | null
 }
 
 export function PhotoGrid({
   photos,
   onDeletePhoto,
+  onUpdatePhoto,
   deletingPhotoId = null,
+  updatingPhotoId = null,
 }: PhotoGridProps) {
   const [activePhoto, setActivePhoto] = useState<PhotoItem | null>(null)
+  const [editingPhotoId, setEditingPhotoId] = useState<string | null>(null)
+  const [editingCaption, setEditingCaption] = useState('')
+  const [editingShareToFeed, setEditingShareToFeed] = useState(true)
 
   useEffect(() => {
     if (!activePhoto) {
@@ -33,6 +40,18 @@ export function PhotoGrid({
     return <p className="card muted reveal">No photos yet. Be the first to add one.</p>
   }
 
+  function startEditingPhoto(photo: PhotoItem) {
+    setEditingPhotoId(photo.id)
+    setEditingCaption(photo.caption ?? '')
+    setEditingShareToFeed(photo.isFeedPost)
+  }
+
+  function cancelEditingPhoto() {
+    setEditingPhotoId(null)
+    setEditingCaption('')
+    setEditingShareToFeed(true)
+  }
+
   return (
     <>
       <div className="photo-grid">
@@ -51,24 +70,83 @@ export function PhotoGrid({
               <div className="photo-meta-row">
                 <p className="muted">Shared by {photo.uploadedBy}</p>
                 {photo.isOwner && onDeletePhoto ? (
-                  <button
-                    type="button"
-                    className="secondary-button photo-delete-button"
-                    disabled={deletingPhotoId === photo.id}
-                    onClick={async () => {
-                      const shouldDelete = window.confirm(
-                        'Delete this photo from your gallery uploads?',
-                      )
-                      if (!shouldDelete) {
-                        return
-                      }
-                      await onDeletePhoto(photo.id)
-                    }}
-                  >
-                    {deletingPhotoId === photo.id ? 'Deleting...' : 'Delete'}
-                  </button>
+                  <div className="photo-owner-actions">
+                    {onUpdatePhoto ? (
+                      <button
+                        type="button"
+                        className="secondary-button photo-delete-button"
+                        onClick={() => startEditingPhoto(photo)}
+                        disabled={editingPhotoId === photo.id}
+                      >
+                        Edit
+                      </button>
+                    ) : null}
+                    <button
+                      type="button"
+                      className="secondary-button photo-delete-button"
+                      disabled={deletingPhotoId === photo.id}
+                      onClick={async () => {
+                        const shouldDelete = window.confirm(
+                          'Delete this photo from your gallery uploads?',
+                        )
+                        if (!shouldDelete) {
+                          return
+                        }
+                        await onDeletePhoto(photo.id)
+                      }}
+                    >
+                      {deletingPhotoId === photo.id ? 'Deleting...' : 'Delete'}
+                    </button>
+                  </div>
                 ) : null}
               </div>
+              {photo.isOwner && onUpdatePhoto && editingPhotoId === photo.id ? (
+                <form
+                  className="photo-edit-form"
+                  onSubmit={async (event) => {
+                    event.preventDefault()
+                    await onUpdatePhoto(photo.id, {
+                      caption: editingCaption,
+                      shareToFeed: editingShareToFeed,
+                    })
+                    cancelEditingPhoto()
+                  }}
+                >
+                  <label className="field">
+                    Caption
+                    <input
+                      value={editingCaption}
+                      onChange={(event) => setEditingCaption(event.target.value)}
+                      maxLength={160}
+                    />
+                  </label>
+                  <label className="checkbox-field">
+                    <input
+                      type="checkbox"
+                      checked={editingShareToFeed}
+                      onChange={(event) => setEditingShareToFeed(event.target.checked)}
+                    />
+                    <span>Show in Wedding Feed</span>
+                  </label>
+                  <div className="photo-owner-actions">
+                    <button
+                      type="submit"
+                      className="secondary-button photo-delete-button"
+                      disabled={updatingPhotoId === photo.id}
+                    >
+                      {updatingPhotoId === photo.id ? 'Saving...' : 'Save'}
+                    </button>
+                    <button
+                      type="button"
+                      className="secondary-button photo-delete-button"
+                      onClick={cancelEditingPhoto}
+                      disabled={updatingPhotoId === photo.id}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              ) : null}
             </figcaption>
           </figure>
         ))}

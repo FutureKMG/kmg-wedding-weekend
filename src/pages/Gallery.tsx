@@ -27,6 +27,7 @@ export function GalleryPage() {
   const [successMessage, setSuccessMessage] = useState('')
   const [isUploading, setIsUploading] = useState(false)
   const [deletingPhotoId, setDeletingPhotoId] = useState<string | null>(null)
+  const [updatingPhotoId, setUpdatingPhotoId] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const canUpload = useMemo(() => Boolean(supabaseClient), [])
@@ -153,6 +154,34 @@ export function GalleryPage() {
     }
   }
 
+  async function handleUpdatePhoto(
+    photoId: string,
+    payload: { caption: string; shareToFeed: boolean },
+  ) {
+    setError('')
+    setSuccessMessage('')
+    setUpdatingPhotoId(photoId)
+
+    try {
+      await apiRequest('/api/photos/update', {
+        method: 'POST',
+        body: JSON.stringify({
+          photoId,
+          caption: payload.caption,
+          shareToFeed: payload.shareToFeed,
+        }),
+      })
+      await loadPhotoCollections()
+      setSuccessMessage('Photo updated.')
+    } catch (requestError) {
+      const message =
+        requestError instanceof Error ? requestError.message : 'Could not update photo'
+      setError(message)
+    } finally {
+      setUpdatingPhotoId(null)
+    }
+  }
+
   const visiblePhotos = activeScope === 'feed' ? feedPhotos : allPhotos
 
   return (
@@ -239,7 +268,9 @@ export function GalleryPage() {
       <PhotoGrid
         photos={visiblePhotos}
         deletingPhotoId={deletingPhotoId}
+        updatingPhotoId={updatingPhotoId}
         onDeletePhoto={handleDeletePhoto}
+        onUpdatePhoto={handleUpdatePhoto}
       />
     </section>
   )
