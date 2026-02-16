@@ -278,12 +278,13 @@ export function HomePage() {
   return (
     <section className="stack">
       <article className="card home-hero home-hero-cigar reveal">
-        <div className="home-hero-copy">
-          <p className="eyebrow">Welcome, {guest?.firstName}</p>
-          <h2>{text['home.hero.title']}</h2>
-          <p className="muted">{text['home.hero.body']}</p>
+        <div className="home-hero-copy home-hero-copy-centered">
+          <p className="eyebrow">The Gilmore Wedding Weekend</p>
+          <p className="hero-accent-line">March 13-15 · Tampa, Florida</p>
+          <h2>Welcome, {guest?.firstName ?? 'Guest'}.</h2>
+          <p className="hero-subheadline">{text['home.hero.title']}</p>
           <DecoDivider />
-          <p className="hero-note">{text['home.hero.note']}</p>
+          <p className="muted hero-supporting">{text['home.hero.body']}</p>
         </div>
 
         <div className="home-cigar-media-grid">

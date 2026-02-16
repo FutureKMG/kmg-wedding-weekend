@@ -3,11 +3,10 @@ export const DASHBOARD_TEXT_DEFAULTS = {
   'layout.title': 'Kara & Kevin',
   'layout.subtitle': 'Wedding Companion',
 
-  'home.hero.title': 'Your storybook weekend lounge',
+  'home.hero.title': 'Your personal concierge for the weekend.',
   'home.hero.body':
-    'March 13-14, 2026 in Dunedin, Florida. A romantic cathedral-meets-cigar-lounge mood with stained-glass glow, warm brick, and everything guests need in one place.',
-  'home.hero.note':
-    'Ceremony begins at 5:30 PM on Saturday, March 14 at the Fenway Hotel Front Lawn.',
+    'Everything you need - from timelines to table numbers - all in one place.',
+  'home.hero.note': 'March 13-15, 2026 · Tampa, Florida',
 
   'home.weather.eyebrow': 'Live Weather',
   'home.weather.title': 'Tampa Right Now',

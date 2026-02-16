@@ -57,7 +57,6 @@ export function Layout() {
           <p className="eyebrow">{text['layout.eyebrow']}</p>
           <h1 className="title">{text['layout.title']}</h1>
           <p className="subtitle">{text['layout.subtitle']}</p>
-          <p className="muted">Welcome, {guest?.firstName ?? 'Guest'}</p>
         </div>
         <button className="secondary-button" onClick={handleLogout}>
           Log out

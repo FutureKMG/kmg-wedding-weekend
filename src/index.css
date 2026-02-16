@@ -596,8 +596,33 @@ button:disabled {
   z-index: 1;
 }
 
+.home-hero-copy-centered {
+  justify-items: center;
+  text-align: center;
+}
+
 .home-hero-copy h2 {
   font-size: var(--fs-h1);
+}
+
+.hero-accent-line {
+  margin: 0;
+  font-size: var(--fs-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6f4f44;
+}
+
+.hero-subheadline {
+  margin: 0;
+  font-size: clamp(1.05rem, 2.2vw, 1.28rem);
+  color: var(--text-primary);
+  max-width: 34ch;
+}
+
+.hero-supporting {
+  margin: 0;
+  max-width: 56ch;
 }
 
 .hero-note {
