@@ -16,7 +16,7 @@ Mobile-first React app for an immersive wedding weekend companion with name-base
 - Upload toggle to post on the public-in-app Wedding Feed
 - Multi-photo upload in one action
 - Guests can edit/delete only photos they uploaded
-- Owner-only dashboard text editor (`/content-editor`) for Kara Margraf
+- Admin-only dashboard text editor (`/content-editor`)
 - Global art deco watercolor visual system aligned to Fenway palette
 - Phillies-inspired Welcome Party microsite with directions + calendar actions
 - Vercel-ready API routes and deployment config
@@ -55,6 +55,7 @@ Frontend:
    - If your project was created before text updates, run `supabase/migrations/2026-02-16-add-feed-updates.sql`
    - If your project has older seed content, run `supabase/migrations/2026-02-16-sync-zola-content.sql`
    - If you want in-app dashboard text editing, run `supabase/migrations/2026-02-16-add-app-text-content.sql`
+   - If your project was created before admin controls, run `supabase/migrations/2026-02-16-add-guests-admin-flag.sql`
 2. Seed event + guide data:
    - `supabase/seed.sql`
 3. Import guest CSV using:
@@ -76,7 +77,7 @@ Detailed steps: `docs/supabase-setup.md`
 - `POST /api/feed-updates/update`
 - `POST /api/feed-updates/delete`
 - `GET /api/content-text`
-- `POST /api/content-text/save` (Kara-only)
+- `POST /api/content-text/save` (admin-only)
 - `GET /api/photos`
   - Optional query: `scope=feed|all`
 - `POST /api/photos/upload-url`

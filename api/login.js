@@ -4,7 +4,6 @@ import { methodNotAllowed, readJson, sendJson } from './_lib/http.js'
 import { normalizeFullName } from './_lib/nameNormalization.js'
 import { createSessionToken, setSessionCookie } from './_lib/session.js'
 import { getSupabaseAdminClient } from './_lib/supabaseAdmin.js'
-import { canEditContentByFullNameNorm } from './_lib/contentEditor.js'
 
 const loginSchema = z.object({
   firstName: z.string().trim().min(1).max(80),
@@ -31,7 +30,7 @@ export default async function handler(req, res) {
 
     const { data, error } = await supabase
       .from('guests')
-      .select('id, first_name, table_label, can_upload, full_name_norm')
+      .select('id, first_name, table_label, can_upload, is_admin')
       .eq('full_name_norm', fullNameNorm)
       .maybeSingle()
 
@@ -52,7 +51,7 @@ export default async function handler(req, res) {
         firstName: data.first_name,
         tableLabel: data.table_label,
         canUpload: Boolean(data.can_upload),
-        canEditContent: canEditContentByFullNameNorm(data.full_name_norm),
+        canEditContent: Boolean(data.is_admin),
       },
       expiresAt,
     })

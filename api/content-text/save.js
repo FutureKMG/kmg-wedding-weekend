@@ -21,7 +21,7 @@ export default async function handler(req, res) {
   }
 
   if (!guest.canEditContent) {
-    return sendJson(res, 403, { message: 'Only Kara can edit dashboard text.' })
+    return sendJson(res, 403, { message: 'Only admin guests can edit dashboard text.' })
   }
 
   const payload = await readJson(req)

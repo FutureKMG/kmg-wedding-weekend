@@ -28,3 +28,9 @@ test-results/
 *.sln
 *.sw?
 .vercel
+
+# Private planning/import exports
+docs/reception-attending-*.csv
+docs/reception-attending-*.xlsx
+docs/export*.csv
+docs/export*.xlsx

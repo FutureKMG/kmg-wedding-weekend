@@ -7,6 +7,7 @@ create table if not exists public.guests (
   full_name_norm text not null unique,
   table_label text,
   can_upload boolean not null default true,
+  is_admin boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

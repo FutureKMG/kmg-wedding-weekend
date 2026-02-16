@@ -14,13 +14,16 @@
 6. If you want owner-only dashboard text editing in-app, run migration:
    - `supabase/migrations/2026-02-16-add-app-text-content.sql`
    - This enables editable card/dashboard text storage.
-7. Create storage bucket:
+7. If your project was created before admin controls, run migration:
+   - `supabase/migrations/2026-02-16-add-guests-admin-flag.sql`
+   - This adds `guests.is_admin` and marks `kara margraf` as admin by default.
+8. Create storage bucket:
    - Name: `wedding-photos`
    - Public bucket: `false`
-8. Run `supabase/seed.sql`.
-9. Import your guest CSV using `docs/guest-import-template.csv` columns.
-10. Manually fix any table labels or name spelling issues.
-11. Validate duplicates:
+9. Run `supabase/seed.sql`.
+10. Import your guest CSV using `docs/guest-import-template.csv` columns.
+11. Manually fix any table labels or name spelling issues.
+12. Validate duplicates:
    - `select full_name_norm, count(*) from guests group by full_name_norm having count(*) > 1;`
    - Ensure zero duplicates before launch.
 
@@ -30,6 +33,10 @@
 
 ## Suggested upload policy
 Set `can_upload=false` for any guest entries you want to block from photo uploads.
+
+## Suggested admin policy
+Grant dashboard-text edit rights by setting:
+- `is_admin=true` for the guest row(s) you trust to manage app copy.
 
 If you use a different bucket name (for example `Wedding_Photos`), set:
 - `PHOTO_BUCKET_NAME=<your_bucket_name>`
