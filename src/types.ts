@@ -48,3 +48,12 @@ export type FeedUpdate = {
   postedBy: string
   isOwner: boolean
 }
+
+export type FlightDetail = {
+  arrivalAirport: 'TPA' | 'PIE'
+  arrivalTime: string
+  airline: string | null
+  flightNumber: string | null
+  notes: string | null
+  updatedAt: string
+}

@@ -18,14 +18,15 @@ export const DASHBOARD_TEXT_DEFAULTS = {
     'One tap to open Uber with pickup at your location and destination set to Fenway Hotel.',
   'home.uber.button': 'Open Uber',
 
-  'home.travel.eyebrow': 'Travel Snapshot',
-  'home.travel.title': 'Stay + Getting Here',
-  'home.travel.bodyPrimary':
-    'Closest airports: Tampa International (TPA) and St. Pete-Clearwater (PIE).',
-  'home.travel.bodySecondary':
-    'Room block: Fenway Hotel, Autograph Collection. Book early for discounted group rates.',
-  'home.travel.buttonPrimary': 'Room Block',
-  'home.travel.buttonSecondary': 'Nearby Hotels',
+  'home.flight.eyebrow': 'Travel Hub',
+  'home.flight.title':
+    'Flying in for the weekend? Add your flight details to keep everything in one place.',
+  'home.flight.body':
+    'Track arrival times, coordinate rides, and make sure you do not miss a moment of the celebration.',
+  'home.flight.airportOne': 'Tampa International (TPA)',
+  'home.flight.airportTwo': 'St. Pete-Clearwater (PIE)',
+  'home.flight.buttonPrimary': 'Track Your Flight',
+  'home.flight.buttonSecondary': 'View Airport Info',
 
   'home.feed.eyebrow': 'Live Moments',
   'home.feed.title': 'Wedding Feed: Photos + Notes',
@@ -91,7 +92,7 @@ export const DASHBOARD_TEXT_EDITOR_SECTIONS: DashboardTextSection[] = [
     ],
   },
   {
-    title: 'Weather + Uber + Travel Cards',
+    title: 'Weather + Uber + Flight Hub Card',
     fields: [
       { key: 'home.weather.eyebrow', label: 'Weather eyebrow' },
       { key: 'home.weather.title', label: 'Weather title' },
@@ -99,12 +100,13 @@ export const DASHBOARD_TEXT_EDITOR_SECTIONS: DashboardTextSection[] = [
       { key: 'home.uber.title', label: 'Uber title' },
       { key: 'home.uber.body', label: 'Uber description', multiline: true },
       { key: 'home.uber.button', label: 'Uber button text' },
-      { key: 'home.travel.eyebrow', label: 'Travel eyebrow' },
-      { key: 'home.travel.title', label: 'Travel title' },
-      { key: 'home.travel.bodyPrimary', label: 'Travel line 1', multiline: true },
-      { key: 'home.travel.bodySecondary', label: 'Travel line 2', multiline: true },
-      { key: 'home.travel.buttonPrimary', label: 'Travel primary button' },
-      { key: 'home.travel.buttonSecondary', label: 'Travel secondary button' },
+      { key: 'home.flight.eyebrow', label: 'Flight hub eyebrow' },
+      { key: 'home.flight.title', label: 'Flight hub title', multiline: true },
+      { key: 'home.flight.body', label: 'Flight hub description', multiline: true },
+      { key: 'home.flight.airportOne', label: 'Airport line 1' },
+      { key: 'home.flight.airportTwo', label: 'Airport line 2' },
+      { key: 'home.flight.buttonPrimary', label: 'Flight primary button' },
+      { key: 'home.flight.buttonSecondary', label: 'Flight secondary button' },
     ],
   },
   {

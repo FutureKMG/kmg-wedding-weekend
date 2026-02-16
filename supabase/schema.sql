@@ -65,12 +65,25 @@ create table if not exists public.app_text_content (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.flight_details (
+  id uuid primary key default gen_random_uuid(),
+  guest_id uuid not null unique references public.guests(id) on delete cascade,
+  arrival_airport text not null,
+  arrival_time timestamptz not null,
+  airline text,
+  flight_number text,
+  notes text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 create index if not exists idx_guests_full_name_norm on public.guests(full_name_norm);
 create index if not exists idx_song_requests_guest_id on public.song_requests(guest_id);
 create index if not exists idx_photos_guest_id on public.photos(guest_id);
 create index if not exists idx_photos_is_feed_post_created_at on public.photos(is_feed_post, created_at desc);
 create index if not exists idx_feed_updates_guest_id on public.feed_updates(guest_id);
 create index if not exists idx_feed_updates_created_at on public.feed_updates(created_at desc);
+create index if not exists idx_flight_details_arrival_time on public.flight_details(arrival_time);
 
 alter table public.guests enable row level security;
 alter table public.events enable row level security;
@@ -79,6 +92,7 @@ alter table public.song_requests enable row level security;
 alter table public.photos enable row level security;
 alter table public.feed_updates enable row level security;
 alter table public.app_text_content enable row level security;
+alter table public.flight_details enable row level security;
 
 -- Service-role API routes query these tables directly, so client-side access stays closed by default.
 create policy "deny all guests"
@@ -119,6 +133,12 @@ create policy "deny all feed updates"
 
 create policy "deny all app text content"
   on public.app_text_content
+  for all
+  using (false)
+  with check (false);
+
+create policy "deny all flight details"
+  on public.flight_details
   for all
   using (false)
   with check (false);

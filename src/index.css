@@ -694,6 +694,31 @@ button:disabled {
   font-family: var(--font-display);
 }
 
+.flight-hub-card {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.flight-airports-label {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--fs-label);
+  font-weight: 700;
+}
+
+.flight-airports-list {
+  margin: 0;
+  padding-left: 1rem;
+  display: grid;
+  gap: 0.2rem;
+  color: var(--text-secondary);
+  font-size: var(--fs-label);
+}
+
+.flight-form {
+  margin-top: 0.35rem;
+}
+
 .home-feed {
   display: grid;
   gap: var(--space-3);
@@ -876,6 +901,7 @@ button:disabled {
 }
 
 .field input,
+.field select,
 .field textarea {
   border: 1px solid var(--border-soft);
   background: var(--bg-surface-strong);

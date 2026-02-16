@@ -7,6 +7,7 @@ Mobile-first React app for an immersive wedding weekend companion with name-base
 - Wedding-day timeline with live "happening now" indicator
 - Featured Welcome Party timeline card linking to `/welcome-party`
 - Local Dunedin/Tampa guide synced from Zola travel details
+- Flight details hub (guests can save arrival airport/time + flight info)
 - Live Tampa weather card on Home
 - One-tap Uber request quick action from Home
 - Private seating lookup
@@ -56,6 +57,7 @@ Frontend:
    - If your project has older seed content, run `supabase/migrations/2026-02-16-sync-zola-content.sql`
    - If you want in-app dashboard text editing, run `supabase/migrations/2026-02-16-add-app-text-content.sql`
    - If your project was created before admin controls, run `supabase/migrations/2026-02-16-add-guests-admin-flag.sql`
+   - If your project was created before flight tracking, run `supabase/migrations/2026-02-16-add-flight-details.sql`
 2. Seed event + guide data:
    - `supabase/seed.sql`
 3. Import guest CSV using:
@@ -70,6 +72,8 @@ Detailed steps: `docs/supabase-setup.md`
 - `GET /api/me`
 - `GET /api/events`
 - `GET /api/guide`
+- `GET /api/flight-details`
+- `POST /api/flight-details`
 - `GET /api/seating`
 - `POST /api/song-requests`
 - `GET /api/feed-updates`

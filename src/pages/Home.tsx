@@ -5,7 +5,7 @@ import { DecoDivider } from '../components/DecoDivider'
 import { mergeDashboardText } from '../content/dashboardText'
 import { apiRequest } from '../lib/apiClient'
 import { useAuth } from '../lib/auth'
-import type { FeedUpdate, PhotoItem } from '../types'
+import type { FeedUpdate, FlightDetail, PhotoItem } from '../types'
 
 const tampaWeatherUrl =
   'https://api.open-meteo.com/v1/forecast?latitude=27.9506&longitude=-82.4572&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,is_day&daily=temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FNew_York&forecast_days=1'
@@ -20,10 +20,7 @@ const fenwayUberUrl = (() => {
   return `https://m.uber.com/ul/?${params.toString()}`
 })()
 
-const fenwayRoomBlockUrl =
-  'https://www.marriott.com/event-reservations/reservation-link.mi?id=1740088122132&key=GRP&guestreslink2=true&app=resvlink'
-const nearbyHotelsUrl =
-  'https://hotelblocks.zola.com/Search/?City=Dunedin+FL&inDate=03/13/2026&outDate=03/15/2026'
+const flightTrackerUrl = 'https://www.flightaware.com/live/'
 
 function weatherLabel(code: number, isDay: number): string {
   if (code === 0) {
@@ -60,6 +57,39 @@ type TampaWeather = {
   condition: string
 }
 
+type FlightFormState = {
+  arrivalAirport: 'TPA' | 'PIE'
+  arrivalTime: string
+  airline: string
+  flightNumber: string
+  notes: string
+}
+
+function toLocalDateTimeInput(isoTimestamp: string | null | undefined): string {
+  if (!isoTimestamp) {
+    return ''
+  }
+
+  const date = new Date(isoTimestamp)
+  if (Number.isNaN(date.getTime())) {
+    return ''
+  }
+
+  const pad = (value: number) => String(value).padStart(2, '0')
+
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
+}
+
+function mapFlightDetailToForm(detail: FlightDetail | null): FlightFormState {
+  return {
+    arrivalAirport: detail?.arrivalAirport ?? 'TPA',
+    arrivalTime: toLocalDateTimeInput(detail?.arrivalTime),
+    airline: detail?.airline ?? '',
+    flightNumber: detail?.flightNumber ?? '',
+    notes: detail?.notes ?? '',
+  }
+}
+
 export function HomePage() {
   const { guest } = useAuth()
   const [feedPhotos, setFeedPhotos] = useState<PhotoItem[]>([])
@@ -75,6 +105,18 @@ export function HomePage() {
   const [deletingUpdateId, setDeletingUpdateId] = useState<string | null>(null)
   const [weather, setWeather] = useState<TampaWeather | null>(null)
   const [weatherError, setWeatherError] = useState('')
+  const [flightDetail, setFlightDetail] = useState<FlightDetail | null>(null)
+  const [flightForm, setFlightForm] = useState<FlightFormState>({
+    arrivalAirport: 'TPA',
+    arrivalTime: '',
+    airline: '',
+    flightNumber: '',
+    notes: '',
+  })
+  const [flightError, setFlightError] = useState('')
+  const [flightSuccess, setFlightSuccess] = useState('')
+  const [isLoadingFlight, setIsLoadingFlight] = useState(true)
+  const [isSavingFlight, setIsSavingFlight] = useState(false)
 
   const text = useMemo(() => mergeDashboardText(contentOverrides), [contentOverrides])
 
@@ -133,6 +175,34 @@ export function HomePage() {
     }
   }, [])
 
+  const loadFlightDetails = useCallback(async () => {
+    setIsLoadingFlight(true)
+
+    try {
+      const payload = await apiRequest<{ detail: FlightDetail | null; migrationRequired?: boolean }>(
+        '/api/flight-details',
+      )
+
+      if (payload.migrationRequired) {
+        setFlightError('Flight details are not enabled yet. Ask Kara to run the latest migration.')
+        setFlightDetail(null)
+        setFlightForm(mapFlightDetailToForm(null))
+      } else {
+        setFlightError('')
+        setFlightDetail(payload.detail)
+        setFlightForm(mapFlightDetailToForm(payload.detail))
+      }
+    } catch (requestError) {
+      const message =
+        requestError instanceof Error ? requestError.message : 'Could not load your flight details'
+      setFlightError(message)
+      setFlightDetail(null)
+      setFlightForm(mapFlightDetailToForm(null))
+    } finally {
+      setIsLoadingFlight(false)
+    }
+  }, [])
+
   useEffect(() => {
     async function loadContentText() {
       try {
@@ -150,6 +220,7 @@ export function HomePage() {
     const startup = window.setTimeout(() => {
       void loadWeddingFeed()
       void loadWeather()
+      void loadFlightDetails()
     }, 0)
 
     const feedRefresh = window.setInterval(() => {
@@ -160,7 +231,7 @@ export function HomePage() {
       window.clearTimeout(startup)
       window.clearInterval(feedRefresh)
     }
-  }, [loadWeddingFeed, loadWeather])
+  }, [loadWeddingFeed, loadWeather, loadFlightDetails])
 
   useEffect(() => {
     const weatherRefresh = window.setInterval(() => {
@@ -275,6 +346,52 @@ export function HomePage() {
     }
   }
 
+  async function handleSaveFlightDetails(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setFlightError('')
+    setFlightSuccess('')
+
+    const rawArrivalTime = flightForm.arrivalTime.trim()
+    if (!rawArrivalTime) {
+      setFlightError('Please add your arrival date and time.')
+      return
+    }
+
+    const arrivalDate = new Date(rawArrivalTime)
+    if (Number.isNaN(arrivalDate.getTime())) {
+      setFlightError('Arrival date and time is invalid.')
+      return
+    }
+
+    setIsSavingFlight(true)
+
+    try {
+      const payload = await apiRequest<{ detail: FlightDetail; migrationRequired?: boolean }>(
+        '/api/flight-details',
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            arrivalAirport: flightForm.arrivalAirport,
+            arrivalTime: arrivalDate.toISOString(),
+            airline: flightForm.airline,
+            flightNumber: flightForm.flightNumber,
+            notes: flightForm.notes,
+          }),
+        },
+      )
+
+      setFlightDetail(payload.detail)
+      setFlightForm(mapFlightDetailToForm(payload.detail))
+      setFlightSuccess('Flight details saved.')
+    } catch (requestError) {
+      const message =
+        requestError instanceof Error ? requestError.message : 'Could not save flight details'
+      setFlightError(message)
+    } finally {
+      setIsSavingFlight(false)
+    }
+  }
+
   return (
     <section className="stack">
       <article className="card home-hero home-hero-cigar reveal">
@@ -363,18 +480,104 @@ export function HomePage() {
           </a>
         </article>
 
-        <article className="card reveal">
-          <p className="eyebrow">{text['home.travel.eyebrow']}</p>
-          <h3>{text['home.travel.title']}</h3>
-          <p className="muted">{text['home.travel.bodyPrimary']}</p>
-          <p className="muted">{text['home.travel.bodySecondary']}</p>
+        <article className="card reveal flight-hub-card">
+          <p className="eyebrow">{text['home.flight.eyebrow']}</p>
+          <h3>{text['home.flight.title']}</h3>
+          <p className="muted">{text['home.flight.body']}</p>
+          <p className="flight-airports-label">Closest Airports</p>
+          <ul className="flight-airports-list">
+            <li>{text['home.flight.airportOne']}</li>
+            <li>{text['home.flight.airportTwo']}</li>
+          </ul>
+
+          <form className="stack flight-form" onSubmit={handleSaveFlightDetails}>
+            <label className="field">
+              Arrival Airport
+              <select
+                value={flightForm.arrivalAirport}
+                onChange={(event) => {
+                  const value = event.target.value === 'PIE' ? 'PIE' : 'TPA'
+                  setFlightForm((current) => ({ ...current, arrivalAirport: value }))
+                  setFlightError('')
+                  setFlightSuccess('')
+                }}
+              >
+                <option value="TPA">Tampa International (TPA)</option>
+                <option value="PIE">St. Pete-Clearwater (PIE)</option>
+              </select>
+            </label>
+
+            <label className="field">
+              Arrival Date & Time
+              <input
+                type="datetime-local"
+                value={flightForm.arrivalTime}
+                onChange={(event) => {
+                  setFlightForm((current) => ({ ...current, arrivalTime: event.target.value }))
+                  setFlightError('')
+                  setFlightSuccess('')
+                }}
+                required
+              />
+            </label>
+
+            <label className="field">
+              Airline (optional)
+              <input
+                value={flightForm.airline}
+                onChange={(event) => {
+                  setFlightForm((current) => ({ ...current, airline: event.target.value }))
+                }}
+                maxLength={80}
+                placeholder="Delta, United, Southwest..."
+              />
+            </label>
+
+            <label className="field">
+              Flight Number (optional)
+              <input
+                value={flightForm.flightNumber}
+                onChange={(event) => {
+                  setFlightForm((current) => ({ ...current, flightNumber: event.target.value }))
+                }}
+                maxLength={24}
+                placeholder="DL 1234"
+              />
+            </label>
+
+            <label className="field">
+              Notes (optional)
+              <textarea
+                value={flightForm.notes}
+                onChange={(event) => {
+                  setFlightForm((current) => ({ ...current, notes: event.target.value }))
+                }}
+                maxLength={280}
+                placeholder="Share any pickup notes or arrival updates."
+              />
+            </label>
+
+            {isLoadingFlight ? <p className="muted small-text">Loading your saved flight details...</p> : null}
+            {flightDetail ? (
+              <p className="muted small-text">
+                Last saved {formatDistanceToNow(new Date(flightDetail.updatedAt), { addSuffix: true })}
+              </p>
+            ) : null}
+            {flightError ? <p className="error-text">{flightError}</p> : null}
+            {flightSuccess ? <p className="success-text">{flightSuccess}</p> : null}
+
+            <button type="submit" disabled={isSavingFlight || isLoadingFlight}>
+              {isSavingFlight ? 'Saving...' : 'Save Flight Details'}
+            </button>
+          </form>
+
           <div className="button-row">
-            <a className="button-link secondary-button-link" href={fenwayRoomBlockUrl} target="_blank" rel="noreferrer">
-              {text['home.travel.buttonPrimary']}
+            <a className="button-link secondary-button-link" href={flightTrackerUrl} target="_blank" rel="noreferrer">
+              {text['home.flight.buttonPrimary']}
             </a>
-            <a className="button-link secondary-button-link" href={nearbyHotelsUrl} target="_blank" rel="noreferrer">
-              {text['home.travel.buttonSecondary']}
-            </a>
+            <Link className="button-link secondary-button-link" to="/guide">
+              {text['home.flight.buttonSecondary']}
+            </Link>
           </div>
         </article>
       </div>

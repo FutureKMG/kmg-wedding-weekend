@@ -17,13 +17,16 @@
 7. If your project was created before admin controls, run migration:
    - `supabase/migrations/2026-02-16-add-guests-admin-flag.sql`
    - This adds `guests.is_admin` and marks `kara margraf` as admin by default.
-8. Create storage bucket:
+8. If your project was created before the flight details feature, run migration:
+   - `supabase/migrations/2026-02-16-add-flight-details.sql`
+   - This enables each guest to save their arrival airport/time and optional flight info.
+9. Create storage bucket:
    - Name: `wedding-photos`
    - Public bucket: `false`
-9. Run `supabase/seed.sql`.
-10. Import your guest CSV using `docs/guest-import-template.csv` columns.
-11. Manually fix any table labels or name spelling issues.
-12. Validate duplicates:
+10. Run `supabase/seed.sql`.
+11. Import your guest CSV using `docs/guest-import-template.csv` columns.
+12. Manually fix any table labels or name spelling issues.
+13. Validate duplicates:
    - `select full_name_norm, count(*) from guests group by full_name_norm having count(*) > 1;`
    - Ensure zero duplicates before launch.
 
