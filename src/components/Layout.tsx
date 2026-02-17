@@ -33,11 +33,10 @@ export function Layout() {
   const links = useMemo(() => {
     const baseLinks = [
       { to: '/', label: 'Home' },
-      { to: '/timeline', label: 'Timeline' },
-      { to: '/guide', label: 'Guide' },
+      { to: '/gallery', label: 'Feed' },
       { to: '/seating', label: 'Seating' },
+      { to: '/weekend', label: 'Weekend' },
       { to: '/songs', label: 'Songs' },
-      { to: '/gallery', label: 'Gallery' },
     ]
 
     if (guest?.canEditContent) {

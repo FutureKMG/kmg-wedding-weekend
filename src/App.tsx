@@ -3,12 +3,11 @@ import { Layout } from './components/Layout'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { ContentEditorPage } from './pages/ContentEditor'
 import { GalleryPage } from './pages/Gallery'
-import { GuidePage } from './pages/Guide'
 import { HomePage } from './pages/Home'
 import { LoginPage } from './pages/Login'
 import { SeatingPage } from './pages/Seating'
 import { SongsPage } from './pages/Songs'
-import { TimelinePage } from './pages/Timeline'
+import { WeekendPage } from './pages/Weekend'
 import { WelcomePartyPage } from './pages/WelcomeParty'
 
 function App() {
@@ -23,9 +22,8 @@ function App() {
         }
       >
         <Route path="/" element={<HomePage />} />
-        <Route path="/timeline" element={<TimelinePage />} />
+        <Route path="/weekend" element={<WeekendPage />} />
         <Route path="/welcome-party" element={<WelcomePartyPage />} />
-        <Route path="/guide" element={<GuidePage />} />
         <Route path="/seating" element={<SeatingPage />} />
         <Route path="/songs" element={<SongsPage />} />
         <Route path="/gallery" element={<GalleryPage />} />

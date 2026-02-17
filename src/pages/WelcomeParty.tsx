@@ -90,8 +90,8 @@ export function WelcomePartyPage() {
         <p>Spring Training Weekend</p>
       </div>
 
-      <Link to="/timeline" className="welcome-back-link reveal">
-        ← Back to Timeline
+      <Link to="/weekend" className="welcome-back-link reveal">
+        ← Back to Weekend
       </Link>
 
       <article className="welcome-hero reveal">

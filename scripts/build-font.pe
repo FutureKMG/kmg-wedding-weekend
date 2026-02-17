@@ -1,0 +1,336 @@
+#!/usr/bin/env fontforge
+# coding: utf-8
+"""
+Pinellas Brush build script.
+
+Run from repo root:
+  fontforge -lang=py -script scripts/build-font.pe
+
+Optional environment overrides:
+  FONT_VERSION=0.1.0
+  FONT_MANIFEST_PATH=assets/font-src/glyph-map.csv
+  FONT_SVG_DIR=assets/font-src/svg
+  FONT_SFD_PATH=assets/font-src/PinellasBrush-Regular.sfd
+  FONT_OUTPUT_DIR=public/fonts
+  FONT_GENERATE_WOFF2=1
+"""
+
+from __future__ import annotations
+
+import csv
+import os
+import sys
+from pathlib import Path
+
+try:
+    import fontforge
+except Exception as exc:  # pragma: no cover
+    print(f"[font-build] Unable to import FontForge Python module: {exc}", file=sys.stderr)
+    raise SystemExit(1)
+
+
+ROOT = Path(__file__).resolve().parent.parent
+FAMILY_NAME = "Pinellas Brush"
+STYLE_NAME = "Regular"
+POSTSCRIPT_NAME = "PinellasBrush-Regular"
+
+EM_SIZE = 1000
+ASCENT = 800
+DESCENT = 200
+
+METRIC_OVERRIDES = {
+    "os2_typoascent": 730,
+    "os2_typodescent": -270,
+    "os2_winascent": 800,
+    "os2_windescent": 200,
+    "hhea_ascent": 800,
+    "hhea_descent": -200,
+    "os2_capheight": 700,
+    "os2_xheight": 460,
+}
+
+PUNCT_WIDTHS = {
+    0x0020: 280,
+    0x0021: 260,
+    0x0022: 300,
+    0x0026: 520,
+    0x0027: 180,
+    0x0028: 260,
+    0x0029: 260,
+    0x002C: 220,
+    0x002D: 300,
+    0x002E: 220,
+    0x002F: 300,
+    0x003A: 220,
+    0x003B: 220,
+    0x003F: 420,
+    0x0040: 760,
+}
+
+
+def parse_codepoint(token: str) -> int:
+    raw = token.strip().upper()
+    if raw.startswith("U+"):
+        raw = raw[2:]
+    elif raw.startswith("0X"):
+        raw = raw[2:]
+    return int(raw, 16)
+
+
+def infer_default_width(codepoint: int) -> int:
+    if codepoint in PUNCT_WIDTHS:
+        return PUNCT_WIDTHS[codepoint]
+    if 0x30 <= codepoint <= 0x39:
+        return 520
+    if 0x41 <= codepoint <= 0x5A:
+        return 640
+    if 0x61 <= codepoint <= 0x7A:
+        return 500
+    return 500
+
+
+def set_attr_if_present(font, attr_name: str, value: int) -> None:
+    if hasattr(font, attr_name):
+        setattr(font, attr_name, value)
+
+
+def configure_font(font, version: str) -> None:
+    font.encoding = "UnicodeFull"
+    font.em = EM_SIZE
+    font.ascent = ASCENT
+    font.descent = DESCENT
+    font.familyname = FAMILY_NAME
+    font.fullname = f"{FAMILY_NAME} {STYLE_NAME}"
+    font.fontname = POSTSCRIPT_NAME
+    font.weight = STYLE_NAME
+    font.version = f"Version {version}"
+
+    for attr_name, value in METRIC_OVERRIDES.items():
+        set_attr_if_present(font, attr_name, value)
+
+    try:
+        font.appendSFNTName("English (US)", "Preferred Family", FAMILY_NAME)
+        font.appendSFNTName("English (US)", "Preferred Styles", STYLE_NAME)
+    except Exception:
+        pass
+
+
+def cleanup_glyph(glyph) -> None:
+    try:
+        glyph.removeOverlap()
+    except Exception:
+        pass
+
+    try:
+        glyph.correctDirection()
+    except Exception:
+        pass
+
+    try:
+        glyph.addExtrema("all")
+    except Exception:
+        try:
+            glyph.addExtrema()
+        except Exception:
+            pass
+
+    try:
+        glyph.simplify(1.0, ("mergelines", "setstarttoextremum"))
+    except Exception:
+        pass
+
+
+def ensure_kerning_lookup(font) -> str:
+    lookup_name = "kern_latin"
+    subtable_name = "kern_latin_pairs"
+
+    gpos_lookups = list(getattr(font, "gpos_lookups", []))
+    if lookup_name not in gpos_lookups:
+        font.addLookup(
+            lookup_name,
+            "gpos_pair",
+            0,
+            (("kern", (("latn", ("dflt",)),)),),
+        )
+
+    lookup_subtables = set(font.getLookupSubtables(lookup_name))
+    if subtable_name not in lookup_subtables:
+        font.addLookupSubtable(lookup_name, subtable_name)
+
+    return subtable_name
+
+
+def apply_kerning_pairs(font, kerning_path: Path) -> tuple[int, list[str]]:
+    if not kerning_path.exists():
+        return 0, [f"Kerning CSV not found at {kerning_path}"]
+
+    warnings: list[str] = []
+    applied = 0
+
+    try:
+        subtable_name = ensure_kerning_lookup(font)
+    except Exception as exc:
+        return 0, [f"Unable to initialize kerning lookup: {exc}"]
+
+    with kerning_path.open("r", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        for row in reader:
+            left = (row.get("left") or "").strip()
+            right = (row.get("right") or "").strip()
+            value_text = (row.get("value") or "").strip()
+
+            if not left or not right or not value_text:
+                continue
+
+            if left.startswith("#"):
+                continue
+
+            if len(left) != 1 or len(right) != 1:
+                warnings.append(
+                    f"Skipping invalid kerning pair '{left}'/'{right}' (must be single characters)."
+                )
+                continue
+
+            try:
+                value = int(value_text)
+            except ValueError:
+                warnings.append(f"Skipping kerning pair {left}/{right}: invalid value '{value_text}'.")
+                continue
+
+            left_codepoint = ord(left)
+            right_codepoint = ord(right)
+
+            try:
+                left_glyph = font[left_codepoint]
+                right_glyph = font[right_codepoint]
+                left_glyph.addPosSub(subtable_name, right_glyph.glyphname, value)
+                applied += 1
+            except Exception as exc:
+                warnings.append(f"Kerning pair {left}/{right} skipped: {exc}")
+
+    return applied, warnings
+
+
+def load_manifest(manifest_path: Path) -> list[dict[str, str]]:
+    if not manifest_path.exists():
+        print(f"[font-build] Manifest not found: {manifest_path}", file=sys.stderr)
+        raise SystemExit(1)
+
+    with manifest_path.open("r", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        required = {"filename", "unicode"}
+        if not reader.fieldnames or not required.issubset(set(reader.fieldnames)):
+            print(
+                "[font-build] Manifest must include columns: filename, unicode, name",
+                file=sys.stderr,
+            )
+            raise SystemExit(1)
+        return [row for row in reader]
+
+
+def import_glyphs(font, rows: list[dict[str, str]], svg_dir: Path) -> tuple[int, list[str]]:
+    imported_count = 0
+    missing_svgs: list[str] = []
+
+    for row in rows:
+        filename = (row.get("filename") or "").strip()
+        unicode_token = (row.get("unicode") or "").strip()
+        glyph_name = (row.get("name") or "").strip() or None
+
+        if not filename or not unicode_token:
+            continue
+
+        try:
+            codepoint = parse_codepoint(unicode_token)
+        except ValueError:
+            print(f"[font-build] Skipping row with invalid unicode value: {unicode_token}")
+            continue
+
+        glyph = font.createChar(codepoint, glyph_name)
+
+        svg_path = svg_dir / filename
+        if svg_path.exists():
+            try:
+                glyph.clear()
+                glyph.importOutlines(str(svg_path))
+                cleanup_glyph(glyph)
+                imported_count += 1
+            except Exception as exc:
+                print(f"[font-build] Failed to import {svg_path}: {exc}")
+        else:
+            missing_svgs.append(filename)
+
+        if codepoint == 0x0020:
+            glyph.width = PUNCT_WIDTHS[0x0020]
+        elif glyph.width <= 0:
+            glyph.width = infer_default_width(codepoint)
+
+    return imported_count, missing_svgs
+
+
+def generate_font_outputs(font, output_dir: Path, version: str, generate_woff2: bool) -> None:
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    ttf_path = output_dir / f"{POSTSCRIPT_NAME}.ttf"
+    versioned_ttf_path = output_dir / f"{POSTSCRIPT_NAME}-v{version}.ttf"
+
+    font.generate(str(ttf_path))
+    font.generate(str(versioned_ttf_path))
+
+    if generate_woff2:
+        woff2_path = output_dir / f"{POSTSCRIPT_NAME}.woff2"
+        try:
+            font.generate(str(woff2_path))
+        except Exception as exc:
+            print(f"[font-build] WOFF2 generation skipped: {exc}")
+
+
+def main() -> int:
+    manifest_path = ROOT / os.getenv("FONT_MANIFEST_PATH", "assets/font-src/glyph-map.csv")
+    svg_dir = ROOT / os.getenv("FONT_SVG_DIR", "assets/font-src/svg")
+    base_sfd_path = ROOT / os.getenv("FONT_SFD_PATH", "assets/font-src/PinellasBrush-Regular.sfd")
+    kerning_path = ROOT / os.getenv("FONT_KERNING_PATH", "assets/font-src/kerning-pairs.csv")
+    output_dir = ROOT / os.getenv("FONT_OUTPUT_DIR", "public/fonts")
+    version = os.getenv("FONT_VERSION", "0.1.0")
+    generate_woff2 = os.getenv("FONT_GENERATE_WOFF2", "1") != "0"
+
+    if base_sfd_path.exists():
+        font = fontforge.open(str(base_sfd_path))
+        print(f"[font-build] Loaded existing SFD: {base_sfd_path}")
+    else:
+        font = fontforge.font()
+        print("[font-build] Created new in-memory font source.")
+
+    configure_font(font, version)
+
+    rows = load_manifest(manifest_path)
+    imported_count, missing_svgs = import_glyphs(font, rows, svg_dir)
+
+    applied_kerning, kerning_warnings = apply_kerning_pairs(font, kerning_path)
+
+    base_sfd_path.parent.mkdir(parents=True, exist_ok=True)
+    font.save(str(base_sfd_path))
+
+    generate_font_outputs(font, output_dir, version, generate_woff2)
+
+    print(f"[font-build] Imported glyph SVGs: {imported_count}")
+    print(f"[font-build] Applied kerning pairs: {applied_kerning}")
+
+    if missing_svgs:
+        print("[font-build] Missing SVGs (left as empty/default-width glyphs):")
+        for filename in missing_svgs:
+            print(f"  - {filename}")
+
+    if kerning_warnings:
+        print("[font-build] Kerning warnings:")
+        for warning in kerning_warnings:
+            print(f"  - {warning}")
+
+    print(f"[font-build] Saved source: {base_sfd_path}")
+    print(f"[font-build] Generated outputs in: {output_dir}")
+
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

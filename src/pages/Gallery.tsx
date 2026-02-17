@@ -188,8 +188,8 @@ export function GalleryPage() {
     <section className="stack">
       <PageIntro
         eyebrow="Memories"
-        title="Wedding Feed & Full Gallery"
-        description="Wedding Feed shows guest-shared highlights. Full Gallery includes every upload."
+        title="Wedding Feed: Photos + Notes"
+        description="See shared memories and quick updates from across the weekend."
       />
 
       <form className="card stack reveal" onSubmit={handleUpload}>
@@ -253,7 +253,7 @@ export function GalleryPage() {
           onClick={() => setActiveScope('feed')}
           aria-selected={activeScope === 'feed'}
         >
-          Wedding Feed ({feedPhotos.length})
+          Feed ({feedPhotos.length})
         </button>
         <button
           type="button"

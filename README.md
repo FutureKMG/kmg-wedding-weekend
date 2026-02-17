@@ -120,3 +120,10 @@ Detailed guidance: `docs/theme-guide.md`
 
 ## Deployment
 GitHub and Vercel steps are in `docs/deploy.md`.
+
+## Custom Script Font (Pinellas Brush)
+- Source assets live in `assets/font-src`.
+- Build pipeline script: `scripts/build-font.pe` (run through `scripts/build-font.sh`).
+- Build command: `npm run font:build`
+- Output directory: `public/fonts`
+- Full workflow and kerning guidance: `docs/fontforge-script-font.md`

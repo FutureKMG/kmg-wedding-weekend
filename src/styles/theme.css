@@ -43,6 +43,7 @@
 
   --font-display: 'Marcellus', serif;
   --font-body: 'Source Sans 3', sans-serif;
+  --font-script: 'Pinellas Brush', 'Brush Script MT', cursive;
 
   --fs-display: clamp(2.1rem, 6vw, 3.4rem);
   --fs-h1: clamp(1.8rem, 4.4vw, 2.6rem);

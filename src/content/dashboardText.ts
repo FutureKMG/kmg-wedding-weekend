@@ -19,14 +19,12 @@ export const DASHBOARD_TEXT_DEFAULTS = {
   'home.uber.button': 'Open Uber',
 
   'home.flight.eyebrow': 'Travel Hub',
-  'home.flight.title':
-    'Flying in for the weekend? Add your flight details to keep everything in one place.',
-  'home.flight.body':
-    'Track arrival times, coordinate rides, and make sure you do not miss a moment of the celebration.',
-  'home.flight.airportOne': 'Tampa International (TPA)',
+  'home.flight.title': 'Flying in? Add your flight.',
+  'home.flight.body': 'Share arrival details so your group can coordinate rides.',
+  'home.flight.airportOne': 'Tampa (TPA)',
   'home.flight.airportTwo': 'St. Pete-Clearwater (PIE)',
-  'home.flight.buttonPrimary': 'Track Your Flight',
-  'home.flight.buttonSecondary': 'View Airport Info',
+  'home.flight.buttonPrimary': 'Track Flight',
+  'home.flight.buttonSecondary': 'Airport Info',
 
   'home.feed.eyebrow': 'Live Moments',
   'home.feed.title': 'Wedding Feed: Photos + Notes',

@@ -1,3 +1,19 @@
+@font-face {
+  font-family: 'Pinellas Brush';
+  src:
+    url('/fonts/PinellasBrush-Regular.woff2') format('woff2'),
+    url('/fonts/PinellasBrush-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+.script-brand {
+  font-family: 'Pinellas Brush', 'Brush Script MT', cursive;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
 .shell,
 .login-shell,
 .app-frame {
@@ -128,6 +144,22 @@ button:disabled {
 .invite-hero-copy {
   display: grid;
   gap: 0.5rem;
+}
+
+.guest-note {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.guest-note p {
+  margin: 0;
+}
+
+.guest-note-signoff {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  color: var(--accent-primary);
+  margin-top: 0.2rem;
 }
 
 .login-card {
@@ -1181,6 +1213,10 @@ button:disabled {
 
   .invite-hero-media {
     min-height: 220px;
+  }
+
+  .guest-note {
+    gap: 0.6rem;
   }
 }
 

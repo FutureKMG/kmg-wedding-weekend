@@ -1,8 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { useAuth } from '../lib/auth'
 import { DecoDivider } from '../components/DecoDivider'
-import { HeroImage } from '../components/HeroImage'
+import { useAuth } from '../lib/auth'
 
 type LocationState = {
   from?: {
@@ -47,14 +46,49 @@ export function LoginPage() {
     <main className="login-shell reveal">
       <section className="login-stage">
         <div className="invite-hero-panel">
-          <HeroImage alt="Fenway-inspired watercolor invitation artwork" className="invite-hero-media" />
-          <div className="invite-hero-copy">
-            <p className="eyebrow">March 14, 2026</p>
-            <h2>Fenway Hotel, Dunedin</h2>
-            <p className="muted">
-              A watercolor weekend with art deco charm, warm light, and the people we love.
+          <picture className="invite-hero-media">
+            <source
+              media="(max-width: 680px)"
+              srcSet="/theme/home-lounge-hero-mobile.avif"
+              type="image/avif"
+            />
+            <source
+              media="(max-width: 680px)"
+              srcSet="/theme/home-lounge-hero-mobile.webp"
+              type="image/webp"
+            />
+            <source srcSet="/theme/home-lounge-hero.avif" type="image/avif" />
+            <source srcSet="/theme/home-lounge-hero.webp" type="image/webp" />
+            <img src="/theme/home-lounge-hero.png" alt="Kara and Kevin in the lounge" loading="lazy" />
+          </picture>
+
+          <article className="guest-note">
+            <p className="eyebrow">A Note to Our Favorite People</p>
+            <p>
+              Our hope for this weekend is simple. A deep exhale.
             </p>
-          </div>
+            <p>
+              Life has been busy and heavy at times. This is our invitation to pause it all for a little while and
+              just be together.
+            </p>
+            <p>
+              We did not plan this to be a perfect wedding. We planned it to be a joyful one. A meaningful one. A
+              weekend with the people who have loved and shaped us into who we are.
+            </p>
+            <p>
+              We may never have this exact group in one place again. That feels rare and worth celebrating.
+            </p>
+            <p>
+              Come as you are. Leave the stress behind. Stay out late. Laugh loudly. Dance freely.
+            </p>
+            <p>
+              Whatever happens, we will call it a memory.
+            </p>
+            <p>
+              We are so grateful you are here with us.
+            </p>
+            <p className="guest-note-signoff">Kara &amp; Kevin</p>
+          </article>
         </div>
 
         <section className="login-card">

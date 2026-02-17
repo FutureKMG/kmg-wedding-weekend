@@ -1,0 +1,27 @@
+left,right,value,notes
+r,a,-40,close shoulder to rounded entry
+r,i,-35,prevents airy gap
+r,o,-45,script rhythm
+r,v,-65,diagonal collision
+r,w,-65,diagonal collision
+r,y,-85,strong script collision
+l,a,-20,mild open gap
+l,i,-20,mild open gap
+l,l,-18,keeps double-l compact
+l,t,-25,t stem looks detached otherwise
+l,y,-48,tail spacing
+t,a,-35,crossbar overshoots
+t,e,-25,balance loop spacing
+t,o,-35,balance loop spacing
+t,r,-28,keeps script link
+t,t,-24,reduce doubled stem gap
+t,y,-58,rightward tail conflict
+f,a,-48,descender and bowl
+f,e,-42,descender and bowl
+f,o,-46,descender and bowl
+f,f,-30,double-f fit
+V,a,-85,classic cap to lowercase gap
+W,a,-90,classic cap to lowercase gap
+Y,a,-100,classic cap to lowercase gap
+T,o,-85,cap overhang
+T,a,-92,cap overhang

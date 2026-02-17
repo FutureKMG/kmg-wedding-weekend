@@ -15,7 +15,8 @@
     "test:mobile": "playwright test --config=playwright.mobile.config.ts",
     "check:mobile": "npm run build && start-server-and-test \"npm run preview -- --host 127.0.0.1 --port 4173\" http://127.0.0.1:4173 \"npm run test:mobile\"",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "font:build": "bash scripts/build-font.sh"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.95.3",
