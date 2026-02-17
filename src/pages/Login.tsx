@@ -48,6 +48,21 @@ export function LoginPage() {
         <section className="login-card">
           <p className="eyebrow">Kara & Kevin</p>
           <h1>Step Into the Weekend</h1>
+          <picture className="login-card-media">
+            <source
+              media="(max-width: 680px)"
+              srcSet="/theme/home-lounge-portrait-one-mobile.avif"
+              type="image/avif"
+            />
+            <source
+              media="(max-width: 680px)"
+              srcSet="/theme/home-lounge-portrait-one-mobile.webp"
+              type="image/webp"
+            />
+            <source srcSet="/theme/home-lounge-portrait-one.avif" type="image/avif" />
+            <source srcSet="/theme/home-lounge-portrait-one.webp" type="image/webp" />
+            <img src="/theme/home-lounge-portrait-one.png" alt="Kara and Kevin together" loading="lazy" />
+          </picture>
           <p className="muted">Please enter your first and last name to continue.</p>
 
           <DecoDivider />
