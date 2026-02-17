@@ -80,7 +80,7 @@ export function LoginPage() {
             </button>
           </form>
 
-          <article className="guest-note guest-note-handwritten guest-note-login">
+          <article className="guest-note guest-note-login">
             <p className="eyebrow">A Note to Our Favorite People</p>
             <p>Our hope for this weekend is simple. A deep exhale.</p>
             <p>
@@ -101,19 +101,7 @@ export function LoginPage() {
 
         <div className="invite-hero-panel">
           <picture className="invite-hero-media login-cigar-media">
-            <source
-              media="(max-width: 680px)"
-              srcSet="/theme/home-lounge-hero-mobile.avif"
-              type="image/avif"
-            />
-            <source
-              media="(max-width: 680px)"
-              srcSet="/theme/home-lounge-hero-mobile.webp"
-              type="image/webp"
-            />
-            <source srcSet="/theme/home-lounge-hero.avif" type="image/avif" />
-            <source srcSet="/theme/home-lounge-hero.webp" type="image/webp" />
-            <img src="/theme/home-lounge-hero.png" alt="Kara and Kevin in the lounge" loading="lazy" />
+            <img src="/theme/kevkaracigar.png" alt="Kara and Kevin smoking a cigar" loading="lazy" />
           </picture>
         </div>
       </section>

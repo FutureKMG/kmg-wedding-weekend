@@ -197,9 +197,9 @@ button:disabled {
 }
 
 .guest-note-signoff {
-  font-family: var(--font-script);
-  font-size: clamp(1.28rem, 2.8vw, 1.65rem);
-  color: #6f3f5a;
+  font-family: var(--font-display);
+  font-size: clamp(1.06rem, 2vw, 1.2rem);
+  color: var(--accent-primary);
   margin-top: 0.2rem;
 }
 
