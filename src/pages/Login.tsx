@@ -45,6 +45,42 @@ export function LoginPage() {
   return (
     <main className="login-shell reveal">
       <section className="login-stage">
+        <section className="login-card">
+          <p className="eyebrow">Kara & Kevin</p>
+          <h1>Step Into the Weekend</h1>
+          <p className="muted">Please enter your first and last name to continue.</p>
+
+          <DecoDivider />
+
+          <form onSubmit={handleSubmit} className="stack">
+            <label className="field">
+              First name
+              <input
+                autoComplete="given-name"
+                value={firstName}
+                onChange={(event) => setFirstName(event.target.value)}
+                required
+              />
+            </label>
+
+            <label className="field">
+              Last name
+              <input
+                autoComplete="family-name"
+                value={lastName}
+                onChange={(event) => setLastName(event.target.value)}
+                required
+              />
+            </label>
+
+            {error && <p className="error-text">{error}</p>}
+
+            <button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Checking guest list...' : 'Enter the Weekend'}
+            </button>
+          </form>
+        </section>
+
         <div className="invite-hero-panel">
           <picture className="invite-hero-media">
             <source
@@ -90,42 +126,6 @@ export function LoginPage() {
             <p className="guest-note-signoff">Kara &amp; Kevin</p>
           </article>
         </div>
-
-        <section className="login-card">
-          <p className="eyebrow">Kara & Kevin</p>
-          <h1>Step Into the Evening</h1>
-          <p className="muted">Please enter your first and last name to continue.</p>
-
-          <DecoDivider />
-
-          <form onSubmit={handleSubmit} className="stack">
-            <label className="field">
-              First name
-              <input
-                autoComplete="given-name"
-                value={firstName}
-                onChange={(event) => setFirstName(event.target.value)}
-                required
-              />
-            </label>
-
-            <label className="field">
-              Last name
-              <input
-                autoComplete="family-name"
-                value={lastName}
-                onChange={(event) => setLastName(event.target.value)}
-                required
-              />
-            </label>
-
-            {error && <p className="error-text">{error}</p>}
-
-            <button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Checking guest list...' : 'Enter the Weekend'}
-            </button>
-          </form>
-        </section>
       </section>
     </main>
   )

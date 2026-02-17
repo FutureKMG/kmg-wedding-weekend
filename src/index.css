@@ -100,7 +100,7 @@ button:disabled {
   width: 100%;
   display: grid;
   gap: var(--space-4);
-  grid-template-columns: 1.1fr 1fr;
+  grid-template-columns: 1fr;
   align-items: stretch;
 }
 
@@ -165,6 +165,9 @@ button:disabled {
 .login-card {
   display: grid;
   gap: var(--space-3);
+  max-width: 680px;
+  width: 100%;
+  margin-inline: auto;
 }
 
 .login-card h1 {
