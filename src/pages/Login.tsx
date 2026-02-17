@@ -95,7 +95,7 @@ export function LoginPage() {
             <p>Come as you are. Leave the stress behind. Stay out late. Laugh loudly. Dance freely.</p>
             <p>Whatever happens, we will call it a memory.</p>
             <p>We are so grateful you are here with us.</p>
-            <p className="guest-note-signoff">Kara &amp; Kevin</p>
+            <p className="guest-note-signoff">With love, Kevin &amp; Kara</p>
           </article>
         </section>
 
