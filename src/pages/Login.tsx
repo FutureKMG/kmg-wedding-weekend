@@ -59,27 +59,12 @@ export function LoginPage() {
               We did not plan this to be a perfect wedding. We planned it to be a joyful one. A meaningful one. A
               weekend with the people who have loved and shaped us into who we are.
             </p>
-            <p>We may never have this exact group in one place again. That feels rare and worth celebrating.</p>
+            <p>We will never have this exact group in one place again. That feels rare and worth celebrating.</p>
             <p>Come as you are. Leave the stress behind. Stay out late. Laugh loudly. Dance freely.</p>
             <p>Whatever happens, we will call it a memory.</p>
             <p>We are so grateful you are here with us.</p>
             <p className="guest-note-signoff">Kara &amp; Kevin</p>
           </article>
-          <picture className="login-card-media">
-            <source
-              media="(max-width: 680px)"
-              srcSet="/theme/home-lounge-portrait-one-mobile.avif"
-              type="image/avif"
-            />
-            <source
-              media="(max-width: 680px)"
-              srcSet="/theme/home-lounge-portrait-one-mobile.webp"
-              type="image/webp"
-            />
-            <source srcSet="/theme/home-lounge-portrait-one.avif" type="image/avif" />
-            <source srcSet="/theme/home-lounge-portrait-one.webp" type="image/webp" />
-            <img src="/theme/home-lounge-portrait-one.png" alt="Kara and Kevin together" loading="lazy" />
-          </picture>
           <p className="muted">Please enter your first and last name to continue.</p>
 
           <DecoDivider />

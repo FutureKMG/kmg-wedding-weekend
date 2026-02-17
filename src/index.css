@@ -133,16 +133,7 @@ button:disabled {
   min-height: 300px;
 }
 
-.login-card-media {
-  display: block;
-  border-radius: calc(var(--radius-m) - 6px);
-  overflow: hidden;
-  border: 1px solid rgba(61, 116, 134, 0.25);
-  min-height: 220px;
-}
-
 .invite-hero-media img,
-.login-card-media img,
 .home-hero-media img {
   display: block;
   width: 100%;
@@ -1257,10 +1248,6 @@ button:disabled {
 
   .invite-hero-media {
     min-height: 220px;
-  }
-
-  .login-card-media {
-    min-height: 180px;
   }
 
   .guest-note {
