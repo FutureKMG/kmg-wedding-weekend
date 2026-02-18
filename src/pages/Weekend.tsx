@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { EventCard } from '../components/EventCard'
 import { GuideCard } from '../components/GuideCard'
 import { PageIntro } from '../components/PageIntro'
-import { WelcomePartyCard } from '../components/WelcomePartyCard'
+import { WeekendMapCard } from '../components/WeekendMapCard'
 import { apiRequest } from '../lib/apiClient'
 import { getTimelineState } from '../lib/time'
 import type { GuideItem, WeddingEvent } from '../types'
@@ -58,6 +58,8 @@ export function WeekendPage() {
         description="Everything in one place: live status, full schedule, and free-time plans."
       />
 
+      <WeekendMapCard id="weekend-map" />
+
       <article id="now-next" className="card reveal">
         <p className="eyebrow">Now & Next</p>
         {timelineState.currentEvent ? (
@@ -81,15 +83,14 @@ export function WeekendPage() {
       </article>
 
       <article id="full-schedule" className="card reveal">
-        <p className="eyebrow">Full Schedule</p>
-        <h3>All Weekend Events</h3>
-        <p className="muted">From welcome party through reception, here is the full plan.</p>
+        <p className="eyebrow">Weekend Itinerary</p>
+        <h3>Tap Any Event Card for Full Details</h3>
+        <p className="muted">Each card includes quick actions for event details and Add to Calendar.</p>
       </article>
 
       {eventsError ? <p className="error-text">{eventsError}</p> : null}
 
       <div className="stack">
-        <WelcomePartyCard />
         {events.map((event) => (
           <EventCard key={event.id} event={event} isCurrent={timelineState.currentEvent?.id === event.id} />
         ))}
