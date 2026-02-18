@@ -4,11 +4,14 @@ import { PageIntro } from '../components/PageIntro'
 import {
   DASHBOARD_TEXT_DEFAULTS,
   DASHBOARD_TEXT_EDITOR_SECTIONS,
+  ENFORCED_DASHBOARD_TEXT_KEYS,
   type DashboardTextKey,
   mergeDashboardText,
 } from '../content/dashboardText'
 import { apiRequest } from '../lib/apiClient'
 import { useAuth } from '../lib/auth'
+
+const LOCKED_DASHBOARD_TEXT_KEYS = new Set<DashboardTextKey>(ENFORCED_DASHBOARD_TEXT_KEYS)
 
 export function ContentEditorPage() {
   const { guest } = useAuth()
@@ -48,6 +51,10 @@ export function ContentEditorPage() {
   }
 
   function updateField(key: DashboardTextKey, value: string) {
+    if (LOCKED_DASHBOARD_TEXT_KEYS.has(key)) {
+      return
+    }
+
     setValues((current) => ({
       ...current,
       [key]: value,
@@ -62,10 +69,14 @@ export function ContentEditorPage() {
     setSuccessMessage('')
     setIsSaving(true)
 
+    const contentToSave = Object.fromEntries(
+      Object.entries(values).filter(([key]) => !LOCKED_DASHBOARD_TEXT_KEYS.has(key as DashboardTextKey)),
+    )
+
     try {
       await apiRequest('/api/content-text/save', {
         method: 'POST',
-        body: JSON.stringify({ content: values }),
+        body: JSON.stringify({ content: contentToSave }),
       })
       setSuccessMessage('Dashboard text updated.')
     } catch (requestError) {
@@ -85,6 +96,7 @@ export function ContentEditorPage() {
         description="These text updates apply across the app for all guests."
       >
         <p className="muted small-text">Changed from defaults: {changedCount}</p>
+        <p className="muted small-text">Header eyebrow and subtitle are locked in code.</p>
       </PageIntro>
 
       {isLoading ? (
@@ -103,21 +115,27 @@ export function ContentEditorPage() {
                     {field.multiline ? (
                       <textarea
                         value={values[field.key]}
+                        disabled={LOCKED_DASHBOARD_TEXT_KEYS.has(field.key)}
                         onChange={(event) => updateField(field.key, event.target.value)}
                       />
                     ) : (
                       <input
                         value={values[field.key]}
+                        disabled={LOCKED_DASHBOARD_TEXT_KEYS.has(field.key)}
                         onChange={(event) => updateField(field.key, event.target.value)}
                       />
                     )}
-                    <button
-                      type="button"
-                      className="secondary-button content-reset-button"
-                      onClick={() => updateField(field.key, DASHBOARD_TEXT_DEFAULTS[field.key])}
-                    >
-                      Reset to Default
-                    </button>
+                    {LOCKED_DASHBOARD_TEXT_KEYS.has(field.key) ? (
+                      <p className="muted small-text">Locked in code.</p>
+                    ) : (
+                      <button
+                        type="button"
+                        className="secondary-button content-reset-button"
+                        onClick={() => updateField(field.key, DASHBOARD_TEXT_DEFAULTS[field.key])}
+                      >
+                        Reset to Default
+                      </button>
+                    )}
                   </label>
                 ))}
               </div>

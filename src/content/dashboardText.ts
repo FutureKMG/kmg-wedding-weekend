@@ -1,8 +1,8 @@
 export const DASHBOARD_TEXT_DEFAULTS = {
-  'layout.eyebrow': 'The Gilmore Wedding Weekend',
+  'layout.eyebrow': 'A Gilmore Wedding Weekend',
   'layout.meta': 'March 13-15 · Tampa, Florida',
   'layout.title': 'Welcome, {GuestFirstName}.',
-  'layout.subtitle': 'Your personal concierge for the weekend.',
+  'layout.subtitle': 'Your personal wedding concierge',
 
   'home.need.eyebrow': 'Need Right Now',
   'home.need.title': 'What do you need right now?',
@@ -77,6 +77,11 @@ export const DASHBOARD_TEXT_DEFAULTS = {
 
 export type DashboardTextKey = keyof typeof DASHBOARD_TEXT_DEFAULTS
 export type DashboardTextValues = Record<DashboardTextKey, string>
+export const ENFORCED_DASHBOARD_TEXT_KEYS = ['layout.eyebrow', 'layout.subtitle'] as const
+const ENFORCED_DASHBOARD_TEXT: Pick<DashboardTextValues, (typeof ENFORCED_DASHBOARD_TEXT_KEYS)[number]> = {
+  'layout.eyebrow': DASHBOARD_TEXT_DEFAULTS['layout.eyebrow'],
+  'layout.subtitle': DASHBOARD_TEXT_DEFAULTS['layout.subtitle'],
+}
 
 export type DashboardTextField = {
   key: DashboardTextKey
@@ -183,5 +188,6 @@ export function mergeDashboardText(overrides: Record<string, string> | undefined
   return {
     ...DASHBOARD_TEXT_DEFAULTS,
     ...(overrides ?? {}),
+    ...ENFORCED_DASHBOARD_TEXT,
   }
 }
