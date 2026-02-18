@@ -183,6 +183,21 @@ button:disabled {
   margin: 0;
 }
 
+.guest-note-elegant p {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2.1vw, 1.12rem);
+  line-height: 1.62;
+  letter-spacing: 0.01em;
+  color: #2e4f5d;
+}
+
+.guest-note-elegant .eyebrow {
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  letter-spacing: 0.09em;
+  color: var(--accent-secondary);
+}
+
 .guest-note-handwritten p {
   font-family: var(--font-script);
   font-size: clamp(1.08rem, 2.2vw, 1.34rem);
@@ -205,7 +220,8 @@ button:disabled {
 
 .guest-note-signoff {
   font-family: var(--font-display);
-  font-size: clamp(1.06rem, 2vw, 1.2rem);
+  font-size: clamp(1.12rem, 2.4vw, 1.28rem);
+  letter-spacing: 0.02em;
   color: var(--accent-primary);
   margin-top: 0.2rem;
 }

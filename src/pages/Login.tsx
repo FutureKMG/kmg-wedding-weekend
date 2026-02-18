@@ -81,9 +81,9 @@ export function LoginPage() {
           </form>
         </section>
 
-        <article className="guest-note guest-note-login login-note-panel">
+        <article className="guest-note guest-note-elegant guest-note-login login-note-panel">
           <p className="eyebrow">A Note to Our Favorite People</p>
-          <p>Our hope for this weekend is simple. A deep exhale.</p>
+          <p>Our hope for this wedding weekend is simple. A deep exhale.</p>
           <p>
             Life has been busy and heavy at times. This is our invitation to pause it all for a little while and just
             be together.
