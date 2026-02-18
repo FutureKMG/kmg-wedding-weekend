@@ -79,25 +79,25 @@ export function LoginPage() {
               {isSubmitting ? 'Checking guest list...' : 'Enter the Weekend'}
             </button>
           </form>
-
-          <article className="guest-note guest-note-login">
-            <p className="eyebrow">A Note to Our Favorite People</p>
-            <p>Our hope for this weekend is simple. A deep exhale.</p>
-            <p>
-              Life has been busy and heavy at times. This is our invitation to pause it all for a little while and
-              just be together.
-            </p>
-            <p>
-              We did not plan this to be a perfect wedding. We planned it to be a joyful one. A meaningful one. A
-              weekend with the people who have loved and shaped us into who we are.
-            </p>
-            <p>We will never have this exact group in one place again. That feels rare and worth celebrating.</p>
-            <p>Come as you are. Leave the stress behind. Stay out late. Laugh loudly. Dance freely.</p>
-            <p>Whatever happens, we will call it a memory.</p>
-            <p>We are so grateful you are here with us.</p>
-            <p className="guest-note-signoff">With love, Kevin &amp; Kara</p>
-          </article>
         </section>
+
+        <article className="guest-note guest-note-login login-note-panel">
+          <p className="eyebrow">A Note to Our Favorite People</p>
+          <p>Our hope for this weekend is simple. A deep exhale.</p>
+          <p>
+            Life has been busy and heavy at times. This is our invitation to pause it all for a little while and just
+            be together.
+          </p>
+          <p>
+            We did not plan this to be a perfect wedding. We planned it to be a joyful one. A meaningful one. A
+            weekend with the people who have loved and shaped us into who we are.
+          </p>
+          <p>We will never have this exact group in one place again. That feels rare and worth celebrating.</p>
+          <p>Come as you are. Leave the stress behind. Stay out late. Laugh loudly. Dance freely.</p>
+          <p>Whatever happens, we will call it a memory.</p>
+          <p>We are so grateful you are here with us.</p>
+          <p className="guest-note-signoff">With love, Kevin &amp; Kara</p>
+        </article>
 
         <div className="invite-hero-panel">
           <picture className="invite-hero-media login-cigar-media">
