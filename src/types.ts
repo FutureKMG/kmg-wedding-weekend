@@ -90,3 +90,9 @@ export type FlightPartyMember = {
   notes: string | null
   updatedAt: string
 }
+
+export type SeatingInfo = {
+  tableLabel: string | null
+  mealSelection: string | null
+  dietaryRestrictions: string | null
+}

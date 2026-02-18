@@ -23,13 +23,20 @@
 9. If you want manual travel-party grouping across different last names, run migration:
    - `supabase/migrations/2026-02-16-add-flight-group-key.sql`
    - Guests with matching `flight_group_key` can see each other's shared flight details.
-10. Create storage bucket:
+10. If your project was created before Girls Room, run migration:
+   - `supabase/migrations/2026-02-18-add-girls-room.sql`
+11. If your project was created before seating meal fields, run migration:
+   - `supabase/migrations/2026-02-18-add-guest-meal-and-diet.sql`
+12. Create storage bucket:
    - Name: `wedding-photos`
    - Public bucket: `false`
-11. Run `supabase/seed.sql`.
-12. Import your guest CSV using `docs/guest-import-template.csv` columns.
-13. Manually fix any table labels or name spelling issues.
-14. Validate duplicates:
+13. Run `supabase/seed.sql`.
+14. Import your guest CSV using `docs/guest-import-template.csv` columns.
+15. Optional RSVP enrichment import (attending-only login population + meal/diet fields):
+   - `npm run rsvp:check-conflicts`
+   - `npm run rsvp:import`
+16. Manually fix any table labels or name spelling issues.
+17. Validate duplicates:
    - `select full_name_norm, count(*) from guests group by full_name_norm having count(*) > 1;`
    - Ensure zero duplicates before launch.
 

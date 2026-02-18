@@ -59,11 +59,16 @@ Frontend:
    - If your project was created before admin controls, run `supabase/migrations/2026-02-16-add-guests-admin-flag.sql`
    - If your project was created before flight tracking, run `supabase/migrations/2026-02-16-add-flight-details.sql`
    - If your project was created before flight sharing groups, run `supabase/migrations/2026-02-16-add-flight-group-key.sql`
+   - If your project was created before seating meal fields, run `supabase/migrations/2026-02-18-add-guest-meal-and-diet.sql`
+   - If your project was created before Girls Room, run `supabase/migrations/2026-02-18-add-girls-room.sql`
 2. Seed event + guide data:
    - `supabase/seed.sql`
 3. Import guest CSV using:
    - `docs/guest-import-template.csv`
-4. Create storage bucket `wedding-photos` (private).
+4. Optional RSVP enrichment import:
+   - `npm run rsvp:check-conflicts`
+   - `npm run rsvp:import`
+5. Create storage bucket `wedding-photos` (private).
 
 Detailed steps: `docs/supabase-setup.md`
 
