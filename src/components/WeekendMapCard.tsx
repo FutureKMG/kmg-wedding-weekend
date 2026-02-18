@@ -21,7 +21,7 @@ export function WeekendMapCard({ id, ctaTo, ctaLabel }: WeekendMapCardProps) {
       ) : null}
       <div className="weekend-map-media">
         <img
-          src="/theme/tampa-weekend-map.jpg"
+          src="/theme/tampa-weekend-map.jpg?v=20260218"
           alt="Illustrated map of Dunedin, Clearwater, Largo, and St. Petersburg for the wedding weekend."
           loading="lazy"
         />
