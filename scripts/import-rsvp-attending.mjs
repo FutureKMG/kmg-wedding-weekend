@@ -75,6 +75,23 @@ function renameStephenBoydJr(records) {
   return { applied: true, lineNumber: jrTarget.lineNumber, reason: sarahBoyd ? 'matched_sarah' : 'default_first_row' }
 }
 
+function renameDuplicateAsJr(records, fullNameNorm) {
+  const duplicateRows = records
+    .filter((record) => record.fullNameNorm === fullNameNorm)
+    .sort((left, right) => right.lineNumber - left.lineNumber)
+
+  if (duplicateRows.length !== 2) {
+    return { applied: false, lineNumber: null, reason: 'no_two_duplicate_rows' }
+  }
+
+  const jrTarget = duplicateRows[0]
+  const baseLastName = cleanString(jrTarget.lastName).replace(/\s+jr$/i, '').trim()
+  jrTarget.lastName = `${baseLastName} Jr`
+  jrTarget.fullNameNorm = normalizeFullName(jrTarget.firstName, jrTarget.lastName)
+
+  return { applied: true, lineNumber: jrTarget.lineNumber, reason: 'latest_row' }
+}
+
 function chunk(items, size) {
   const batches = []
   for (let index = 0; index < items.length; index += size) {
@@ -135,6 +152,8 @@ async function main() {
   }
 
   const stephenRename = renameStephenBoydJr(candidateRecords)
+  const robertRename = renameDuplicateAsJr(candidateRecords, 'robert kidd')
+  const ericRename = renameDuplicateAsJr(candidateRecords, 'eric sennott')
 
   const groups = new Map()
   for (const record of candidateRecords) {
@@ -201,6 +220,8 @@ async function main() {
     duplicateSkippedCount: duplicateRows.length,
     unresolvedDuplicateGroups: Array.from(new Set(duplicateRows.map((row) => row.duplicate_group_key))),
     stephenBoydJrRename: stephenRename,
+    robertKiddJrRename: robertRename,
+    ericSennottJrRename: ericRename,
     generatedAt: new Date().toISOString(),
   }
 
