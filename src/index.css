@@ -1194,6 +1194,84 @@ button:disabled {
   box-shadow: var(--shadow-raised);
 }
 
+.girls-room-page .page-intro {
+  border-color: rgba(138, 51, 111, 0.34);
+}
+
+.girls-room-compose {
+  display: grid;
+  gap: 0.65rem;
+  border-color: rgba(138, 51, 111, 0.28);
+  background:
+    radial-gradient(circle at 94% 8%, rgba(234, 173, 220, 0.18), transparent 40%),
+    rgba(255, 250, 245, 0.9);
+}
+
+.girls-room-thread-list {
+  gap: 0.85rem;
+}
+
+.girls-room-thread {
+  display: grid;
+  gap: 0.65rem;
+  border-color: rgba(61, 116, 134, 0.3);
+  background: rgba(255, 250, 245, 0.88);
+}
+
+.girls-room-thread-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.girls-room-replies {
+  display: grid;
+  gap: 0.45rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-s);
+  background: rgba(255, 250, 245, 0.82);
+  padding: 0.7rem;
+}
+
+.girls-room-replies-title {
+  margin: 0;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: var(--fs-label);
+}
+
+.girls-room-reply-list {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.girls-room-reply {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-s);
+  background: rgba(255, 250, 245, 0.9);
+  padding: 0.6rem;
+  display: grid;
+  gap: 0.28rem;
+}
+
+.girls-room-reply p {
+  margin: 0;
+}
+
+.girls-room-reply-form {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-s);
+  background: rgba(255, 250, 245, 0.84);
+  padding: 0.75rem;
+}
+
+.girls-room-locked {
+  display: grid;
+  gap: 0.5rem;
+}
+
 .field {
   display: grid;
   gap: 0.4rem;
@@ -1534,6 +1612,15 @@ button:disabled {
 
   .home-feed-preview-head {
     align-items: flex-start;
+  }
+
+  .girls-room-thread-head {
+    justify-content: flex-start;
+  }
+
+  .girls-room-reply-form button,
+  .girls-room-compose button {
+    width: 100%;
   }
 
   .button-row {

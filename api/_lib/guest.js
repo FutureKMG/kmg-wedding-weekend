@@ -24,5 +24,6 @@ export async function requireGuest(req) {
     tableLabel: data.table_label,
     canUpload: Boolean(data.can_upload),
     canEditContent: Boolean(data.is_admin),
+    canAccessGirlsRoom: true,
   }
 }

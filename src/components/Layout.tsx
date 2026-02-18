@@ -34,17 +34,25 @@ export function Layout() {
     const baseLinks = [
       { to: '/', label: 'Home' },
       { to: '/gallery', label: 'Feed' },
+      { to: '/girls-room', label: 'Girls Room' },
       { to: '/seating', label: 'Seating' },
       { to: '/weekend', label: 'Weekend' },
       { to: '/songs', label: 'Songs' },
     ]
+
+    if (!guest?.canAccessGirlsRoom) {
+      const girlsRoomIndex = baseLinks.findIndex((link) => link.to === '/girls-room')
+      if (girlsRoomIndex >= 0) {
+        baseLinks.splice(girlsRoomIndex, 1)
+      }
+    }
 
     if (guest?.canEditContent) {
       baseLinks.push({ to: '/content-editor', label: 'Edit Content' })
     }
 
     return baseLinks
-  }, [guest?.canEditContent])
+  }, [guest?.canAccessGirlsRoom, guest?.canEditContent])
 
   async function handleLogout() {
     await logout()

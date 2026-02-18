@@ -3,6 +3,7 @@ import { Layout } from './components/Layout'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { ContentEditorPage } from './pages/ContentEditor'
 import { GalleryPage } from './pages/Gallery'
+import { GirlsRoomPage } from './pages/GirlsRoom'
 import { HomePage } from './pages/Home'
 import { LoginPage } from './pages/Login'
 import { SeatingPage } from './pages/Seating'
@@ -29,6 +30,7 @@ function App() {
         <Route path="/seating" element={<SeatingPage />} />
         <Route path="/songs" element={<SongsPage />} />
         <Route path="/gallery" element={<GalleryPage />} />
+        <Route path="/girls-room" element={<GirlsRoomPage />} />
         <Route path="/content-editor" element={<ContentEditorPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

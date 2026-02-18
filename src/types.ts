@@ -4,6 +4,7 @@ export type GuestProfile = {
   tableLabel: string | null
   canUpload: boolean
   canEditContent: boolean
+  canAccessGirlsRoom: boolean
 }
 
 export type WeddingEvent = {
@@ -47,6 +48,25 @@ export type FeedUpdate = {
   createdAt: string
   postedBy: string
   isOwner: boolean
+}
+
+export type GirlsRoomReply = {
+  id: string
+  threadId: string
+  message: string
+  createdAt: string
+  postedBy: string
+  isOwner: boolean
+}
+
+export type GirlsRoomThread = {
+  id: string
+  item: string
+  message: string
+  createdAt: string
+  postedBy: string
+  isOwner: boolean
+  replies: GirlsRoomReply[]
 }
 
 export type FlightDetail = {
