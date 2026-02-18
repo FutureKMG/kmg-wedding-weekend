@@ -768,6 +768,21 @@ button:disabled {
   gap: 0.7rem;
 }
 
+.home-icloud-card,
+.gallery-icloud-card {
+  display: grid;
+  gap: 0.6rem;
+  border-color: rgba(61, 116, 134, 0.34);
+  background:
+    radial-gradient(circle at 93% 8%, rgba(162, 200, 231, 0.18), transparent 38%),
+    rgba(255, 250, 245, 0.88);
+}
+
+.home-icloud-card .button-link,
+.gallery-icloud-card .button-link {
+  justify-self: flex-start;
+}
+
 .flight-airports-label {
   margin: 0;
   color: var(--text-primary);

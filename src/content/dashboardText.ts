@@ -38,6 +38,12 @@ export const DASHBOARD_TEXT_DEFAULTS = {
   'home.flight.buttonPrimary': 'Track Flight',
   'home.flight.buttonSecondary': 'Airport Info',
 
+  'home.icloud.eyebrow': 'Shared Album',
+  'home.icloud.title': 'Join the iCloud Shared Album',
+  'home.icloud.body': 'Tap once to view and add your weekend photos in our shared iCloud album.',
+  'home.icloud.button': 'Open iCloud Album',
+  'home.icloud.url': '',
+
   'home.feed.eyebrow': 'Live Moments',
   'home.feed.title': 'Wedding Feed: Photos + Notes',
   'home.feed.body': 'See shared memories and quick text updates from guests across the weekend.',
@@ -73,6 +79,12 @@ export const DASHBOARD_TEXT_DEFAULTS = {
   'home.quick.gallery.eyebrow': 'Memories',
   'home.quick.gallery.title': 'Wedding Feed & Gallery',
   'home.quick.gallery.body': 'Post to the feed or browse every photo from the weekend.',
+
+  'gallery.icloud.eyebrow': 'Shared Album',
+  'gallery.icloud.title': 'Save to iCloud Shared Album',
+  'gallery.icloud.body': 'Prefer Apple Photos? Open the shared iCloud album from here.',
+  'gallery.icloud.button': 'Open iCloud Album',
+  'gallery.icloud.url': '',
 } as const
 
 export type DashboardTextKey = keyof typeof DASHBOARD_TEXT_DEFAULTS
@@ -141,6 +153,21 @@ export const DASHBOARD_TEXT_EDITOR_SECTIONS: DashboardTextSection[] = [
       { key: 'home.flight.airportTwo', label: 'Airport line 2' },
       { key: 'home.flight.buttonPrimary', label: 'Flight primary button' },
       { key: 'home.flight.buttonSecondary', label: 'Flight secondary button' },
+    ],
+  },
+  {
+    title: 'iCloud Shared Album',
+    fields: [
+      { key: 'home.icloud.eyebrow', label: 'Home eyebrow' },
+      { key: 'home.icloud.title', label: 'Home title' },
+      { key: 'home.icloud.body', label: 'Home description', multiline: true },
+      { key: 'home.icloud.button', label: 'Home button text' },
+      { key: 'home.icloud.url', label: 'Home iCloud URL' },
+      { key: 'gallery.icloud.eyebrow', label: 'Gallery eyebrow' },
+      { key: 'gallery.icloud.title', label: 'Gallery title' },
+      { key: 'gallery.icloud.body', label: 'Gallery description', multiline: true },
+      { key: 'gallery.icloud.button', label: 'Gallery button text' },
+      { key: 'gallery.icloud.url', label: 'Gallery iCloud URL' },
     ],
   },
   {

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } fro
 import { createClient } from '@supabase/supabase-js'
 import { PageIntro } from '../components/PageIntro'
 import { PhotoGrid } from '../components/PhotoGrid'
+import { mergeDashboardText } from '../content/dashboardText'
 import { apiRequest } from '../lib/apiClient'
 import type { PhotoItem } from '../types'
 
@@ -16,9 +17,23 @@ const supabaseClient =
     ? createClient(supabaseUrl, supabaseAnonKey)
     : null
 
+function parseHttpsUrl(candidate: string): string | null {
+  if (!candidate.trim()) {
+    return null
+  }
+
+  try {
+    const parsed = new URL(candidate)
+    return parsed.protocol === 'https:' ? parsed.toString() : null
+  } catch {
+    return null
+  }
+}
+
 export function GalleryPage() {
   const [feedPhotos, setFeedPhotos] = useState<PhotoItem[]>([])
   const [allPhotos, setAllPhotos] = useState<PhotoItem[]>([])
+  const [contentOverrides, setContentOverrides] = useState<Record<string, string>>({})
   const [activeScope, setActiveScope] = useState<GalleryScope>('feed')
   const [caption, setCaption] = useState('')
   const [files, setFiles] = useState<File[]>([])
@@ -31,6 +46,8 @@ export function GalleryPage() {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const canUpload = useMemo(() => Boolean(supabaseClient), [])
+  const text = useMemo(() => mergeDashboardText(contentOverrides), [contentOverrides])
+  const galleryIcloudUrl = parseHttpsUrl(text['gallery.icloud.url'])
 
   const loadPhotoCollections = useCallback(async () => {
     try {
@@ -51,6 +68,19 @@ export function GalleryPage() {
   useEffect(() => {
     void loadPhotoCollections()
   }, [loadPhotoCollections])
+
+  useEffect(() => {
+    async function loadContentText() {
+      try {
+        const payload = await apiRequest<{ content: Record<string, string> }>('/api/content-text')
+        setContentOverrides(payload.content ?? {})
+      } catch {
+        setContentOverrides({})
+      }
+    }
+
+    void loadContentText()
+  }, [])
 
   async function handleUpload(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -191,6 +221,17 @@ export function GalleryPage() {
         title="Wedding Feed: Photos + Notes"
         description="See shared memories and quick updates from across the weekend."
       />
+
+      {galleryIcloudUrl ? (
+        <article className="card stack reveal gallery-icloud-card">
+          <p className="eyebrow">{text['gallery.icloud.eyebrow']}</p>
+          <h3>{text['gallery.icloud.title']}</h3>
+          <p className="muted">{text['gallery.icloud.body']}</p>
+          <a className="button-link secondary-button-link" href={galleryIcloudUrl} target="_blank" rel="noreferrer">
+            {text['gallery.icloud.button']}
+          </a>
+        </article>
+      ) : null}
 
       <form className="card stack reveal" onSubmit={handleUpload}>
         <label className="field">

@@ -26,6 +26,19 @@ const fenwayDirectionsUrl = `https://maps.apple.com/?q=${encodeURIComponent(fenw
 
 const flightTrackerUrl = 'https://www.flightaware.com/live/'
 
+function parseHttpsUrl(candidate: string): string | null {
+  if (!candidate.trim()) {
+    return null
+  }
+
+  try {
+    const parsed = new URL(candidate)
+    return parsed.protocol === 'https:' ? parsed.toString() : null
+  } catch {
+    return null
+  }
+}
+
 function buildAppleMapsUrl(location: string): string | null {
   try {
     return `https://maps.apple.com/?q=${encodeURIComponent(`${location}, Tampa, Florida`)}`
@@ -252,6 +265,7 @@ export function HomePage() {
   const directionsUrl = activeEvent
     ? buildAppleMapsUrl(activeEvent.location) ?? '/weekend#now-next'
     : fenwayDirectionsUrl
+  const homeIcloudUrl = parseHttpsUrl(text['home.icloud.url'])
 
   async function handlePostUpdate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -412,6 +426,17 @@ export function HomePage() {
             )}
           </section>
         </article>
+
+        {homeIcloudUrl ? (
+          <article className="card reveal home-icloud-card">
+            <p className="eyebrow">{text['home.icloud.eyebrow']}</p>
+            <h3>{text['home.icloud.title']}</h3>
+            <p className="muted">{text['home.icloud.body']}</p>
+            <a className="button-link secondary-button-link" href={homeIcloudUrl} target="_blank" rel="noreferrer">
+              {text['home.icloud.button']}
+            </a>
+          </article>
+        ) : null}
       </div>
 
       <article className="card home-feed home-feed-compact reveal">
