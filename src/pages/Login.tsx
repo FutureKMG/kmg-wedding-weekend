@@ -46,7 +46,7 @@ export function LoginPage() {
     <main className="login-shell reveal">
       <section className="login-stage">
         <section className="login-card">
-          <p className="eyebrow">Kara & Kevin</p>
+          <p className="eyebrow">Kara & Kevin 03.14.26</p>
           <h1>Step Into the Weekend</h1>
           <p className="muted">Please enter your first and last name to continue.</p>
 
