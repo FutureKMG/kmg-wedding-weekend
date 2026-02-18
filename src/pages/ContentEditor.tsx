@@ -69,9 +69,21 @@ export function ContentEditorPage() {
     setSuccessMessage('')
     setIsSaving(true)
 
-    const contentToSave = Object.fromEntries(
-      Object.entries(values).filter(([key]) => !LOCKED_DASHBOARD_TEXT_KEYS.has(key as DashboardTextKey)),
+    const editableKeys = (Object.keys(DASHBOARD_TEXT_DEFAULTS) as DashboardTextKey[]).filter(
+      (key) => !LOCKED_DASHBOARD_TEXT_KEYS.has(key),
     )
+
+    const tooLongKey = editableKeys.find((key) => values[key].length > 1600)
+    if (tooLongKey) {
+      setError(`Text is too long for "${tooLongKey}". Maximum is 1600 characters.`)
+      setIsSaving(false)
+      return
+    }
+
+    const contentToSave = editableKeys.reduce<Record<string, string>>((acc, key) => {
+      acc[key] = values[key]
+      return acc
+    }, {})
 
     try {
       await apiRequest('/api/content-text/save', {

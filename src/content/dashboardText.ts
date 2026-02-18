@@ -185,9 +185,21 @@ export const DASHBOARD_TEXT_EDITOR_SECTIONS: DashboardTextSection[] = [
 ]
 
 export function mergeDashboardText(overrides: Record<string, string> | undefined): DashboardTextValues {
-  return {
+  const merged = {
     ...DASHBOARD_TEXT_DEFAULTS,
-    ...(overrides ?? {}),
+  } as DashboardTextValues
+
+  if (overrides) {
+    for (const key of Object.keys(DASHBOARD_TEXT_DEFAULTS) as DashboardTextKey[]) {
+      const value = overrides[key]
+      if (typeof value === 'string') {
+        merged[key] = value
+      }
+    }
+  }
+
+  return {
+    ...merged,
     ...ENFORCED_DASHBOARD_TEXT,
   }
 }
