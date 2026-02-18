@@ -1207,6 +1207,20 @@ button:disabled {
     rgba(255, 250, 245, 0.9);
 }
 
+.girls-room-hero-media {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-s);
+  overflow: hidden;
+  background: rgba(255, 250, 245, 0.86);
+}
+
+.girls-room-hero-media img {
+  width: 100%;
+  display: block;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
 .girls-room-thread-list {
   gap: 0.85rem;
 }

@@ -117,6 +117,9 @@ export function GirlsRoomPage() {
           <form className="card stack reveal girls-room-compose" onSubmit={handlePostThread}>
             <p className="eyebrow">Start a thread</p>
             <h3>What do you need?</h3>
+            <div className="girls-room-hero-media">
+              <img src="/theme/girls-room-hero.jpg" alt="The Girls Room hero graphic" loading="lazy" />
+            </div>
             <label className="field">
               Item
               <input
