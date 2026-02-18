@@ -21,7 +21,8 @@ export function GirlsRoomPage() {
   const loadThreads = useCallback(async () => {
     try {
       const payload = await apiRequest<{ threads: GirlsRoomThread[]; migrationRequired?: boolean }>(
-        '/api/girls-room?limit=60',
+        `/api/girls-room?limit=60&t=${Date.now()}`,
+        { cache: 'no-store' },
       )
       if (payload.migrationRequired) {
         setError('Girls Room is not enabled yet. Run the latest Supabase migration.')

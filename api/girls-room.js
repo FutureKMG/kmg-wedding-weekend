@@ -5,7 +5,6 @@ import {
   readJson,
   sendJson,
   setNoStore,
-  setPrivateCache,
   unauthorized,
 } from './_lib/http.js'
 import { getSupabaseAdminClient } from './_lib/supabaseAdmin.js'
@@ -110,7 +109,7 @@ export default async function handler(req, res) {
       }
     })
 
-    setPrivateCache(res, 5, 15)
+    setNoStore(res)
     return sendJson(res, 200, { threads })
   }
 
