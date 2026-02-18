@@ -18,12 +18,13 @@ const supabaseClient =
     : null
 
 function parseHttpsUrl(candidate: string): string | null {
-  if (!candidate.trim()) {
+  const normalized = candidate.trim()
+  if (!normalized) {
     return null
   }
 
   try {
-    const parsed = new URL(candidate)
+    const parsed = new URL(normalized)
     return parsed.protocol === 'https:' ? parsed.toString() : null
   } catch {
     return null

@@ -3,7 +3,7 @@ import { requireGuest } from '../_lib/guest.js'
 import { methodNotAllowed, readJson, sendJson, unauthorized } from '../_lib/http.js'
 import { getSupabaseAdminClient } from '../_lib/supabaseAdmin.js'
 
-const keySchema = z.string().trim().min(1).max(80).regex(/^[a-z0-9._-]+$/)
+const keySchema = z.string().trim().min(1).max(80).regex(/^[A-Za-z0-9._-]+$/)
 const valueSchema = z.string().max(1600)
 
 const saveSchema = z.object({
