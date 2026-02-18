@@ -26,6 +26,7 @@ const fenwayUberUrl = (() => {
 const fenwayDirectionsUrl = `https://maps.apple.com/?q=${encodeURIComponent(fenwayAddress)}`
 
 const flightTrackerUrl = 'https://www.flightaware.com/live/'
+const FEED_REFRESH_BASE_MS = 2 * 60 * 1000
 
 function parseHttpsUrl(candidate: string): string | null {
   const normalized = candidate.trim()
@@ -133,7 +134,7 @@ export function HomePage() {
   const loadWeddingFeed = useCallback(async () => {
     try {
       const [photoPayload, updatePayload] = await Promise.all([
-        apiRequest<{ photos: PhotoItem[] }>('/api/photos?scope=feed'),
+        apiRequest<{ photos: PhotoItem[] }>('/api/photos?scope=feed&limit=24'),
         apiRequest<{ updates: FeedUpdate[]; migrationRequired?: boolean }>('/api/feed-updates?limit=12'),
       ])
       setFeedPhotos(photoPayload.photos.slice(0, 18))
@@ -227,15 +228,39 @@ export function HomePage() {
       void loadFlightDetails()
     }, 0)
 
-    const feedRefresh = window.setInterval(() => {
-      void loadWeddingFeed()
-    }, 5 * 60 * 1000)
-
     return () => {
       window.clearTimeout(startup)
-      window.clearInterval(feedRefresh)
     }
   }, [loadEvents, loadWeddingFeed, loadWeather, loadFlightDetails])
+
+  useEffect(() => {
+    let timeoutId: number | null = null
+    let isCancelled = false
+
+    const scheduleNext = () => {
+      const jitterMs = Math.floor(Math.random() * 30_000)
+      timeoutId = window.setTimeout(async () => {
+        if (isCancelled) {
+          return
+        }
+
+        if (document.visibilityState === 'visible') {
+          await loadWeddingFeed()
+        }
+
+        scheduleNext()
+      }, FEED_REFRESH_BASE_MS + jitterMs)
+    }
+
+    scheduleNext()
+
+    return () => {
+      isCancelled = true
+      if (timeoutId !== null) {
+        window.clearTimeout(timeoutId)
+      }
+    }
+  }, [loadWeddingFeed])
 
   useEffect(() => {
     const weatherRefresh = window.setInterval(() => {

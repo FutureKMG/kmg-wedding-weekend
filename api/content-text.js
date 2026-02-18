@@ -1,5 +1,5 @@
 import { requireGuest } from './_lib/guest.js'
-import { methodNotAllowed, sendJson, unauthorized } from './_lib/http.js'
+import { methodNotAllowed, sendJson, setPrivateCache, unauthorized } from './_lib/http.js'
 import { getSupabaseAdminClient } from './_lib/supabaseAdmin.js'
 
 export default async function handler(req, res) {
@@ -30,5 +30,6 @@ export default async function handler(req, res) {
     content[item.content_key] = item.content_value
   }
 
+  setPrivateCache(res, 20, 40)
   return sendJson(res, 200, { content })
 }

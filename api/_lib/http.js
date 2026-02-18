@@ -8,6 +8,22 @@ export function sendJson(res, statusCode, payload) {
   res.end(JSON.stringify(payload))
 }
 
+export function setPrivateCache(res, maxAgeSeconds, staleWhileRevalidateSeconds = 0) {
+  const maxAge = Math.max(0, Math.floor(maxAgeSeconds))
+  const staleWhileRevalidate = Math.max(0, Math.floor(staleWhileRevalidateSeconds))
+
+  const directives = [`private`, `max-age=${maxAge}`]
+  if (staleWhileRevalidate > 0) {
+    directives.push(`stale-while-revalidate=${staleWhileRevalidate}`)
+  }
+
+  res.setHeader('Cache-Control', directives.join(', '))
+}
+
+export function setNoStore(res) {
+  res.setHeader('Cache-Control', 'no-store')
+}
+
 export async function readJson(req) {
   if (!req.body) {
     const chunks = []

@@ -1,6 +1,13 @@
 import { z } from 'zod'
 import { requireGuest } from './_lib/guest.js'
-import { methodNotAllowed, readJson, sendJson, unauthorized } from './_lib/http.js'
+import {
+  methodNotAllowed,
+  readJson,
+  sendJson,
+  setNoStore,
+  setPrivateCache,
+  unauthorized,
+} from './_lib/http.js'
 import { getSupabaseAdminClient } from './_lib/supabaseAdmin.js'
 
 const FLIGHT_AIRPORTS = ['TPA', 'PIE']
@@ -146,11 +153,13 @@ export default async function handler(req, res) {
 
     const { context, error: contextError } = await loadGuestSharingContext(supabase, guest.id)
     if (contextError || !context) {
+      setPrivateCache(res, 20, 40)
       return sendJson(res, 200, { detail: mapFlightDetail(data), party: [] })
     }
 
     const sharedGuestIds = await loadSharedGuestIds(supabase, context)
     if (sharedGuestIds.length === 0) {
+      setPrivateCache(res, 20, 40)
       return sendJson(res, 200, { detail: mapFlightDetail(data), party: [] })
     }
 
@@ -163,6 +172,7 @@ export default async function handler(req, res) {
       .order('arrival_time', { ascending: true })
 
     if (partyError) {
+      setPrivateCache(res, 20, 40)
       return sendJson(res, 200, { detail: mapFlightDetail(data), party: [] })
     }
 
@@ -170,6 +180,7 @@ export default async function handler(req, res) {
       .map(mapSharedFlight)
       .filter(Boolean)
 
+    setPrivateCache(res, 20, 40)
     return sendJson(res, 200, { detail: mapFlightDetail(data), party })
   }
 
@@ -211,6 +222,7 @@ export default async function handler(req, res) {
       return sendJson(res, 500, { message: 'Could not save flight details' })
     }
 
+    setNoStore(res)
     return sendJson(res, 200, { ok: true, detail: mapFlightDetail(data) })
   }
 

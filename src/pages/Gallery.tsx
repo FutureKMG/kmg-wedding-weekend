@@ -54,8 +54,8 @@ export function GalleryPage() {
     try {
       setError('')
       const [feedPayload, allPayload] = await Promise.all([
-        apiRequest<{ photos: PhotoItem[] }>('/api/photos?scope=feed'),
-        apiRequest<{ photos: PhotoItem[] }>('/api/photos?scope=all'),
+        apiRequest<{ photos: PhotoItem[] }>('/api/photos?scope=feed&limit=120'),
+        apiRequest<{ photos: PhotoItem[] }>('/api/photos?scope=all&limit=300'),
       ])
       setFeedPhotos(feedPayload.photos)
       setAllPhotos(allPayload.photos)

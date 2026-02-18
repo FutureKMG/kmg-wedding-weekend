@@ -1,5 +1,5 @@
 import { requireGuest } from './_lib/guest.js'
-import { methodNotAllowed, sendJson, unauthorized } from './_lib/http.js'
+import { methodNotAllowed, sendJson, setPrivateCache, unauthorized } from './_lib/http.js'
 import { getSupabaseAdminClient } from './_lib/supabaseAdmin.js'
 
 export default async function handler(req, res) {
@@ -22,6 +22,7 @@ export default async function handler(req, res) {
     return sendJson(res, 500, { message: 'Could not load guide items' })
   }
 
+  setPrivateCache(res, 60, 180)
   return sendJson(res, 200, {
     items: (data ?? []).map((item) => ({
       id: item.id,

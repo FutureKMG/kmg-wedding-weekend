@@ -1,6 +1,60 @@
 import { requireGuest } from './_lib/guest.js'
-import { methodNotAllowed, sendJson, unauthorized } from './_lib/http.js'
+import { methodNotAllowed, sendJson, setPrivateCache, unauthorized } from './_lib/http.js'
 import { getSupabaseAdminClient } from './_lib/supabaseAdmin.js'
+
+function getPhotoLimit(req, scope) {
+  const raw = Array.isArray(req.query?.limit) ? req.query.limit[0] : req.query?.limit
+  const parsed = Number.parseInt(raw ?? '', 10)
+  const defaultLimit = scope === 'feed' ? 48 : 320
+  const maxLimit = scope === 'feed' ? 120 : 600
+
+  if (Number.isNaN(parsed)) {
+    return defaultLimit
+  }
+
+  return Math.max(1, Math.min(parsed, maxLimit))
+}
+
+async function createSignedUrlMap(supabase, bucketName, storagePaths, expiresInSeconds) {
+  const paths = Array.from(new Set(storagePaths.filter(Boolean)))
+  const signedUrlByPath = new Map()
+
+  if (paths.length === 0) {
+    return signedUrlByPath
+  }
+
+  const bucket = supabase.storage.from(bucketName)
+  const batch = await bucket.createSignedUrls(paths, expiresInSeconds)
+
+  if (!batch.error && Array.isArray(batch.data)) {
+    for (let index = 0; index < batch.data.length; index += 1) {
+      const item = batch.data[index]
+      const path = item?.path ?? paths[index]
+      if (path && item?.signedUrl) {
+        signedUrlByPath.set(path, item.signedUrl)
+      }
+    }
+  }
+
+  if (signedUrlByPath.size === paths.length) {
+    return signedUrlByPath
+  }
+
+  await Promise.all(
+    paths.map(async (path) => {
+      if (signedUrlByPath.has(path)) {
+        return
+      }
+
+      const single = await bucket.createSignedUrl(path, expiresInSeconds)
+      if (!single.error && single.data?.signedUrl) {
+        signedUrlByPath.set(path, single.data.signedUrl)
+      }
+    }),
+  )
+
+  return signedUrlByPath
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -16,6 +70,7 @@ export default async function handler(req, res) {
   const scope = Array.isArray(req.query?.scope)
     ? req.query.scope[0]
     : req.query?.scope
+  const limit = getPhotoLimit(req, scope)
 
   const supabase = getSupabaseAdminClient()
 
@@ -25,6 +80,7 @@ export default async function handler(req, res) {
       'id, guest_id, caption, storage_path, created_at, is_feed_post, guests(first_name,last_name)',
     )
     .order('created_at', { ascending: false })
+    .limit(limit)
 
   if (scope === 'feed') {
     query = query.eq('is_feed_post', true)
@@ -38,40 +94,45 @@ export default async function handler(req, res) {
     ;({ data, error } = await supabase
       .from('photos')
       .select('id, guest_id, caption, storage_path, created_at, guests(first_name,last_name)')
-      .order('created_at', { ascending: false }))
+      .order('created_at', { ascending: false })
+      .limit(limit))
   }
 
   if (error) {
     return sendJson(res, 500, { message: 'Could not load photos' })
   }
 
-  const photos = await Promise.all(
-    (data ?? []).map(async (photo) => {
-      const uploadOwner = Array.isArray(photo.guests) ? photo.guests[0] : photo.guests
-      const fullName = uploadOwner
-        ? `${uploadOwner.first_name} ${uploadOwner.last_name}`
-        : 'Guest'
-
-      const { data: signed, error: signedError } = await supabase.storage
-        .from(bucketName)
-        .createSignedUrl(photo.storage_path, 60 * 60)
-
-      if (signedError || !signed) {
-        return null
-      }
-
-      return {
-        id: photo.id,
-        imageUrl: signed.signedUrl,
-        caption: photo.caption,
-        uploadedBy: fullName,
-        createdAt: photo.created_at,
-        isFeedPost: hasFeedColumn ? Boolean(photo.is_feed_post) : true,
-        isOwner: photo.guest_id === guest.id,
-      }
-    }),
+  const rows = data ?? []
+  const signedUrlByPath = await createSignedUrlMap(
+    supabase,
+    bucketName,
+    rows.map((row) => row.storage_path),
+    60 * 60,
   )
 
+  const photos = rows.map((photo) => {
+    const signedUrl = signedUrlByPath.get(photo.storage_path)
+    if (!signedUrl) {
+      return null
+    }
+
+    const uploadOwner = Array.isArray(photo.guests) ? photo.guests[0] : photo.guests
+    const fullName = uploadOwner
+      ? `${uploadOwner.first_name} ${uploadOwner.last_name}`
+      : 'Guest'
+
+    return {
+      id: photo.id,
+      imageUrl: signedUrl,
+      caption: photo.caption,
+      uploadedBy: fullName,
+      createdAt: photo.created_at,
+      isFeedPost: hasFeedColumn ? Boolean(photo.is_feed_post) : true,
+      isOwner: photo.guest_id === guest.id,
+    }
+  })
+
+  setPrivateCache(res, 15, 45)
   return sendJson(res, 200, {
     photos: photos.filter(Boolean),
   })

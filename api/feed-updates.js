@@ -1,6 +1,13 @@
 import { z } from 'zod'
 import { requireGuest } from './_lib/guest.js'
-import { methodNotAllowed, readJson, sendJson, unauthorized } from './_lib/http.js'
+import {
+  methodNotAllowed,
+  readJson,
+  sendJson,
+  setNoStore,
+  setPrivateCache,
+  unauthorized,
+} from './_lib/http.js'
 import { getSupabaseAdminClient } from './_lib/supabaseAdmin.js'
 
 const updateSchema = z.object({
@@ -52,6 +59,7 @@ export default async function handler(req, res) {
       }
     })
 
+    setPrivateCache(res, 8, 20)
     return sendJson(res, 200, { updates })
   }
 
@@ -77,6 +85,7 @@ export default async function handler(req, res) {
       return sendJson(res, 500, { message: 'Could not post update' })
     }
 
+    setNoStore(res)
     return sendJson(res, 200, { ok: true })
   }
 
