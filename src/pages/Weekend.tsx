@@ -4,8 +4,14 @@ import { GuideCard } from '../components/GuideCard'
 import { PageIntro } from '../components/PageIntro'
 import { WeekendMapCard } from '../components/WeekendMapCard'
 import { apiRequest } from '../lib/apiClient'
-import { getTimelineState } from '../lib/time'
+import { formatEventClock, getTimelineState } from '../lib/time'
 import type { GuideItem, WeddingEvent } from '../types'
+
+const WEDDING_DAY_EVENT_TITLES = new Set(['ceremony', 'cocktail hour', 'reception'])
+
+function isWeddingDayCoreEvent(eventTitle: string): boolean {
+  return WEDDING_DAY_EVENT_TITLES.has(eventTitle.trim().toLowerCase())
+}
 
 export function WeekendPage() {
   const [events, setEvents] = useState<WeddingEvent[]>([])
@@ -49,9 +55,66 @@ export function WeekendPage() {
   }, [])
 
   const timelineState = useMemo(() => getTimelineState(events, now), [events, now])
+  const weddingDayEvents = useMemo(
+    () => events.filter((event) => isWeddingDayCoreEvent(event.title)),
+    [events],
+  )
+
+  const combinedWeddingDayEvent = useMemo<WeddingEvent | null>(() => {
+    if (weddingDayEvents.length === 0) {
+      return null
+    }
+
+    const sortedByStart = [...weddingDayEvents].sort(
+      (a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime(),
+    )
+    const locations = Array.from(new Set(sortedByStart.map((event) => event.location.trim()).filter(Boolean)))
+
+    return {
+      id: 'wedding-day',
+      title: 'Ceremony + Cocktail Hour + Reception',
+      location: locations.join(' · '),
+      startAt: sortedByStart[0].startAt,
+      endAt: sortedByStart[sortedByStart.length - 1].endAt,
+      sortOrder: sortedByStart[0].sortOrder,
+    }
+  }, [weddingDayEvents])
+
+  const weddingDayAgenda = useMemo(
+    () =>
+      [...weddingDayEvents]
+        .sort((a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime())
+        .map((event) => ({
+          time: formatEventClock(event.startAt),
+          label: event.title,
+        })),
+    [weddingDayEvents],
+  )
+
+  const weddingDayIsCurrent = useMemo(() => {
+    if (!timelineState.currentEvent) {
+      return false
+    }
+    return weddingDayEvents.some((event) => event.id === timelineState.currentEvent?.id)
+  }, [timelineState.currentEvent, weddingDayEvents])
+
+  const individualEvents = useMemo(
+    () => events.filter((event) => !isWeddingDayCoreEvent(event.title)),
+    [events],
+  )
+
+  const weekendCards = useMemo(() => {
+    const combined = combinedWeddingDayEvent ? [combinedWeddingDayEvent, ...individualEvents] : individualEvents
+    return [...combined].sort((a, b) => a.sortOrder - b.sortOrder)
+  }, [combinedWeddingDayEvent, individualEvents])
+
+  const visibleGuideItems = useMemo(
+    () => guideItems.filter((item) => item.title.trim().toLowerCase() !== 'fenway hotel room block'),
+    [guideItems],
+  )
 
   return (
-    <section className="stack">
+    <section className="stack weekend-page">
       <PageIntro
         eyebrow="Weekend"
         title="Weekend"
@@ -91,8 +154,14 @@ export function WeekendPage() {
       {eventsError ? <p className="error-text">{eventsError}</p> : null}
 
       <div className="stack">
-        {events.map((event) => (
-          <EventCard key={event.id} event={event} isCurrent={timelineState.currentEvent?.id === event.id} />
+        {weekendCards.map((event) => (
+          <EventCard
+            key={event.id}
+            event={event}
+            isCurrent={event.id === 'wedding-day' ? weddingDayIsCurrent : timelineState.currentEvent?.id === event.id}
+            detailPath={event.id === 'wedding-day' ? '/weekend/events/wedding-day' : undefined}
+            agendaItems={event.id === 'wedding-day' ? weddingDayAgenda : undefined}
+          />
         ))}
       </div>
 
@@ -105,7 +174,7 @@ export function WeekendPage() {
       {guideError ? <p className="error-text">{guideError}</p> : null}
 
       <div className="stack">
-        {guideItems.map((item) => (
+        {visibleGuideItems.map((item) => (
           <GuideCard key={item.id} item={item} />
         ))}
       </div>

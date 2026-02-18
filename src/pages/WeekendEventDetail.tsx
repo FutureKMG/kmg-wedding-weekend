@@ -8,6 +8,7 @@ import { getTimelineState } from '../lib/time'
 import type { WeddingEvent } from '../types'
 
 const EVENT_TIMEZONE = 'America/New_York'
+const WEDDING_DAY_EVENT_TITLES = new Set(['ceremony', 'cocktail hour', 'reception'])
 
 function formatEventText(isoString: string, pattern: string, fallback: string): string {
   try {
@@ -42,6 +43,10 @@ function buildDirectionsUrl(location: string): string {
   return `https://maps.apple.com/?q=${encodeURIComponent(`${location}, Tampa, Florida`)}`
 }
 
+function isWeddingDayCoreEvent(eventTitle: string): boolean {
+  return WEDDING_DAY_EVENT_TITLES.has(eventTitle.trim().toLowerCase())
+}
+
 export function WeekendEventDetailPage() {
   const { eventId } = useParams()
   const [events, setEvents] = useState<WeddingEvent[]>([])
@@ -66,16 +71,65 @@ export function WeekendEventDetailPage() {
     void loadEvents()
   }, [])
 
+  const weddingDayEvents = useMemo(
+    () => events.filter((event) => isWeddingDayCoreEvent(event.title)),
+    [events],
+  )
+
+  const weddingDayAgenda = useMemo(
+    () =>
+      [...weddingDayEvents]
+        .sort((a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime())
+        .map((event) => ({
+          id: event.id,
+          title: event.title,
+          startLabel: formatEventText(event.startAt, 'h:mm a', 'Time TBD'),
+          location: event.location,
+        })),
+    [weddingDayEvents],
+  )
+
   const event = useMemo(() => {
     if (!eventId) {
       return null
     }
+
+    if (eventId === 'wedding-day') {
+      if (weddingDayEvents.length === 0) {
+        return null
+      }
+
+      const sortedByStart = [...weddingDayEvents].sort(
+        (a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime(),
+      )
+      const locations = Array.from(new Set(sortedByStart.map((item) => item.location.trim()).filter(Boolean)))
+
+      return {
+        id: 'wedding-day',
+        title: 'Ceremony + Cocktail Hour + Reception',
+        location: locations.join(' · '),
+        startAt: sortedByStart[0].startAt,
+        endAt: sortedByStart[sortedByStart.length - 1].endAt,
+        sortOrder: sortedByStart[0].sortOrder,
+      }
+    }
+
     return events.find((item) => item.id === eventId) ?? null
-  }, [events, eventId])
+  }, [eventId, events, weddingDayEvents])
 
   const timelineState = useMemo(() => getTimelineState(events, new Date()), [events])
-  const isCurrent = Boolean(event && timelineState.currentEvent?.id === event.id)
-  const isNext = Boolean(event && timelineState.nextEvent?.id === event.id)
+  const isCurrent = Boolean(
+    event &&
+      (event.id === 'wedding-day'
+        ? weddingDayEvents.some((item) => item.id === timelineState.currentEvent?.id)
+        : timelineState.currentEvent?.id === event.id),
+  )
+  const isNext = Boolean(
+    event &&
+      (event.id === 'wedding-day'
+        ? weddingDayEvents.some((item) => item.id === timelineState.nextEvent?.id)
+        : timelineState.nextEvent?.id === event.id),
+  )
 
   if (isLoading) {
     return (
@@ -141,7 +195,9 @@ export function WeekendEventDetailPage() {
   const eventStart = formatEventText(event.startAt, 'h:mm a', 'Start TBD')
   const eventEnd = formatEventText(event.endAt, 'h:mm a', 'End TBD')
   const eventDuration = formatDurationLabel(event.startAt, event.endAt)
-  const directionsUrl = buildDirectionsUrl(event.location)
+  const directionsBaseLocation =
+    event.id === 'wedding-day' && weddingDayEvents.length > 0 ? weddingDayEvents[0].location : event.location
+  const directionsUrl = buildDirectionsUrl(directionsBaseLocation)
 
   return (
     <section className="stack">
@@ -179,6 +235,21 @@ export function WeekendEventDetailPage() {
             <p>{event.location}</p>
           </article>
         </div>
+
+        {event.id === 'wedding-day' ? (
+          <article className="event-detail-item event-detail-agenda">
+            <p className="eyebrow">Wedding Day Sequence</p>
+            <ul>
+              {weddingDayAgenda.map((agendaItem) => (
+                <li key={agendaItem.id}>
+                  <span>{agendaItem.startLabel}</span>
+                  <span>{agendaItem.title}</span>
+                  <span>{agendaItem.location}</span>
+                </li>
+              ))}
+            </ul>
+          </article>
+        ) : null}
 
         <div className="button-row">
           <a className="button-link" href={calendarDataUri} download={calendarFilename}>

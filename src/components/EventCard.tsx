@@ -17,15 +17,19 @@ function formatEventDate(isoString: string, pattern: string, fallback: string): 
 export function EventCard({
   event,
   isCurrent,
+  detailPath,
+  agendaItems = [],
 }: {
   event: WeddingEvent
   isCurrent: boolean
+  detailPath?: string
+  agendaItems?: Array<{ label: string; time: string }>
 }) {
   const eventMonth = formatEventDate(event.startAt, 'MMM', 'TBD').toUpperCase()
   const eventDay = formatEventDate(event.startAt, 'd', '--')
   const eventDayName = formatEventDate(event.startAt, 'EEEE', 'Day TBD')
   const eventDateLabel = formatEventDate(event.startAt, 'EEEE, MMMM d', 'Date pending')
-  const eventDetailPath = `/weekend/events/${encodeURIComponent(event.id)}`
+  const eventDetailPath = detailPath ?? `/weekend/events/${encodeURIComponent(event.id)}`
   const calendarDataUri = buildCalendarDataUri(event)
   const calendarFilename = buildCalendarFilename(event)
 
@@ -43,6 +47,16 @@ export function EventCard({
             {eventDateLabel} · {formatEventClock(event.startAt)} - {formatEventClock(event.endAt)}
           </p>
           <p className="muted">{event.location}</p>
+          {agendaItems.length > 0 ? (
+            <ul className="event-card-agenda">
+              {agendaItems.map((agendaItem) => (
+                <li key={`${agendaItem.time}-${agendaItem.label}`}>
+                  <span>{agendaItem.time}</span>
+                  <span>{agendaItem.label}</span>
+                </li>
+              ))}
+            </ul>
+          ) : null}
           {isCurrent ? <p className="status-pill">Happening now</p> : null}
         </div>
       </Link>

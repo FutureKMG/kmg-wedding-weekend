@@ -475,6 +475,28 @@ button:disabled {
   font-size: var(--fs-h2);
 }
 
+.event-card-agenda {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.event-card-agenda li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.45rem;
+  align-items: baseline;
+  font-size: var(--fs-label);
+  color: var(--text-secondary);
+}
+
+.event-card-agenda li span:first-child {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
 .event-calendar-actions {
   display: flex;
   flex-wrap: wrap;
@@ -503,6 +525,28 @@ button:disabled {
   padding: 0.7rem;
   display: grid;
   gap: 0.2rem;
+}
+
+.event-detail-agenda ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.event-detail-agenda li {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-s);
+  background: rgba(255, 250, 245, 0.9);
+  padding: 0.6rem;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.event-detail-agenda li span:first-child {
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .button-link {
@@ -1458,6 +1502,34 @@ button:disabled {
 
   .event-calendar-date {
     width: 84px;
+    justify-self: center;
+  }
+
+  .weekend-page .page-intro,
+  .weekend-page .card {
+    text-align: center;
+  }
+
+  .weekend-page .eyebrow {
+    justify-content: center;
+  }
+
+  .weekend-page .event-calendar-copy {
+    justify-items: center;
+  }
+
+  .weekend-page .event-card-agenda li {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .weekend-page .event-calendar-actions {
+    flex-direction: column;
+  }
+
+  .weekend-page .event-calendar-actions .button-link {
+    width: 100%;
   }
 
   .home-feed-preview-head {
