@@ -5,6 +5,10 @@ import { apiRequest } from '../lib/apiClient'
 import { useAuth } from '../lib/auth'
 import type { GirlsRoomThread } from '../types'
 
+function isKaraMargraf(firstName: string, lastName: string): boolean {
+  return firstName.trim().toLowerCase() === 'kara' && lastName.trim().toLowerCase() === 'margraf'
+}
+
 export function GirlsRoomPage() {
   const { guest } = useAuth()
   const [threads, setThreads] = useState<GirlsRoomThread[]>([])
@@ -15,8 +19,13 @@ export function GirlsRoomPage() {
   const [replyDrafts, setReplyDrafts] = useState<Record<string, string>>({})
   const [replyErrors, setReplyErrors] = useState<Record<string, string>>({})
   const [postingReplyThreadId, setPostingReplyThreadId] = useState<string | null>(null)
+  const [deletingThreadId, setDeletingThreadId] = useState<string | null>(null)
+  const [deletingReplyId, setDeletingReplyId] = useState<string | null>(null)
 
   const canAccess = guest?.canAccessGirlsRoom ?? true
+  const isModerator =
+    guest != null &&
+    (guest.canEditContent || isKaraMargraf(guest.firstName ?? '', guest.lastName ?? ''))
 
   const loadThreads = useCallback(async () => {
     try {
@@ -96,6 +105,42 @@ export function GirlsRoomPage() {
     }
   }
 
+  async function handleDeleteThread(threadId: string) {
+    setError('')
+    setDeletingThreadId(threadId)
+
+    try {
+      await apiRequest('/api/girls-room/thread-delete', {
+        method: 'POST',
+        body: JSON.stringify({ threadId }),
+      })
+      await loadThreads()
+    } catch (requestError) {
+      const messageText = requestError instanceof Error ? requestError.message : 'Could not delete thread'
+      setError(messageText)
+    } finally {
+      setDeletingThreadId(null)
+    }
+  }
+
+  async function handleDeleteReply(replyId: string, threadId: string) {
+    setReplyErrors((current) => ({ ...current, [threadId]: '' }))
+    setDeletingReplyId(replyId)
+
+    try {
+      await apiRequest('/api/girls-room/reply-delete', {
+        method: 'POST',
+        body: JSON.stringify({ replyId }),
+      })
+      await loadThreads()
+    } catch (requestError) {
+      const messageText = requestError instanceof Error ? requestError.message : 'Could not delete reply'
+      setReplyErrors((current) => ({ ...current, [threadId]: messageText }))
+    } finally {
+      setDeletingReplyId(null)
+    }
+  }
+
   return (
     <section className="stack girls-room-page">
       <PageIntro
@@ -159,6 +204,16 @@ export function GirlsRoomPage() {
                     <p className="muted small-text">
                       {thread.postedBy} • {formatDistanceToNow(new Date(thread.createdAt), { addSuffix: true })}
                     </p>
+                    {thread.isOwner || isModerator ? (
+                      <button
+                        type="button"
+                        className="secondary-button girls-room-delete-button"
+                        onClick={() => void handleDeleteThread(thread.id)}
+                        disabled={deletingThreadId === thread.id}
+                      >
+                        {deletingThreadId === thread.id ? 'Deleting...' : 'Delete thread'}
+                      </button>
+                    ) : null}
                   </header>
                   <h3>{thread.item}</h3>
                   <p>{thread.message}</p>
@@ -171,9 +226,21 @@ export function GirlsRoomPage() {
                         {thread.replies.map((reply) => (
                           <article key={reply.id} className="girls-room-reply">
                             <p>{reply.message}</p>
-                            <p className="muted small-text">
-                              {reply.postedBy} • {formatDistanceToNow(new Date(reply.createdAt), { addSuffix: true })}
-                            </p>
+                            <div className="girls-room-reply-meta">
+                              <p className="muted small-text">
+                                {reply.postedBy} • {formatDistanceToNow(new Date(reply.createdAt), { addSuffix: true })}
+                              </p>
+                              {reply.isOwner || isModerator ? (
+                                <button
+                                  type="button"
+                                  className="secondary-button girls-room-delete-button"
+                                  onClick={() => void handleDeleteReply(reply.id, thread.id)}
+                                  disabled={deletingReplyId === reply.id}
+                                >
+                                  {deletingReplyId === reply.id ? 'Deleting...' : 'Delete reply'}
+                                </button>
+                              ) : null}
+                            </div>
                           </article>
                         ))}
                       </div>

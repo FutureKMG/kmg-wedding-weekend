@@ -30,7 +30,7 @@ export default async function handler(req, res) {
 
     const { data, error } = await supabase
       .from('guests')
-      .select('id, first_name, table_label, can_upload, is_admin')
+      .select('id, first_name, last_name, table_label, can_upload, is_admin')
       .eq('full_name_norm', fullNameNorm)
       .maybeSingle()
 
@@ -49,6 +49,7 @@ export default async function handler(req, res) {
       guest: {
         id: data.id,
         firstName: data.first_name,
+        lastName: data.last_name,
         tableLabel: data.table_label,
         canUpload: Boolean(data.can_upload),
         canEditContent: Boolean(data.is_admin),

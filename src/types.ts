@@ -1,6 +1,7 @@
 export type GuestProfile = {
   id: string
   firstName: string
+  lastName: string
   tableLabel: string | null
   canUpload: boolean
   canEditContent: boolean
