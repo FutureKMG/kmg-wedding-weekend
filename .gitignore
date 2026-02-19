@@ -34,3 +34,6 @@ docs/reception-attending-*.csv
 docs/reception-attending-*.xlsx
 docs/export*.csv
 docs/export*.xlsx
+
+# Generated RSVP import reports
+docs/import-reports/rsvp-*
