@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent, type ChangeEvent } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { DecoDivider } from '../components/DecoDivider'
 import { apiRequest } from '../lib/apiClient'
@@ -19,8 +19,6 @@ export function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isVendorSubmitting, setIsVendorSubmitting] = useState(false)
   const [vendors, setVendors] = useState<string[]>([])
-  const [vendorQuery, setVendorQuery] = useState('')
-  const [selectedVendor, setSelectedVendor] = useState('')
   const [vendorsLoading, setVendorsLoading] = useState(true)
   const [vendorsMigrationRequired, setVendorsMigrationRequired] = useState(false)
   const navigate = useNavigate()
@@ -45,14 +43,6 @@ export function LoginPage() {
     void loadVendors()
   }, [])
 
-  const filteredVendors = useMemo(() => {
-    const query = vendorQuery.trim().toLowerCase()
-    if (!query) {
-      return vendors
-    }
-    return vendors.filter((vendor) => vendor.toLowerCase().includes(query))
-  }, [vendorQuery, vendors])
-
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError('')
@@ -70,21 +60,16 @@ export function LoginPage() {
     }
   }
 
-  async function handleVendorSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    if (!selectedVendor) {
-      setVendorError('Please select a vendor from the list.')
-      return
-    }
-
+  async function handleVendorSelect(event: ChangeEvent<HTMLSelectElement>) {
+    const vendor = event.target.value
+    if (!vendor) return
     setVendorError('')
     setIsVendorSubmitting(true)
-
     try {
-      await loginVendor(selectedVendor)
+      await loginVendor(vendor)
       navigate(redirectPath, { replace: true })
     } catch {
-      setVendorError('Vendor login was not found. Please choose your name from the list.')
+      setVendorError('Vendor login was not found. Please try again.')
     } finally {
       setIsVendorSubmitting(false)
     }
@@ -125,61 +110,25 @@ export function LoginPage() {
               />
             </label>
 
+            <label className="field">
+              Vendor? Enter through here.
+              <select
+                onChange={handleVendorSelect}
+                defaultValue=""
+                disabled={vendorsLoading || vendorsMigrationRequired || isVendorSubmitting}
+              >
+                <option value="" disabled>— Select your name —</option>
+                {vendors.map((vendor) => (
+                  <option key={vendor} value={vendor}>{vendor}</option>
+                ))}
+              </select>
+            </label>
+
+            {vendorError && <p className="error-text">{vendorError}</p>}
             {error && <p className="error-text">{error}</p>}
 
             <button type="submit" disabled={isSubmitting}>
               {isSubmitting ? 'Checking guest list...' : 'Enter the Weekend'}
-            </button>
-          </form>
-
-          <DecoDivider />
-
-          <form onSubmit={handleVendorSubmit} className="stack vendor-login-form">
-            <h2>Vendor Login</h2>
-            <p className="muted">
-              Vendors can select their business below to enter the weekend app.
-            </p>
-            <label className="field">
-              Search vendors
-              <input
-                value={vendorQuery}
-                onChange={(event) => setVendorQuery(event.target.value)}
-                placeholder="Search by vendor name"
-                autoComplete="off"
-                disabled={vendorsLoading || vendorsMigrationRequired}
-              />
-            </label>
-
-            <div className="vendor-dropdown" role="listbox" aria-label="Vendor list">
-              {vendorsLoading ? (
-                <p className="muted small-text">Loading vendors...</p>
-              ) : vendorsMigrationRequired ? (
-                <p className="muted small-text">Vendor login will appear after the latest migration runs.</p>
-              ) : filteredVendors.length === 0 ? (
-                <p className="muted small-text">No vendors match that search.</p>
-              ) : (
-                filteredVendors.map((vendor) => (
-                  <button
-                    key={vendor}
-                    type="button"
-                    className={selectedVendor === vendor ? 'vendor-option vendor-option-selected' : 'vendor-option'}
-                    onClick={() => {
-                      setSelectedVendor(vendor)
-                      setVendorQuery(vendor)
-                      setVendorError('')
-                    }}
-                  >
-                    {vendor}
-                  </button>
-                ))
-              )}
-            </div>
-
-            {selectedVendor ? <p className="muted small-text">Selected: {selectedVendor}</p> : null}
-            {vendorError && <p className="error-text">{vendorError}</p>}
-
-            <button type="submit" disabled={isVendorSubmitting || !selectedVendor || vendorsMigrationRequired}>
-              {isVendorSubmitting ? 'Checking vendor access...' : 'Enter as Vendor'}
             </button>
           </form>
         </section>
