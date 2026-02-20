@@ -1,12 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { EventCard } from '../components/EventCard'
-import { GuideCard } from '../components/GuideCard'
 import { PageIntro } from '../components/PageIntro'
 import { WeekendMapCard } from '../components/WeekendMapCard'
 import { apiRequest } from '../lib/apiClient'
-import { fetchPhilliesWelcomeSection, type PhilliesWelcomeSection } from '../lib/philliesWelcome'
 import { formatEventClock, getTimelineState } from '../lib/time'
-import type { GuideItem, WeddingEvent } from '../types'
+import type { WeddingEvent } from '../types'
 
 const WEDDING_DAY_EVENT_TITLES = new Set(['ceremony', 'cocktail hour', 'reception'])
 
@@ -16,13 +14,8 @@ function isWeddingDayCoreEvent(eventTitle: string): boolean {
 
 export function WeekendPage() {
   const [events, setEvents] = useState<WeddingEvent[]>([])
-  const [guideItems, setGuideItems] = useState<GuideItem[]>([])
   const [eventsError, setEventsError] = useState('')
-  const [guideError, setGuideError] = useState('')
-  const [philliesError, setPhilliesError] = useState('')
-  const [philliesSection, setPhilliesSection] = useState<PhilliesWelcomeSection | null>(null)
   const [now, setNow] = useState(() => new Date())
-  const meetSectionRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     async function loadEvents() {
@@ -39,78 +32,9 @@ export function WeekendPage() {
   }, [])
 
   useEffect(() => {
-    async function loadGuide() {
-      try {
-        const payload = await apiRequest<{ items: GuideItem[] }>('/api/guide')
-        setGuideItems(payload.items)
-      } catch (requestError) {
-        const message =
-          requestError instanceof Error ? requestError.message : 'Could not load free-time recommendations'
-        setGuideError(message)
-      }
-    }
-
-    void loadGuide()
-  }, [])
-
-  useEffect(() => {
-    async function loadPhilliesWelcome() {
-      const payload = await fetchPhilliesWelcomeSection()
-      if (payload.section) {
-        setPhilliesSection(payload.section)
-      } else if (!payload.restricted && payload.error) {
-        setPhilliesError(payload.error)
-      }
-    }
-
-    void loadPhilliesWelcome()
-  }, [])
-
-  useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 60_000)
     return () => window.clearInterval(timer)
   }, [])
-
-  useEffect(() => {
-    if (!philliesSection) {
-      return
-    }
-
-    const node = meetSectionRef.current
-    if (!node) {
-      return
-    }
-
-    const prefersReducedMotion =
-      typeof window !== 'undefined' &&
-      'matchMedia' in window &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-    if (prefersReducedMotion) {
-      node.classList.add('weekend-phillies-meet-visible')
-      return
-    }
-
-    if (!('IntersectionObserver' in window)) {
-      node.classList.add('weekend-phillies-meet-visible')
-      return
-    }
-
-    node.classList.remove('weekend-phillies-meet-visible')
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries
-        if (entry?.isIntersecting) {
-          node.classList.add('weekend-phillies-meet-visible')
-          observer.disconnect()
-        }
-      },
-      { threshold: 0.2 },
-    )
-
-    observer.observe(node)
-    return () => observer.disconnect()
-  }, [philliesSection])
 
   const timelineState = useMemo(() => getTimelineState(events, now), [events, now])
   const weddingDayEvents = useMemo(
@@ -166,57 +90,13 @@ export function WeekendPage() {
     return [...combined].sort((a, b) => a.sortOrder - b.sortOrder)
   }, [combinedWeddingDayEvent, individualEvents])
 
-  const visibleGuideItems = useMemo(
-    () => guideItems.filter((item) => item.title.trim().toLowerCase() !== 'fenway hotel room block'),
-    [guideItems],
-  )
-
   return (
     <section className="stack weekend-page">
       <PageIntro
         eyebrow="Weekend"
         title="Weekend"
-        description="Everything in one place: live status, full schedule, and free-time plans."
+        description="A simple agenda for the full weekend."
       />
-
-      {philliesSection ? (
-        <section className="stack weekend-phillies" aria-labelledby="phillies-hero-title">
-          <article className="card weekend-phillies-hero reveal">
-            <p className="weekend-phillies-label">{philliesSection.label}</p>
-            <h3 id="phillies-hero-title">{philliesSection.hero.title}</h3>
-            <p>{philliesSection.hero.body}</p>
-          </article>
-
-          <div className="weekend-phillies-seam" aria-hidden="true" />
-
-          <article className="card weekend-phillies-details reveal" aria-labelledby="phillies-details-title">
-            <h3 id="phillies-details-title">{philliesSection.details.title}</h3>
-            <div className="weekend-phillies-header-rule" aria-hidden="true" />
-            <div className="weekend-phillies-details-grid">
-              {philliesSection.details.items.map((item) => (
-                <article key={item.id} className="weekend-phillies-detail-card">
-                  <h4>{item.label}</h4>
-                  <p>{item.value}</p>
-                </article>
-              ))}
-            </div>
-          </article>
-
-          <div className="weekend-phillies-seam" aria-hidden="true" />
-
-          <article
-            ref={meetSectionRef}
-            className="card weekend-phillies-meet"
-            aria-labelledby="phillies-meet-title"
-          >
-            <h3 id="phillies-meet-title">{philliesSection.meet.title}</h3>
-            <div className="weekend-phillies-header-rule" aria-hidden="true" />
-            <p>{philliesSection.meet.body}</p>
-          </article>
-        </section>
-      ) : null}
-
-      {philliesError ? <p className="muted">{philliesError}</p> : null}
 
       <WeekendMapCard id="weekend-map" />
 
@@ -259,20 +139,6 @@ export function WeekendPage() {
             detailPath={event.id === 'wedding-day' ? '/weekend/events/wedding-day' : undefined}
             agendaItems={event.id === 'wedding-day' ? weddingDayAgenda : undefined}
           />
-        ))}
-      </div>
-
-      <article id="free-time" className="card reveal">
-        <p className="eyebrow">Free Time</p>
-        <h3>Tampa & Dunedin Picks</h3>
-        <p className="muted">Curated recommendations for downtime between events.</p>
-      </article>
-
-      {guideError ? <p className="error-text">{guideError}</p> : null}
-
-      <div className="stack">
-        {visibleGuideItems.map((item) => (
-          <GuideCard key={item.id} item={item} />
         ))}
       </div>
     </section>

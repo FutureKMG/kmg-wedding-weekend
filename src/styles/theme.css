@@ -1,28 +1,31 @@
 @import url('https://fonts.googleapis.com/css2?family=Marcellus&family=Source+Sans+3:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Raw palette */
-  --plum: #8a336f;
-  --lavender: #d2b7d2;
-  --blush: #eaaddc;
-  --sea-glass: #a2c8e7;
-  --sage: #a3d9c5;
-  --teal: #3d7486;
-  --champagne: #d8c794;
+  /* Raw palette — drawn from the Fenway Hotel watercolor & illustrated map */
+  --plum: #8a336f;          /* plum from wedding suite */
+  --lavender: #d2b7d2;      /* lavender-mauve sky in watercolor */
+  --blush: #eaaddc;         /* soft pink */
+  --peach: #f2b48a;         /* warm coral sunset sky, top of watercolor */
+  --terracotta: #c47858;    /* Fenway Hotel roof tiles */
+  --sea-glass: #90c0d4;     /* Gulf of Mexico water, illustrated map */
+  --sage: #8aaa70;          /* palm fronds & lawn in watercolor — olive, not minty */
+  --sand: #e8d8a0;          /* map land mass, stationery paper tone */
+  --teal: #3d7486;          /* water text, deep Florida bay */
+  --champagne: #d8c794;     /* golden detail, string lights */
 
   /* Semantic usage */
-  --bg-canvas: #f6f0e7;
-  --bg-canvas-soft: #fbf8f3;
-  --bg-surface: rgba(255, 250, 245, 0.86);
-  --bg-surface-strong: rgba(255, 250, 245, 0.96);
+  --bg-canvas: #f5ede0;                        /* warm linen — Fenway Hotel facade tone */
+  --bg-canvas-soft: #fdf9f4;
+  --bg-surface: rgba(253, 248, 240, 0.86);     /* creamy frosted glass */
+  --bg-surface-strong: rgba(253, 248, 240, 0.96);
   --text-primary: #1f4b5b;
   --text-secondary: #466775;
   --text-muted: #5c7885;
   --accent-primary: var(--plum);
   --accent-secondary: var(--teal);
   --accent-soft: var(--lavender);
-  --border-soft: rgba(61, 116, 134, 0.28);
-  --border-strong: rgba(61, 116, 134, 0.45);
+  --border-soft: rgba(120, 88, 58, 0.18);      /* warm ink, not cool teal */
+  --border-strong: rgba(120, 88, 58, 0.32);
   --focus-ring: rgba(138, 51, 111, 0.42);
   --success: #2f7564;
   --error: #a04461;
@@ -31,8 +34,8 @@
   --radius-m: 16px;
   --radius-l: 24px;
 
-  --shadow-soft: 0 10px 30px rgba(24, 43, 51, 0.12);
-  --shadow-raised: 0 18px 42px rgba(24, 43, 51, 0.18);
+  --shadow-soft: 0 8px 28px rgba(110, 68, 44, 0.09);   /* warm terracotta shadow */
+  --shadow-raised: 0 16px 40px rgba(110, 68, 44, 0.14);
 
   --space-1: 0.35rem;
   --space-2: 0.65rem;
@@ -80,10 +83,10 @@ body {
   font-size: var(--fs-body);
   color: var(--text-primary);
   background:
-    radial-gradient(circle at 13% 10%, rgba(138, 51, 111, 0.14), transparent 40%),
-    radial-gradient(circle at 88% 16%, rgba(61, 116, 134, 0.12), transparent 38%),
-    radial-gradient(circle at 40% 86%, rgba(163, 217, 197, 0.2), transparent 40%),
-    linear-gradient(168deg, #f8f3ec 0%, #f4ece2 40%, #f7f1ea 100%);
+    radial-gradient(circle at 14% 8%, rgba(242, 180, 138, 0.18), transparent 38%),
+    radial-gradient(circle at 86% 14%, rgba(200, 176, 204, 0.13), transparent 36%),
+    radial-gradient(circle at 42% 88%, rgba(138, 170, 112, 0.16), transparent 38%),
+    linear-gradient(168deg, #f8f2e8 0%, #f3e9d8 40%, #f8f2e8 100%);
   background-attachment: fixed;
 }
 
@@ -100,7 +103,7 @@ body::before {
       transparent 1px,
       transparent 12px
     ),
-    radial-gradient(circle at 35% 22%, rgba(234, 173, 220, 0.16), transparent 45%);
+    radial-gradient(circle at 35% 22%, rgba(242, 180, 138, 0.12), transparent 45%);
   mix-blend-mode: soft-light;
 }
 
