@@ -593,6 +593,42 @@ button:disabled {
   transform: translateY(0);
 }
 
+.weekend-countdown-grid {
+  display: grid;
+  gap: var(--space-5);
+  margin-top: var(--space-3);
+}
+
+.weekend-countdown-grid[data-items="2"] {
+  grid-template-columns: 1fr 1fr;
+}
+
+.weekend-countdown-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.weekend-countdown-number {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 7vw, 2.8rem);
+  color: var(--accent-primary);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.weekend-countdown-event {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 0.3rem;
+}
+
+.weekend-countdown-detail {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
 .event-calendar-card {
   display: grid;
   gap: 0.8rem;
@@ -1875,17 +1911,12 @@ button:disabled {
     justify-self: center;
   }
 
-  .weekend-page .page-intro,
-  .weekend-page .card {
+  .weekend-page .page-intro {
     text-align: center;
   }
 
-  .weekend-page .eyebrow {
+  .weekend-page .page-intro .eyebrow {
     justify-content: center;
-  }
-
-  .weekend-page .event-calendar-copy {
-    justify-items: center;
   }
 
   .weekend-page .weekend-phillies-header-rule {
@@ -1899,11 +1930,15 @@ button:disabled {
   }
 
   .weekend-page .event-calendar-actions {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 
   .weekend-page .event-calendar-actions .button-link {
-    width: 100%;
+    flex: 1 1 auto;
+    font-size: var(--fs-label);
+    min-height: 40px;
+    padding: 0.5rem 0.75rem;
   }
 
   .home-feed-preview-head {
