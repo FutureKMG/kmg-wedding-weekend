@@ -1,9 +1,9 @@
 import { z } from 'zod'
-import { assertRequiredEnv } from './_lib/env.js'
-import { methodNotAllowed, readJson, sendJson } from './_lib/http.js'
-import { normalizeFullName } from './_lib/nameNormalization.js'
-import { createSessionToken, setSessionCookie } from './_lib/session.js'
-import { getSupabaseAdminClient } from './_lib/supabaseAdmin.js'
+import { assertRequiredEnv } from '../_lib/env.js'
+import { methodNotAllowed, readJson, sendJson } from '../_lib/http.js'
+import { normalizeFullName } from '../_lib/nameNormalization.js'
+import { createSessionToken, setSessionCookie } from '../_lib/session.js'
+import { getSupabaseAdminClient } from '../_lib/supabaseAdmin.js'
 
 const loginSchema = z.object({
   firstName: z.string().trim().min(1).max(80),
@@ -28,11 +28,19 @@ export default async function handler(req, res) {
     const fullNameNorm = normalizeFullName(parsed.data.firstName, parsed.data.lastName)
     const supabase = getSupabaseAdminClient()
 
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from('guests')
-      .select('id, first_name, last_name, table_label, can_upload, is_admin')
+      .select('id, first_name, last_name, table_label, can_upload, is_admin, account_type, vendor_name, can_access_vendor_forum')
       .eq('full_name_norm', fullNameNorm)
       .maybeSingle()
+
+    if (error?.message?.includes('account_type')) {
+      ;({ data, error } = await supabase
+        .from('guests')
+        .select('id, first_name, last_name, table_label, can_upload, is_admin')
+        .eq('full_name_norm', fullNameNorm)
+        .maybeSingle())
+    }
 
     if (error) {
       return sendJson(res, 500, { message: 'Could not validate guest list' })
@@ -54,6 +62,9 @@ export default async function handler(req, res) {
         canUpload: Boolean(data.can_upload),
         canEditContent: Boolean(data.is_admin),
         canAccessGirlsRoom: true,
+        accountType: data.account_type ?? 'guest',
+        vendorName: data.vendor_name ?? null,
+        canAccessVendorForum: Boolean(data.can_access_vendor_forum),
       },
       expiresAt,
     })

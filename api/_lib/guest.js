@@ -8,11 +8,19 @@ export async function requireGuest(req) {
   }
 
   const supabase = getSupabaseAdminClient()
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from('guests')
-    .select('id, first_name, last_name, table_label, can_upload, is_admin')
+    .select('id, first_name, last_name, table_label, can_upload, is_admin, account_type, vendor_name, can_access_vendor_forum')
     .eq('id', session.guestId)
     .maybeSingle()
+
+  if (error?.message?.includes('account_type')) {
+    ;({ data, error } = await supabase
+      .from('guests')
+      .select('id, first_name, last_name, table_label, can_upload, is_admin')
+      .eq('id', session.guestId)
+      .maybeSingle())
+  }
 
   if (error || !data) {
     return null
@@ -26,5 +34,8 @@ export async function requireGuest(req) {
     canUpload: Boolean(data.can_upload),
     canEditContent: Boolean(data.is_admin),
     canAccessGirlsRoom: true,
+    accountType: data.account_type ?? 'guest',
+    vendorName: data.vendor_name ?? null,
+    canAccessVendorForum: Boolean(data.can_access_vendor_forum),
   }
 }

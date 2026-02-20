@@ -12,6 +12,7 @@
     "theme:assets": "node scripts/prepare-theme-assets.mjs",
     "theme:welcome-assets": "node scripts/prepare-welcome-party-assets.mjs",
     "theme:home-assets": "node scripts/prepare-home-lounge-assets.mjs",
+    "vendors:seed": "node scripts/seed-vendors.mjs",
     "rsvp:import": "node scripts/import-rsvp-attending.mjs",
     "rsvp:check-conflicts": "node scripts/check-guest-name-conflicts.mjs",
     "test:mobile": "playwright test --config=playwright.mobile.config.ts",

@@ -27,16 +27,20 @@
    - `supabase/migrations/2026-02-18-add-girls-room.sql`
 11. If your project was created before seating meal fields, run migration:
    - `supabase/migrations/2026-02-18-add-guest-meal-and-diet.sql`
-12. Create storage bucket:
+12. If your project was created before vendor access/forum, run migration:
+   - `supabase/migrations/2026-02-20-add-vendor-access-and-forum.sql`
+13. Create storage bucket:
    - Name: `wedding-photos`
    - Public bucket: `false`
-13. Run `supabase/seed.sql`.
-14. Import your guest CSV using `docs/guest-import-template.csv` columns.
-15. Optional RSVP enrichment import (attending-only login population + meal/diet fields):
+14. Run `supabase/seed.sql`.
+15. Import your guest CSV using `docs/guest-import-template.csv` columns.
+16. Optional RSVP enrichment import (attending-only login population + meal/diet fields):
    - `npm run rsvp:check-conflicts`
    - `npm run rsvp:import`
-16. Manually fix any table labels or name spelling issues.
-17. Validate duplicates:
+17. Optional vendor bootstrap:
+   - `npm run vendors:seed`
+18. Manually fix any table labels or name spelling issues.
+19. Validate duplicates:
    - `select full_name_norm, count(*) from guests group by full_name_norm having count(*) > 1;`
    - Ensure zero duplicates before launch.
 

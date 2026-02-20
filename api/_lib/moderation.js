@@ -10,3 +10,11 @@ export function isKaraMargraf(guest) {
 export function canModerateGirlsRoom(guest) {
   return Boolean(guest?.canEditContent) || isKaraMargraf(guest)
 }
+
+export function canAccessVendorForum(guest) {
+  return Boolean(guest?.canAccessVendorForum) || Boolean(guest?.canEditContent) || isKaraMargraf(guest)
+}
+
+export function canModerateVendorForum(guest) {
+  return Boolean(guest?.canEditContent) || isKaraMargraf(guest)
+}

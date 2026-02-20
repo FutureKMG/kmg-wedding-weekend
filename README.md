@@ -61,6 +61,7 @@ Frontend:
    - If your project was created before flight sharing groups, run `supabase/migrations/2026-02-16-add-flight-group-key.sql`
    - If your project was created before seating meal fields, run `supabase/migrations/2026-02-18-add-guest-meal-and-diet.sql`
    - If your project was created before Girls Room, run `supabase/migrations/2026-02-18-add-girls-room.sql`
+   - If your project was created before vendor access/forum, run `supabase/migrations/2026-02-20-add-vendor-access-and-forum.sql`
 2. Seed event + guide data:
    - `supabase/seed.sql`
 3. Import guest CSV using:
@@ -68,14 +69,18 @@ Frontend:
 4. Optional RSVP enrichment import:
    - `npm run rsvp:check-conflicts`
    - `npm run rsvp:import`
-5. Create storage bucket `wedding-photos` (private).
+5. Optional vendor bootstrap:
+   - `npm run vendors:seed`
+6. Create storage bucket `wedding-photos` (private).
 
 Detailed steps: `docs/supabase-setup.md`
 
 ## API Routes
 - `POST /api/login`
+- `POST /api/login/vendor`
 - `POST /api/logout`
 - `GET /api/me`
+- `GET /api/vendors`
 - `GET /api/events`
 - `GET /api/guide`
 - `GET /api/flight-details`
@@ -86,6 +91,11 @@ Detailed steps: `docs/supabase-setup.md`
 - `POST /api/feed-updates`
 - `POST /api/feed-updates/update`
 - `POST /api/feed-updates/delete`
+- `GET /api/vendor-forum`
+- `POST /api/vendor-forum`
+- `POST /api/vendor-forum/reply`
+- `POST /api/vendor-forum/thread-delete`
+- `POST /api/vendor-forum/reply-delete`
 - `GET /api/content-text`
 - `POST /api/content-text/save` (admin-only)
 - `GET /api/photos`

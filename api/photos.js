@@ -1,4 +1,5 @@
 import { requireGuest } from './_lib/guest.js'
+import { formatGuestDisplayName } from './_lib/displayName.js'
 import { methodNotAllowed, sendJson, setPrivateCache, unauthorized } from './_lib/http.js'
 import { getSupabaseAdminClient } from './_lib/supabaseAdmin.js'
 
@@ -73,11 +74,14 @@ export default async function handler(req, res) {
   const limit = getPhotoLimit(req, scope)
 
   const supabase = getSupabaseAdminClient()
+  const ownerSelectVendorAware = 'guests(first_name,last_name,account_type,vendor_name)'
+  const ownerSelectLegacy = 'guests(first_name,last_name)'
+  let ownerSelect = ownerSelectVendorAware
 
   let query = supabase
     .from('photos')
     .select(
-      'id, guest_id, caption, storage_path, created_at, is_feed_post, guests(first_name,last_name)',
+      `id, guest_id, caption, storage_path, created_at, is_feed_post, ${ownerSelect}`,
     )
     .order('created_at', { ascending: false })
     .limit(limit)
@@ -89,11 +93,26 @@ export default async function handler(req, res) {
   let { data, error } = await query
   let hasFeedColumn = true
 
+  if (error?.message?.includes('account_type')) {
+    ownerSelect = ownerSelectLegacy
+    let legacyQuery = supabase
+      .from('photos')
+      .select(`id, guest_id, caption, storage_path, created_at, is_feed_post, ${ownerSelect}`)
+      .order('created_at', { ascending: false })
+      .limit(limit)
+
+    if (scope === 'feed') {
+      legacyQuery = legacyQuery.eq('is_feed_post', true)
+    }
+
+    ;({ data, error } = await legacyQuery)
+  }
+
   if (error?.message?.includes('photos.is_feed_post')) {
     hasFeedColumn = false
     ;({ data, error } = await supabase
       .from('photos')
-      .select('id, guest_id, caption, storage_path, created_at, guests(first_name,last_name)')
+      .select(`id, guest_id, caption, storage_path, created_at, ${ownerSelect}`)
       .order('created_at', { ascending: false })
       .limit(limit))
   }
@@ -117,9 +136,7 @@ export default async function handler(req, res) {
     }
 
     const uploadOwner = Array.isArray(photo.guests) ? photo.guests[0] : photo.guests
-    const fullName = uploadOwner
-      ? `${uploadOwner.first_name} ${uploadOwner.last_name}`
-      : 'Guest'
+    const fullName = formatGuestDisplayName(uploadOwner)
 
     return {
       id: photo.id,

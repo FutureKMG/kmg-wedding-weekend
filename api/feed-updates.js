@@ -8,6 +8,7 @@ import {
   setPrivateCache,
   unauthorized,
 } from './_lib/http.js'
+import { formatGuestDisplayName } from './_lib/displayName.js'
 import { getSupabaseAdminClient } from './_lib/supabaseAdmin.js'
 
 const updateSchema = z.object({
@@ -34,11 +35,19 @@ export default async function handler(req, res) {
 
   if (req.method === 'GET') {
     const limit = getQueryLimit(req)
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from('feed_updates')
-      .select('id, guest_id, message, created_at, guests(first_name,last_name)')
+      .select('id, guest_id, message, created_at, guests(first_name,last_name,account_type,vendor_name)')
       .order('created_at', { ascending: false })
       .limit(limit)
+
+    if (error?.message?.includes('account_type')) {
+      ;({ data, error } = await supabase
+        .from('feed_updates')
+        .select('id, guest_id, message, created_at, guests(first_name,last_name)')
+        .order('created_at', { ascending: false })
+        .limit(limit))
+    }
 
     if (error?.message?.includes('relation "public.feed_updates" does not exist')) {
       return sendJson(res, 200, { updates: [], migrationRequired: true })
@@ -54,7 +63,7 @@ export default async function handler(req, res) {
         id: item.id,
         message: item.message,
         createdAt: item.created_at,
-        postedBy: owner ? `${owner.first_name} ${owner.last_name}` : 'Guest',
+        postedBy: formatGuestDisplayName(owner),
         isOwner: item.guest_id === guest.id,
       }
     })

@@ -1,6 +1,7 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { DecoDivider } from '../components/DecoDivider'
+import { apiRequest } from '../lib/apiClient'
 import { useAuth } from '../lib/auth'
 
 type LocationState = {
@@ -10,16 +11,47 @@ type LocationState = {
 }
 
 export function LoginPage() {
-  const { guest, login } = useAuth()
+  const { guest, login, loginVendor } = useAuth()
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [error, setError] = useState('')
+  const [vendorError, setVendorError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isVendorSubmitting, setIsVendorSubmitting] = useState(false)
+  const [vendors, setVendors] = useState<string[]>([])
+  const [vendorQuery, setVendorQuery] = useState('')
+  const [selectedVendor, setSelectedVendor] = useState('')
+  const [vendorsLoading, setVendorsLoading] = useState(true)
+  const [vendorsMigrationRequired, setVendorsMigrationRequired] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
 
   const state = location.state as LocationState | null
   const redirectPath = state?.from?.pathname ?? '/'
+
+  useEffect(() => {
+    async function loadVendors() {
+      try {
+        const payload = await apiRequest<{ vendors: string[]; migrationRequired?: boolean }>('/api/vendors')
+        setVendors(payload.vendors ?? [])
+        setVendorsMigrationRequired(Boolean(payload.migrationRequired))
+      } catch {
+        setVendors([])
+      } finally {
+        setVendorsLoading(false)
+      }
+    }
+
+    void loadVendors()
+  }, [])
+
+  const filteredVendors = useMemo(() => {
+    const query = vendorQuery.trim().toLowerCase()
+    if (!query) {
+      return vendors
+    }
+    return vendors.filter((vendor) => vendor.toLowerCase().includes(query))
+  }, [vendorQuery, vendors])
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -35,6 +67,26 @@ export function LoginPage() {
       )
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  async function handleVendorSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (!selectedVendor) {
+      setVendorError('Please select a vendor from the list.')
+      return
+    }
+
+    setVendorError('')
+    setIsVendorSubmitting(true)
+
+    try {
+      await loginVendor(selectedVendor)
+      navigate(redirectPath, { replace: true })
+    } catch {
+      setVendorError('Vendor login was not found. Please choose your name from the list.')
+    } finally {
+      setIsVendorSubmitting(false)
     }
   }
 
@@ -77,6 +129,57 @@ export function LoginPage() {
 
             <button type="submit" disabled={isSubmitting}>
               {isSubmitting ? 'Checking guest list...' : 'Enter the Weekend'}
+            </button>
+          </form>
+
+          <DecoDivider />
+
+          <form onSubmit={handleVendorSubmit} className="stack vendor-login-form">
+            <h2>Vendor Login</h2>
+            <p className="muted">
+              Vendors can select their business below to enter the weekend app.
+            </p>
+            <label className="field">
+              Search vendors
+              <input
+                value={vendorQuery}
+                onChange={(event) => setVendorQuery(event.target.value)}
+                placeholder="Search by vendor name"
+                autoComplete="off"
+                disabled={vendorsLoading || vendorsMigrationRequired}
+              />
+            </label>
+
+            <div className="vendor-dropdown" role="listbox" aria-label="Vendor list">
+              {vendorsLoading ? (
+                <p className="muted small-text">Loading vendors...</p>
+              ) : vendorsMigrationRequired ? (
+                <p className="muted small-text">Vendor login will appear after the latest migration runs.</p>
+              ) : filteredVendors.length === 0 ? (
+                <p className="muted small-text">No vendors match that search.</p>
+              ) : (
+                filteredVendors.map((vendor) => (
+                  <button
+                    key={vendor}
+                    type="button"
+                    className={selectedVendor === vendor ? 'vendor-option vendor-option-selected' : 'vendor-option'}
+                    onClick={() => {
+                      setSelectedVendor(vendor)
+                      setVendorQuery(vendor)
+                      setVendorError('')
+                    }}
+                  >
+                    {vendor}
+                  </button>
+                ))
+              )}
+            </div>
+
+            {selectedVendor ? <p className="muted small-text">Selected: {selectedVendor}</p> : null}
+            {vendorError && <p className="error-text">{vendorError}</p>}
+
+            <button type="submit" disabled={isVendorSubmitting || !selectedVendor || vendorsMigrationRequired}>
+              {isVendorSubmitting ? 'Checking vendor access...' : 'Enter as Vendor'}
             </button>
           </form>
         </section>

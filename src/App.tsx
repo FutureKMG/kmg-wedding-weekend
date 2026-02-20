@@ -8,6 +8,7 @@ import { HomePage } from './pages/Home'
 import { LoginPage } from './pages/Login'
 import { SeatingPage } from './pages/Seating'
 import { SongsPage } from './pages/Songs'
+import { VendorForumPage } from './pages/VendorForum'
 import { WeekendPage } from './pages/Weekend'
 import { WeekendEventDetailPage } from './pages/WeekendEventDetail'
 import { WelcomePartyPage } from './pages/WelcomeParty'
@@ -31,6 +32,7 @@ function App() {
         <Route path="/songs" element={<SongsPage />} />
         <Route path="/gallery" element={<GalleryPage />} />
         <Route path="/girls-room" element={<GirlsRoomPage />} />
+        <Route path="/vendor-forum" element={<VendorForumPage />} />
         <Route path="/content-editor" element={<ContentEditorPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

@@ -1,13 +1,8 @@
 import { z } from 'zod'
-import { requireGuest } from './_lib/guest.js'
-import {
-  methodNotAllowed,
-  readJson,
-  sendJson,
-  setNoStore,
-  unauthorized,
-} from './_lib/http.js'
 import { formatGuestDisplayName } from './_lib/displayName.js'
+import { methodNotAllowed, readJson, sendJson, setNoStore, unauthorized } from './_lib/http.js'
+import { canAccessVendorForum } from './_lib/moderation.js'
+import { requireGuest } from './_lib/guest.js'
 import { getSupabaseAdminClient } from './_lib/supabaseAdmin.js'
 
 const createThreadSchema = z.object({
@@ -25,70 +20,53 @@ function getQueryLimit(req) {
   return Math.max(1, Math.min(parsed, 100))
 }
 
-function formatPostedBy(owner) {
-  return formatGuestDisplayName(owner)
-}
-
 export default async function handler(req, res) {
   const guest = await requireGuest(req)
   if (!guest) {
     return unauthorized(res)
   }
 
+  if (!canAccessVendorForum(guest)) {
+    return sendJson(res, 403, { message: 'Only vendors can access Vendor Forum.' })
+  }
+
   const supabase = getSupabaseAdminClient()
 
   if (req.method === 'GET') {
     const limit = getQueryLimit(req)
-    let threadsResult = await supabase
-      .from('girls_room_threads')
+    const threadsResult = await supabase
+      .from('vendor_forum_threads')
       .select('id, guest_id, item, message, created_at, guests(first_name,last_name,account_type,vendor_name)')
       .order('created_at', { ascending: false })
       .limit(limit)
 
-    if (threadsResult.error?.message?.includes('account_type')) {
-      threadsResult = await supabase
-        .from('girls_room_threads')
-        .select('id, guest_id, item, message, created_at, guests(first_name,last_name)')
-        .order('created_at', { ascending: false })
-        .limit(limit)
-    }
-
-    if (threadsResult.error?.message?.includes('relation "public.girls_room_threads" does not exist')) {
+    if (threadsResult.error?.message?.includes('relation "public.vendor_forum_threads" does not exist')) {
       return sendJson(res, 200, { threads: [], migrationRequired: true })
     }
 
     if (threadsResult.error) {
-      return sendJson(res, 500, { message: 'Could not load Girls Room threads' })
+      return sendJson(res, 500, { message: 'Could not load Vendor Forum threads' })
     }
 
     const threadRows = threadsResult.data ?? []
     const threadIds = threadRows.map((thread) => thread.id)
-    let repliesByThreadId = new Map()
+    const repliesByThreadId = new Map()
 
     if (threadIds.length > 0) {
-      let repliesResult = await supabase
-        .from('girls_room_replies')
+      const repliesResult = await supabase
+        .from('vendor_forum_replies')
         .select('id, thread_id, guest_id, message, created_at, guests(first_name,last_name,account_type,vendor_name)')
         .in('thread_id', threadIds)
         .order('created_at', { ascending: true })
 
-      if (repliesResult.error?.message?.includes('account_type')) {
-        repliesResult = await supabase
-          .from('girls_room_replies')
-          .select('id, thread_id, guest_id, message, created_at, guests(first_name,last_name)')
-          .in('thread_id', threadIds)
-          .order('created_at', { ascending: true })
-      }
-
-      if (repliesResult.error?.message?.includes('relation "public.girls_room_replies" does not exist')) {
+      if (repliesResult.error?.message?.includes('relation "public.vendor_forum_replies" does not exist')) {
         return sendJson(res, 200, { threads: [], migrationRequired: true })
       }
 
       if (repliesResult.error) {
-        return sendJson(res, 500, { message: 'Could not load Girls Room replies' })
+        return sendJson(res, 500, { message: 'Could not load Vendor Forum replies' })
       }
 
-      repliesByThreadId = new Map()
       for (const reply of repliesResult.data ?? []) {
         const owner = Array.isArray(reply.guests) ? reply.guests[0] : reply.guests
         const formattedReply = {
@@ -96,7 +74,7 @@ export default async function handler(req, res) {
           threadId: reply.thread_id,
           message: reply.message,
           createdAt: reply.created_at,
-          postedBy: formatPostedBy(owner),
+          postedBy: formatGuestDisplayName(owner),
           isOwner: reply.guest_id === guest.id,
         }
 
@@ -117,7 +95,7 @@ export default async function handler(req, res) {
         item: thread.item,
         message: thread.message,
         createdAt: thread.created_at,
-        postedBy: formatPostedBy(owner),
+        postedBy: formatGuestDisplayName(owner),
         isOwner: thread.guest_id === guest.id,
         replies: repliesByThreadId.get(thread.id) ?? [],
       }
@@ -135,20 +113,20 @@ export default async function handler(req, res) {
       return sendJson(res, 400, { message: 'Please add an item name and details.' })
     }
 
-    const { error } = await supabase.from('girls_room_threads').insert({
+    const { error } = await supabase.from('vendor_forum_threads').insert({
       guest_id: guest.id,
       item: parsed.data.item,
       message: parsed.data.message,
     })
 
-    if (error?.message?.includes('relation "public.girls_room_threads" does not exist')) {
+    if (error?.message?.includes('relation "public.vendor_forum_threads" does not exist')) {
       return sendJson(res, 503, {
-        message: 'Girls Room is not enabled yet. Run the latest Supabase migration.',
+        message: 'Vendor Forum is not enabled yet. Run the latest Supabase migration.',
       })
     }
 
     if (error) {
-      return sendJson(res, 500, { message: 'Could not post to Girls Room' })
+      return sendJson(res, 500, { message: 'Could not post to Vendor Forum' })
     }
 
     setNoStore(res)

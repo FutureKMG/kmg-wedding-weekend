@@ -6,6 +6,9 @@ export type GuestProfile = {
   canUpload: boolean
   canEditContent: boolean
   canAccessGirlsRoom: boolean
+  accountType: 'guest' | 'vendor'
+  vendorName: string | null
+  canAccessVendorForum: boolean
 }
 
 export type WeddingEvent = {
@@ -68,6 +71,25 @@ export type GirlsRoomThread = {
   postedBy: string
   isOwner: boolean
   replies: GirlsRoomReply[]
+}
+
+export type VendorForumReply = {
+  id: string
+  threadId: string
+  message: string
+  createdAt: string
+  postedBy: string
+  isOwner: boolean
+}
+
+export type VendorForumThread = {
+  id: string
+  item: string
+  message: string
+  createdAt: string
+  postedBy: string
+  isOwner: boolean
+  replies: VendorForumReply[]
 }
 
 export type FlightDetail = {

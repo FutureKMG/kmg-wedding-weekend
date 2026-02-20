@@ -35,6 +35,7 @@ export function Layout() {
       { to: '/', label: 'Home' },
       { to: '/gallery', label: 'Feed' },
       { to: '/girls-room', label: 'Girls Room' },
+      { to: '/vendor-forum', label: 'Vendor Forum' },
       { to: '/seating', label: 'Seating' },
       { to: '/weekend', label: 'Weekend' },
       { to: '/songs', label: 'Songs' },
@@ -47,12 +48,19 @@ export function Layout() {
       }
     }
 
+    if (!guest?.canAccessVendorForum && !guest?.canEditContent) {
+      const vendorForumIndex = baseLinks.findIndex((link) => link.to === '/vendor-forum')
+      if (vendorForumIndex >= 0) {
+        baseLinks.splice(vendorForumIndex, 1)
+      }
+    }
+
     if (guest?.canEditContent) {
       baseLinks.push({ to: '/content-editor', label: 'Edit Content' })
     }
 
     return baseLinks
-  }, [guest?.canAccessGirlsRoom, guest?.canEditContent])
+  }, [guest?.canAccessGirlsRoom, guest?.canAccessVendorForum, guest?.canEditContent])
 
   async function handleLogout() {
     await logout()

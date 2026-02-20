@@ -9,6 +9,9 @@ create table if not exists public.guests (
   meal_selection text,
   dietary_restrictions text,
   rsvp_reception text,
+  account_type text not null default 'guest' check (account_type in ('guest', 'vendor')),
+  vendor_name text,
+  can_access_vendor_forum boolean not null default false,
   can_upload boolean not null default true,
   is_admin boolean not null default false,
   flight_group_key text,
@@ -78,6 +81,22 @@ create table if not exists public.girls_room_replies (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.vendor_forum_threads (
+  id uuid primary key default gen_random_uuid(),
+  guest_id uuid not null references public.guests(id) on delete cascade,
+  item text not null check (char_length(item) between 1 and 80),
+  message text not null check (char_length(message) between 1 and 500),
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.vendor_forum_replies (
+  id uuid primary key default gen_random_uuid(),
+  thread_id uuid not null references public.vendor_forum_threads(id) on delete cascade,
+  guest_id uuid not null references public.guests(id) on delete cascade,
+  message text not null check (char_length(message) between 1 and 320),
+  created_at timestamptz not null default now()
+);
+
 create table if not exists public.app_text_content (
   content_key text primary key,
   content_value text not null,
@@ -108,6 +127,10 @@ create index if not exists idx_girls_room_threads_created_at on public.girls_roo
 create index if not exists idx_girls_room_threads_guest_id on public.girls_room_threads(guest_id);
 create index if not exists idx_girls_room_replies_thread_id_created_at on public.girls_room_replies(thread_id, created_at asc);
 create index if not exists idx_girls_room_replies_guest_id on public.girls_room_replies(guest_id);
+create index if not exists idx_vendor_forum_threads_created_at on public.vendor_forum_threads(created_at desc);
+create index if not exists idx_vendor_forum_threads_guest_id on public.vendor_forum_threads(guest_id);
+create index if not exists idx_vendor_forum_replies_thread_id_created_at on public.vendor_forum_replies(thread_id, created_at asc);
+create index if not exists idx_vendor_forum_replies_guest_id on public.vendor_forum_replies(guest_id);
 create index if not exists idx_flight_details_arrival_time on public.flight_details(arrival_time);
 
 alter table public.guests enable row level security;
@@ -118,6 +141,8 @@ alter table public.photos enable row level security;
 alter table public.feed_updates enable row level security;
 alter table public.girls_room_threads enable row level security;
 alter table public.girls_room_replies enable row level security;
+alter table public.vendor_forum_threads enable row level security;
+alter table public.vendor_forum_replies enable row level security;
 alter table public.app_text_content enable row level security;
 alter table public.flight_details enable row level security;
 
@@ -166,6 +191,18 @@ create policy "deny all girls room threads"
 
 create policy "deny all girls room replies"
   on public.girls_room_replies
+  for all
+  using (false)
+  with check (false);
+
+create policy "deny all vendor forum threads"
+  on public.vendor_forum_threads
+  for all
+  using (false)
+  with check (false);
+
+create policy "deny all vendor forum replies"
+  on public.vendor_forum_replies
   for all
   using (false)
   with check (false);
