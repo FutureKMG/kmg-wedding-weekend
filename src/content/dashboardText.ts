@@ -85,6 +85,34 @@ export const DASHBOARD_TEXT_DEFAULTS = {
   'gallery.icloud.body': 'Prefer Apple Photos? Open the shared iCloud album from here.',
   'gallery.icloud.button': 'Open iCloud Album',
   'gallery.icloud.url': '',
+
+  'weekend.phillies.label': 'Wedding Weekend Kickoff',
+  'weekend.phillies.hero.title': 'Welcome to the Big Leagues',
+  'weekend.phillies.hero.body':
+    'High school sweethearts, 14+ years side by side, and still choosing each other every day. Loyalty built this love story, and the ballpark is where we begin this wedding weekend together.',
+  'weekend.phillies.details.title': 'Game Day Details',
+  'weekend.phillies.details.location.label': 'Location',
+  'weekend.phillies.details.location.value': 'BayCare Ballpark',
+  'weekend.phillies.details.date.label': 'Date',
+  'weekend.phillies.details.date.value': 'Friday, March 13, 2026',
+  'weekend.phillies.details.arrival.label': 'Arrival Time',
+  'weekend.phillies.details.arrival.value':
+    'Plan to arrive by 11:30 AM so everyone can settle before first pitch.',
+  'weekend.phillies.details.ticket.label': 'Ticket Access',
+  'weekend.phillies.details.ticket.value':
+    'Your digital ticket will be shared ahead of game day and available at check-in if you need help.',
+  'weekend.phillies.details.wear.label': 'What to Wear',
+  'weekend.phillies.details.wear.value':
+    'Phillies gear, red/navy accents, or relaxed ballpark outfits. Keep it comfortable and weather-ready.',
+  'weekend.phillies.details.transport.label': 'Parking & Transportation',
+  'weekend.phillies.details.transport.value':
+    'On-site parking is available. Rideshare drop-off is recommended for quick arrivals and easy exits.',
+  'weekend.phillies.details.notes.label': 'Ballpark Notes',
+  'weekend.phillies.details.notes.value':
+    'Use a clear bag, expect sun and changing temps, and arrive early for smoother entry and concessions.',
+  'weekend.phillies.meet.title': 'Meet Us at the Ballpark',
+  'weekend.phillies.meet.body':
+    "Meet us near the Picnic Terrace after you enter. Our wedding group seats will be marked, and we'll gather for a group photo after the 3rd inning before post-game plans.",
 } as const
 
 export type DashboardTextKey = keyof typeof DASHBOARD_TEXT_DEFAULTS
@@ -168,6 +196,31 @@ export const DASHBOARD_TEXT_EDITOR_SECTIONS: DashboardTextSection[] = [
       { key: 'gallery.icloud.body', label: 'Gallery description', multiline: true },
       { key: 'gallery.icloud.button', label: 'Gallery button text' },
       { key: 'gallery.icloud.url', label: 'Gallery iCloud URL' },
+    ],
+  },
+  {
+    title: 'Phillies Welcome Party',
+    fields: [
+      { key: 'weekend.phillies.label', label: 'Section label' },
+      { key: 'weekend.phillies.hero.title', label: 'Hero title' },
+      { key: 'weekend.phillies.hero.body', label: 'Hero body', multiline: true },
+      { key: 'weekend.phillies.details.title', label: 'Details section title' },
+      { key: 'weekend.phillies.details.location.label', label: 'Location label' },
+      { key: 'weekend.phillies.details.location.value', label: 'Location value' },
+      { key: 'weekend.phillies.details.date.label', label: 'Date label' },
+      { key: 'weekend.phillies.details.date.value', label: 'Date value' },
+      { key: 'weekend.phillies.details.arrival.label', label: 'Arrival label' },
+      { key: 'weekend.phillies.details.arrival.value', label: 'Arrival value', multiline: true },
+      { key: 'weekend.phillies.details.ticket.label', label: 'Ticket label' },
+      { key: 'weekend.phillies.details.ticket.value', label: 'Ticket value', multiline: true },
+      { key: 'weekend.phillies.details.wear.label', label: 'Wear label' },
+      { key: 'weekend.phillies.details.wear.value', label: 'Wear value', multiline: true },
+      { key: 'weekend.phillies.details.transport.label', label: 'Transport label' },
+      { key: 'weekend.phillies.details.transport.value', label: 'Transport value', multiline: true },
+      { key: 'weekend.phillies.details.notes.label', label: 'Ballpark notes label' },
+      { key: 'weekend.phillies.details.notes.value', label: 'Ballpark notes value', multiline: true },
+      { key: 'weekend.phillies.meet.title', label: 'Meet section title' },
+      { key: 'weekend.phillies.meet.body', label: 'Meet section body', multiline: true },
     ],
   },
   {

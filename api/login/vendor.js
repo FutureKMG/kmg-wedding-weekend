@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { assertRequiredEnv } from '../_lib/env.js'
 import { methodNotAllowed, readJson, sendJson } from '../_lib/http.js'
 import { normalizeNamePart } from '../_lib/nameNormalization.js'
+import { isKaraMargraf } from '../_lib/moderation.js'
 import { createSessionToken, setSessionCookie } from '../_lib/session.js'
 import { getSupabaseAdminClient } from '../_lib/supabaseAdmin.js'
 
@@ -27,7 +28,9 @@ export default async function handler(req, res) {
 
     const { data, error } = await supabase
       .from('guests')
-      .select('id, first_name, last_name, table_label, can_upload, is_admin, account_type, vendor_name, can_access_vendor_forum')
+      .select(
+        'id, first_name, last_name, table_label, can_upload, is_admin, account_type, vendor_name, can_access_vendor_forum, rsvp_reception',
+      )
       .eq('account_type', 'vendor')
 
     if (error?.message?.includes('account_type')) {
@@ -45,22 +48,29 @@ export default async function handler(req, res) {
       return sendJson(res, 404, { message: 'Vendor not found' })
     }
 
+    const guest = {
+      id: match.id,
+      firstName: match.first_name,
+      lastName: match.last_name,
+      tableLabel: match.table_label,
+      canUpload: Boolean(match.can_upload),
+      canEditContent: Boolean(match.is_admin),
+      canAccessGirlsRoom: true,
+      accountType: match.account_type ?? 'vendor',
+      vendorName: match.vendor_name ?? parsed.data.vendorName,
+      canAccessVendorForum: Boolean(match.can_access_vendor_forum),
+      rsvpReception: match.rsvp_reception ?? null,
+      canAccessPhilliesWelcome: false,
+    }
+    if (guest.canEditContent || isKaraMargraf(guest)) {
+      guest.canAccessPhilliesWelcome = true
+    }
+
     const { token, expiresAt } = await createSessionToken(match.id)
     setSessionCookie(res, token)
 
     return sendJson(res, 200, {
-      guest: {
-        id: match.id,
-        firstName: match.first_name,
-        lastName: match.last_name,
-        tableLabel: match.table_label,
-        canUpload: Boolean(match.can_upload),
-        canEditContent: Boolean(match.is_admin),
-        canAccessGirlsRoom: true,
-        accountType: match.account_type ?? 'vendor',
-        vendorName: match.vendor_name ?? parsed.data.vendorName,
-        canAccessVendorForum: Boolean(match.can_access_vendor_forum),
-      },
+      guest,
       expiresAt,
     })
   } catch {

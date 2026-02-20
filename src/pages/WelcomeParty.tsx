@@ -1,71 +1,7 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { BaseballStitchDivider } from '../components/BaseballStitchDivider'
-import {
-  getWelcomePartyGoogleCalendarUrl,
-  getWelcomePartyIcsText,
-  welcomePartyContent,
-} from '../content/welcomeParty'
-
-const styleGuideItems = [
-  {
-    title: 'Casual + Comfortable',
-    detail: 'Relaxed fits and lightweight fabrics are perfect for the ballpark.',
-    icon: 'cap',
-  },
-  {
-    title: 'Breezy Outfits',
-    detail: 'Terrace seating and spring weather call for breathable layers.',
-    icon: 'sun',
-  },
-  {
-    title: 'Phillies Red Welcome',
-    detail: 'A subtle Phillies red accent is welcome if you want to lean in.',
-    icon: 'red',
-  },
-  {
-    title: 'Comfy Shoes',
-    detail: 'Choose easy shoes for walking and mingling in the Picnic Terrace.',
-    icon: 'shoe',
-  },
-] as const
-
-function StyleGuideIcon({ kind }: { kind: (typeof styleGuideItems)[number]['icon'] }) {
-  if (kind === 'cap') {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M4 12a8 8 0 0 1 16 0" />
-        <path d="M4 12h16" />
-        <path d="M12 4v8" />
-      </svg>
-    )
-  }
-
-  if (kind === 'sun') {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="12" r="4" />
-        <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1" />
-      </svg>
-    )
-  }
-
-  if (kind === 'red') {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M12 3c3 4 7 6.7 7 10.3A7 7 0 1 1 5 13.3C5 9.7 9 7 12 3Z" />
-      </svg>
-    )
-  }
-
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M3 15h10c1.6 0 3-1.3 3-3V9h3.5c.8 0 1.5.7 1.5 1.5V15" />
-      <path d="M3 15v2h18v-2" />
-      <circle cx="7" cy="17" r="1.2" />
-      <circle cx="18" cy="17" r="1.2" />
-    </svg>
-  )
-}
+import { getWelcomePartyGoogleCalendarUrl, getWelcomePartyIcsText, welcomePartyContent } from '../content/welcomeParty'
+import { fetchPhilliesWelcomeSection, type PhilliesWelcomeSection } from '../lib/philliesWelcome'
 
 function downloadWelcomePartyIcs() {
   const text = getWelcomePartyIcsText()
@@ -81,7 +17,77 @@ function downloadWelcomePartyIcs() {
 }
 
 export function WelcomePartyPage() {
+  const [section, setSection] = useState<PhilliesWelcomeSection | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isRestricted, setIsRestricted] = useState(false)
+  const [error, setError] = useState('')
   const googleCalendarUrl = getWelcomePartyGoogleCalendarUrl()
+
+  useEffect(() => {
+    async function loadSection() {
+      try {
+        const payload = await fetchPhilliesWelcomeSection()
+        if (payload.section) {
+          setSection(payload.section)
+          return
+        }
+
+        if (payload.restricted) {
+          setIsRestricted(true)
+          return
+        }
+
+        if (payload.error) {
+          setError(payload.error)
+        }
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    void loadSection()
+  }, [])
+
+  if (isLoading) {
+    return (
+      <section className="stack welcome-party-page">
+        <Link to="/weekend" className="welcome-back-link reveal">
+          ← Back to Weekend
+        </Link>
+        <article className="card reveal">
+          <p className="muted">Loading welcome party details...</p>
+        </article>
+      </section>
+    )
+  }
+
+  if (isRestricted) {
+    return (
+      <section className="stack welcome-party-page">
+        <Link to="/weekend" className="welcome-back-link reveal">
+          ← Back to Weekend
+        </Link>
+        <article className="card reveal">
+          <p className="eyebrow">Welcome Party</p>
+          <h3>Details are available for RSVP-attending guests.</h3>
+          <p className="muted">If you think this is incorrect, message Kara and we will update your access.</p>
+        </article>
+      </section>
+    )
+  }
+
+  if (!section) {
+    return (
+      <section className="stack welcome-party-page">
+        <Link to="/weekend" className="welcome-back-link reveal">
+          ← Back to Weekend
+        </Link>
+        <article className="card reveal">
+          <p className="error-text">{error || 'Could not load welcome party details.'}</p>
+        </article>
+      </section>
+    )
+  }
 
   return (
     <section className="welcome-party-page stack">
@@ -94,106 +100,41 @@ export function WelcomePartyPage() {
         ← Back to Weekend
       </Link>
 
-      <article className="welcome-hero reveal">
-        <picture className="welcome-hero-media">
-          <source
-            media="(max-width: 720px)"
-            srcSet="/theme/welcome-party-hero-mobile.avif"
-            type="image/avif"
-          />
-          <source
-            media="(max-width: 720px)"
-            srcSet="/theme/welcome-party-hero-mobile.webp"
-            type="image/webp"
-          />
-          <source srcSet="/theme/welcome-party-hero.avif" type="image/avif" />
-          <source srcSet="/theme/welcome-party-hero.webp" type="image/webp" />
-          <img src="/theme/welcome-party-hero.png" alt="Welcome party bar atmosphere" />
-        </picture>
-
-        <div className="welcome-hero-overlay">
-          <p className="eyebrow">Welcome Party</p>
-          <h2>{welcomePartyContent.subtitle}</h2>
-          <p className="welcome-hero-matchup">{welcomePartyContent.matchup}</p>
-          <p className="welcome-hero-venue">{welcomePartyContent.venue}</p>
-          <BaseballStitchDivider />
-        </div>
+      <article className="card weekend-phillies-hero reveal">
+        <p className="weekend-phillies-label">{section.label}</p>
+        <h2>{section.hero.title}</h2>
+        <p>{section.hero.body}</p>
       </article>
 
-      <article className="card welcome-ticket reveal">
-        <p className="eyebrow">Game Details</p>
-        <h3>{welcomePartyContent.title}</h3>
-
-        <div className="welcome-ticket-grid">
-          <div className="welcome-ticket-item">
-            <p className="welcome-ticket-label">Date & Time</p>
-            <p>{welcomePartyContent.dateLabel}</p>
-            <p>{welcomePartyContent.timeLabel}</p>
-          </div>
-          <div className="welcome-ticket-item">
-            <p className="welcome-ticket-label">Location</p>
-            <p>{welcomePartyContent.locationName}</p>
-            <p>{welcomePartyContent.locationAddress}</p>
-          </div>
-          <div className="welcome-ticket-item">
-            <p className="welcome-ticket-label">Section</p>
-            <p>{welcomePartyContent.sectionLabel}</p>
-          </div>
-          <div className="welcome-ticket-item">
-            <p className="welcome-ticket-label">Buffet</p>
-            <p>{welcomePartyContent.buffetLabel}</p>
-          </div>
+      <article className="card weekend-phillies-details reveal">
+        <h3>{section.details.title}</h3>
+        <div className="weekend-phillies-header-rule" aria-hidden="true" />
+        <div className="weekend-phillies-details-grid">
+          {section.details.items.map((item) => (
+            <article key={item.id} className="weekend-phillies-detail-card">
+              <h4>{item.label}</h4>
+              <p>{item.value}</p>
+            </article>
+          ))}
         </div>
-        <p className="muted">{welcomePartyContent.attire}</p>
 
         <div className="welcome-ticket-actions">
-          <a
-            href={welcomePartyContent.mapsUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="button-link"
-          >
+          <a href={welcomePartyContent.mapsUrl} target="_blank" rel="noreferrer" className="button-link">
             Get Directions
           </a>
           <button type="button" onClick={downloadWelcomePartyIcs}>
             Add to Calendar
           </button>
-          <a
-            href={googleCalendarUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="button-link secondary-button-link"
-          >
+          <a href={googleCalendarUrl} target="_blank" rel="noreferrer" className="button-link secondary-button-link">
             Google Calendar
           </a>
         </div>
       </article>
 
-      <BaseballStitchDivider className="reveal" />
-
-      <article className="card welcome-style-guide reveal">
-        <p className="eyebrow">Ballpark Style Guide</p>
-        <h3>Ballpark Style Guide</h3>
-        <div className="welcome-style-grid">
-          {styleGuideItems.map((item) => (
-            <article key={item.title} className="welcome-style-item">
-              <span className="welcome-style-icon">
-                <StyleGuideIcon kind={item.icon} />
-              </span>
-              <h4>{item.title}</h4>
-              <p>{item.detail}</p>
-            </article>
-          ))}
-        </div>
-      </article>
-
-      <BaseballStitchDivider className="reveal" />
-
-      <article className="card welcome-expect reveal">
-        <p className="eyebrow">Weekend Story</p>
-        <h3>What to Expect</h3>
-        <p>{welcomePartyContent.description}</p>
-        <p>{welcomePartyContent.descriptionContinued}</p>
+      <article className="card weekend-phillies-meet weekend-phillies-meet-visible reveal">
+        <h3>{section.meet.title}</h3>
+        <div className="weekend-phillies-header-rule" aria-hidden="true" />
+        <p>{section.meet.body}</p>
       </article>
     </section>
   )

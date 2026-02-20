@@ -9,6 +9,8 @@ export type GuestProfile = {
   accountType: 'guest' | 'vendor'
   vendorName: string | null
   canAccessVendorForum: boolean
+  rsvpReception: string | null
+  canAccessPhilliesWelcome: boolean
 }
 
 export type WeddingEvent = {

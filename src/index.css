@@ -463,6 +463,128 @@ button:disabled {
   height: auto;
 }
 
+.weekend-phillies {
+  gap: 0.9rem;
+}
+
+.weekend-phillies-hero {
+  border-color: rgba(232, 24, 40, 0.24);
+  background:
+    radial-gradient(circle at 88% 8%, rgba(0, 45, 114, 0.12), transparent 40%),
+    radial-gradient(circle at 7% 5%, rgba(232, 24, 40, 0.1), transparent 36%),
+    linear-gradient(180deg, rgba(255, 251, 244, 0.95) 0%, rgba(250, 240, 222, 0.9) 100%);
+}
+
+.weekend-phillies-label {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: var(--fs-caption);
+  font-weight: 700;
+  color: #002d72;
+}
+
+.weekend-phillies-hero h2,
+.weekend-phillies-hero h3 {
+  color: #002d72;
+  font-size: clamp(1.9rem, 4vw, 2.7rem);
+}
+
+.weekend-phillies-hero p {
+  color: #2f3f57;
+  max-width: 70ch;
+}
+
+.weekend-phillies-seam {
+  height: 14px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(232, 24, 40, 0.14) 0 1px, transparent 1px),
+    linear-gradient(90deg, transparent, rgba(0, 45, 114, 0.22), transparent);
+  background-size:
+    18px 14px,
+    100% 1px;
+  background-repeat: repeat-x, no-repeat;
+  background-position:
+    0 50%,
+    0 50%;
+  opacity: 0.46;
+}
+
+.weekend-phillies-details {
+  border-color: rgba(232, 24, 40, 0.18);
+  background: rgba(255, 250, 242, 0.94);
+}
+
+.weekend-phillies-details h3,
+.weekend-phillies-meet h3 {
+  color: #002d72;
+}
+
+.weekend-phillies-header-rule {
+  width: min(160px, 100%);
+  height: 2px;
+  background: linear-gradient(90deg, rgba(232, 24, 40, 0.9), rgba(232, 24, 40, 0.25));
+  margin-top: 0.35rem;
+  margin-bottom: 0.8rem;
+}
+
+.weekend-phillies-details-grid {
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.weekend-phillies-detail-card {
+  border: 1px solid rgba(0, 45, 114, 0.16);
+  border-radius: var(--radius-s);
+  background: rgba(255, 252, 246, 0.9);
+  padding: 0.8rem;
+  display: grid;
+  gap: 0.35rem;
+  transition:
+    transform var(--motion-fast) ease,
+    box-shadow var(--motion-fast) ease,
+    border-color var(--motion-fast) ease;
+}
+
+.weekend-phillies-detail-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+  border-color: rgba(232, 24, 40, 0.3);
+}
+
+.weekend-phillies-detail-card h4 {
+  margin: 0;
+  font-size: var(--fs-h3);
+  color: #002d72;
+}
+
+.weekend-phillies-detail-card p {
+  color: #2f3f57;
+}
+
+.weekend-phillies-meet {
+  border-color: rgba(0, 45, 114, 0.2);
+  background:
+    radial-gradient(circle at 95% 8%, rgba(232, 24, 40, 0.08), transparent 38%),
+    rgba(255, 250, 242, 0.94);
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity var(--motion-slow) ease,
+    transform var(--motion-slow) ease;
+}
+
+.weekend-phillies-meet p {
+  color: #2f3f57;
+}
+
+.weekend-phillies-meet-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .event-calendar-card {
   display: grid;
   gap: 0.8rem;
@@ -1736,6 +1858,10 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 
+  .weekend-phillies-details-grid {
+    grid-template-columns: 1fr;
+  }
+
   .event-calendar-date {
     width: 84px;
     justify-self: center;
@@ -1752,6 +1878,10 @@ button:disabled {
 
   .weekend-page .event-calendar-copy {
     justify-items: center;
+  }
+
+  .weekend-page .weekend-phillies-header-rule {
+    margin-inline: auto;
   }
 
   .weekend-page .event-card-agenda li {
@@ -1827,6 +1957,12 @@ button:disabled {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .weekend-phillies-meet {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
   .home-feed-marquee {
     overflow-x: auto;
   }
