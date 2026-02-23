@@ -116,6 +116,19 @@ create table if not exists public.flight_details (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.morning_schedule_assignments (
+  id uuid primary key default gen_random_uuid(),
+  guest_id uuid not null references public.guests(id) on delete cascade,
+  service_type text not null check (service_type in ('hair', 'makeup', 'bride_hair', 'bride_makeup', 'junior_hair')),
+  artist_name text not null,
+  start_at timestamptz not null,
+  location text not null default 'Fenway Hotel',
+  notes text,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 create index if not exists idx_guests_full_name_norm on public.guests(full_name_norm);
 create index if not exists idx_guests_flight_group_key on public.guests(flight_group_key);
 create index if not exists idx_song_requests_guest_id on public.song_requests(guest_id);
@@ -132,6 +145,9 @@ create index if not exists idx_vendor_forum_threads_guest_id on public.vendor_fo
 create index if not exists idx_vendor_forum_replies_thread_id_created_at on public.vendor_forum_replies(thread_id, created_at asc);
 create index if not exists idx_vendor_forum_replies_guest_id on public.vendor_forum_replies(guest_id);
 create index if not exists idx_flight_details_arrival_time on public.flight_details(arrival_time);
+create unique index if not exists idx_morning_schedule_guest_service_start_unique on public.morning_schedule_assignments(guest_id, service_type, start_at);
+create index if not exists idx_morning_schedule_guest_start on public.morning_schedule_assignments(guest_id, start_at asc);
+create index if not exists idx_morning_schedule_start on public.morning_schedule_assignments(start_at asc);
 
 alter table public.guests enable row level security;
 alter table public.events enable row level security;
@@ -145,6 +161,7 @@ alter table public.vendor_forum_threads enable row level security;
 alter table public.vendor_forum_replies enable row level security;
 alter table public.app_text_content enable row level security;
 alter table public.flight_details enable row level security;
+alter table public.morning_schedule_assignments enable row level security;
 
 -- Service-role API routes query these tables directly, so client-side access stays closed by default.
 create policy "deny all guests"
@@ -215,6 +232,12 @@ create policy "deny all app text content"
 
 create policy "deny all flight details"
   on public.flight_details
+  for all
+  using (false)
+  with check (false);
+
+create policy "deny all morning schedule assignments"
+  on public.morning_schedule_assignments
   for all
   using (false)
   with check (false);

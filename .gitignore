@@ -37,3 +37,4 @@ docs/export*.xlsx
 
 # Generated RSVP import reports
 docs/import-reports/rsvp-*
+docs/import-reports/morning-schedule-*

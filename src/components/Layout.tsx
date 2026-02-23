@@ -37,6 +37,7 @@ export function Layout() {
       { to: '/girls-room', label: 'Girls Room' },
       { to: '/vendor-forum', label: 'Vendor Forum' },
       { to: '/seating', label: 'Seating' },
+      { to: '/morning-schedule', label: 'Morning Schedule' },
       { to: '/weekend', label: 'Weekend' },
       { to: '/songs', label: 'Songs' },
     ]
@@ -55,12 +56,19 @@ export function Layout() {
       }
     }
 
+    if (guest?.accountType === 'vendor' && !guest?.canEditContent) {
+      const morningScheduleIndex = baseLinks.findIndex((link) => link.to === '/morning-schedule')
+      if (morningScheduleIndex >= 0) {
+        baseLinks.splice(morningScheduleIndex, 1)
+      }
+    }
+
     if (guest?.canEditContent) {
       baseLinks.push({ to: '/content-editor', label: 'Edit Content' })
     }
 
     return baseLinks
-  }, [guest?.canAccessGirlsRoom, guest?.canAccessVendorForum, guest?.canEditContent])
+  }, [guest?.canAccessGirlsRoom, guest?.canAccessVendorForum, guest?.canEditContent, guest?.accountType])
 
   async function handleLogout() {
     await logout()

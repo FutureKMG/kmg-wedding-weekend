@@ -6,6 +6,7 @@ import { GalleryPage } from './pages/Gallery'
 import { GirlsRoomPage } from './pages/GirlsRoom'
 import { HomePage } from './pages/Home'
 import { LoginPage } from './pages/Login'
+import { MorningSchedulePage } from './pages/MorningSchedule'
 import { SeatingPage } from './pages/Seating'
 import { SongsPage } from './pages/Songs'
 import { VendorForumPage } from './pages/VendorForum'
@@ -29,6 +30,7 @@ function App() {
         <Route path="/weekend/events/:eventId" element={<WeekendEventDetailPage />} />
         <Route path="/welcome-party" element={<WelcomePartyPage />} />
         <Route path="/seating" element={<SeatingPage />} />
+        <Route path="/morning-schedule" element={<MorningSchedulePage />} />
         <Route path="/songs" element={<SongsPage />} />
         <Route path="/gallery" element={<GalleryPage />} />
         <Route path="/girls-room" element={<GirlsRoomPage />} />

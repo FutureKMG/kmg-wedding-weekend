@@ -120,3 +120,26 @@ export type SeatingInfo = {
   mealSelection: string | null
   dietaryRestrictions: string | null
 }
+
+export type MorningServiceType = 'hair' | 'makeup' | 'bride_hair' | 'bride_makeup' | 'junior_hair'
+
+export type MorningScheduleAssignment = {
+  id: string
+  serviceType: MorningServiceType
+  serviceLabel: string
+  artistName: string
+  startAt: string
+  location: string
+  notes: string | null
+}
+
+export type MorningSchedulePayload = {
+  location: string
+  timezone: string
+  weddingDate: string
+  finishTime: string
+  photoReadyTime: string
+  arrivalLeadMinutes: number
+  assignments: MorningScheduleAssignment[]
+  migrationRequired?: boolean
+}
