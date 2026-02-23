@@ -14,6 +14,10 @@ const REPORT_DIR = path.resolve(process.cwd(), 'docs/import-reports')
 const WEDDING_DATE = '2026-03-14'
 const TIMEZONE_OFFSET = '-04:00'
 const LOCATION = 'Fenway Hotel'
+const BRIDE_FULL_NAME_NORM = 'kara margraf'
+const FIRST_NAME_OVERRIDES = {
+  katie: 'katie jaffe',
+}
 
 const MORNING_ROWS = [
   { artistName: 'Maddie', time: '08:30', serviceType: 'hair', guestFirstName: 'Katie' },
@@ -66,15 +70,23 @@ function buildGuestMap(guests) {
   return byFirstName
 }
 
+function buildGuestByFullNameMap(guests) {
+  const byFullName = new Map()
+  for (const guest of guests) {
+    byFullName.set(normalizeNamePart(guest.full_name_norm), guest)
+  }
+  return byFullName
+}
+
 async function fetchGuests(supabase) {
   let result = await supabase
     .from('guests')
-    .select('id, first_name, last_name, account_type')
+    .select('id, first_name, last_name, full_name_norm, account_type')
 
   if (result.error?.message?.includes('account_type')) {
     result = await supabase
       .from('guests')
-      .select('id, first_name, last_name')
+      .select('id, first_name, last_name, full_name_norm')
   }
 
   if (result.error) {
@@ -100,10 +112,67 @@ async function main() {
 
   const guests = await fetchGuests(supabase)
   const byFirstName = buildGuestMap(guests)
+  const byFullName = buildGuestByFullNameMap(guests)
   const unresolvedRows = []
   const payload = []
 
   for (const row of MORNING_ROWS) {
+    if (row.serviceType === 'bride_hair' || row.serviceType === 'bride_makeup') {
+      const bride = byFullName.get(BRIDE_FULL_NAME_NORM)
+      if (!bride) {
+        unresolvedRows.push({
+          guest_first_name: row.guestFirstName,
+          service_type: row.serviceType,
+          artist_name: row.artistName,
+          time: row.time,
+          reason: 'bride_not_found',
+          candidate_guests: '',
+        })
+        continue
+      }
+
+      payload.push({
+        guest_id: bride.id,
+        service_type: row.serviceType,
+        artist_name: cleanString(row.artistName),
+        start_at: toStartIso(row.time),
+        location: LOCATION,
+        notes: null,
+        is_active: true,
+        updated_at: new Date().toISOString(),
+      })
+      continue
+    }
+
+    const firstNameKey = normalizeNamePart(row.guestFirstName)
+    const overrideFullName = FIRST_NAME_OVERRIDES[firstNameKey]
+    if (overrideFullName) {
+      const overrideGuest = byFullName.get(overrideFullName)
+      if (!overrideGuest) {
+        unresolvedRows.push({
+          guest_first_name: row.guestFirstName,
+          service_type: row.serviceType,
+          artist_name: row.artistName,
+          time: row.time,
+          reason: 'override_guest_not_found',
+          candidate_guests: '',
+        })
+        continue
+      }
+
+      payload.push({
+        guest_id: overrideGuest.id,
+        service_type: row.serviceType,
+        artist_name: cleanString(row.artistName),
+        start_at: toStartIso(row.time),
+        location: LOCATION,
+        notes: null,
+        is_active: true,
+        updated_at: new Date().toISOString(),
+      })
+      continue
+    }
+
     const matches = byFirstName.get(normalizeNamePart(row.guestFirstName)) ?? []
     if (matches.length === 0) {
       unresolvedRows.push({

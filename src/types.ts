@@ -133,6 +133,11 @@ export type MorningScheduleAssignment = {
   notes: string | null
 }
 
+export type MorningScheduleFullItem = MorningScheduleAssignment & {
+  guestId: string
+  guestName: string
+}
+
 export type MorningSchedulePayload = {
   location: string
   timezone: string
@@ -141,5 +146,6 @@ export type MorningSchedulePayload = {
   photoReadyTime: string
   arrivalLeadMinutes: number
   assignments: MorningScheduleAssignment[]
+  fullSchedule: MorningScheduleFullItem[]
   migrationRequired?: boolean
 }

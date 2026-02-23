@@ -129,6 +129,13 @@ create table if not exists public.morning_schedule_assignments (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.guest_login_aliases (
+  id uuid primary key default gen_random_uuid(),
+  guest_id uuid not null references public.guests(id) on delete cascade,
+  alias_full_name_norm text not null unique,
+  created_at timestamptz not null default now()
+);
+
 create index if not exists idx_guests_full_name_norm on public.guests(full_name_norm);
 create index if not exists idx_guests_flight_group_key on public.guests(flight_group_key);
 create index if not exists idx_song_requests_guest_id on public.song_requests(guest_id);
@@ -148,6 +155,8 @@ create index if not exists idx_flight_details_arrival_time on public.flight_deta
 create unique index if not exists idx_morning_schedule_guest_service_start_unique on public.morning_schedule_assignments(guest_id, service_type, start_at);
 create index if not exists idx_morning_schedule_guest_start on public.morning_schedule_assignments(guest_id, start_at asc);
 create index if not exists idx_morning_schedule_start on public.morning_schedule_assignments(start_at asc);
+create unique index if not exists idx_guest_login_aliases_alias on public.guest_login_aliases(alias_full_name_norm);
+create index if not exists idx_guest_login_aliases_guest_id on public.guest_login_aliases(guest_id);
 
 alter table public.guests enable row level security;
 alter table public.events enable row level security;
@@ -162,6 +171,7 @@ alter table public.vendor_forum_replies enable row level security;
 alter table public.app_text_content enable row level security;
 alter table public.flight_details enable row level security;
 alter table public.morning_schedule_assignments enable row level security;
+alter table public.guest_login_aliases enable row level security;
 
 -- Service-role API routes query these tables directly, so client-side access stays closed by default.
 create policy "deny all guests"
@@ -238,6 +248,12 @@ create policy "deny all flight details"
 
 create policy "deny all morning schedule assignments"
   on public.morning_schedule_assignments
+  for all
+  using (false)
+  with check (false);
+
+create policy "deny all guest login aliases"
+  on public.guest_login_aliases
   for all
   using (false)
   with check (false);

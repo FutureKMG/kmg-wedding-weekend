@@ -23,6 +23,28 @@ function toAssignment(row) {
   }
 }
 
+function toGuestName(guestRow) {
+  if (!guestRow) {
+    return 'Guest'
+  }
+  return `${guestRow.first_name ?? ''} ${guestRow.last_name ?? ''}`.trim() || 'Guest'
+}
+
+function toFullScheduleItem(row) {
+  const owner = Array.isArray(row.guests) ? row.guests[0] : row.guests
+  return {
+    id: row.id,
+    guestId: row.guest_id,
+    guestName: toGuestName(owner),
+    serviceType: row.service_type,
+    serviceLabel: SERVICE_LABELS[row.service_type] ?? row.service_type,
+    artistName: row.artist_name,
+    startAt: row.start_at,
+    location: row.location || FALLBACK_LOCATION,
+    notes: row.notes ?? null,
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return methodNotAllowed(res)
@@ -50,6 +72,7 @@ export default async function handler(req, res) {
       photoReadyTime: '2026-03-14T14:30:00-04:00',
       arrivalLeadMinutes: 15,
       assignments: [],
+      fullSchedule: [],
       migrationRequired: true,
     })
   }
@@ -58,7 +81,18 @@ export default async function handler(req, res) {
     return sendJson(res, 500, { message: 'Could not load morning schedule' })
   }
 
+  const fullScheduleResult = await supabase
+    .from('morning_schedule_assignments')
+    .select('id, guest_id, service_type, artist_name, start_at, location, notes, guests(first_name,last_name)')
+    .eq('is_active', true)
+    .order('start_at', { ascending: true })
+
+  if (fullScheduleResult.error) {
+    return sendJson(res, 500, { message: 'Could not load full morning schedule' })
+  }
+
   const assignments = (data ?? []).map(toAssignment)
+  const fullSchedule = (fullScheduleResult.data ?? []).map(toFullScheduleItem)
   const location = assignments[0]?.location ?? FALLBACK_LOCATION
 
   setPrivateCache(res, 20, 40)
@@ -70,5 +104,6 @@ export default async function handler(req, res) {
     photoReadyTime: '2026-03-14T14:30:00-04:00',
     arrivalLeadMinutes: 15,
     assignments,
+    fullSchedule,
   })
 }

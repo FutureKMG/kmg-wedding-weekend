@@ -666,6 +666,10 @@ button:disabled {
   gap: 0.65rem;
 }
 
+.morning-full-schedule {
+  gap: 0.65rem;
+}
+
 .morning-assignment-card {
   display: grid;
   gap: 0.45rem;
@@ -712,6 +716,11 @@ button:disabled {
   margin: 0;
   color: #2f4f5d;
   font-size: var(--fs-body);
+}
+
+.morning-assignment-card-full {
+  background:
+    linear-gradient(150deg, rgba(255, 252, 246, 0.9), rgba(238, 235, 243, 0.88));
 }
 
 .event-calendar-card {
