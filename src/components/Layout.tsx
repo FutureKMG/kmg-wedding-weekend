@@ -39,6 +39,7 @@ export function Layout() {
       { to: '/seating', label: 'Seating' },
       { to: '/morning-schedule', label: 'Morning Schedule' },
       { to: '/weekend', label: 'Weekend' },
+      { to: '/ootd', label: '#OOTD' },
       { to: '/songs', label: 'Songs' },
     ]
 

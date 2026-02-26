@@ -7,6 +7,7 @@ import { GirlsRoomPage } from './pages/GirlsRoom'
 import { HomePage } from './pages/Home'
 import { LoginPage } from './pages/Login'
 import { MorningSchedulePage } from './pages/MorningSchedule'
+import { OotdPage } from './pages/Ootd'
 import { SeatingPage } from './pages/Seating'
 import { SongsPage } from './pages/Songs'
 import { VendorForumPage } from './pages/VendorForum'
@@ -32,6 +33,7 @@ function App() {
         <Route path="/seating" element={<SeatingPage />} />
         <Route path="/morning-schedule" element={<MorningSchedulePage />} />
         <Route path="/songs" element={<SongsPage />} />
+        <Route path="/ootd" element={<OotdPage />} />
         <Route path="/gallery" element={<GalleryPage />} />
         <Route path="/girls-room" element={<GirlsRoomPage />} />
         <Route path="/vendor-forum" element={<VendorForumPage />} />
