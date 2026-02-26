@@ -1,7 +1,4 @@
 import { useEffect, useState } from 'react'
-import type { FaqAccordionItem } from '../components/FaqAccordion'
-import { FaqAccordion } from '../components/FaqAccordion'
-import { InfoCallout } from '../components/InfoCallout'
 import { PageIntro } from '../components/PageIntro'
 
 declare global {
@@ -12,90 +9,115 @@ declare global {
 }
 
 const GRASS_CALLOUT = {
-  title: 'Grass-Friendly Shoes',
-  body:
-    'Both the ceremony and reception are on grass. If you’re choosing heels, consider block heels, wedges, stable heeled sandals, or a chic flat. Stilettos may sink into the lawn.',
+  body: 'Grass considerations ➤ Wedges & block heels photograph and perform beautifully on lawns.',
 }
 
-const FAQ_ITEMS: FaqAccordionItem[] = [
+type InspirationCard = {
+  id: string
+  title: string
+  query: string
+  href: string
+  section: 'women' | 'men'
+}
+
+const INTRO_PARAGRAPH =
+  'Our wedding will be on the lawn and terrace of the Fenway Hotel — a historic, jazz-age inspired venue in Dunedin, Florida. With waterfront views and a refined garden-formal setting, we want everyone to look and feel great from ceremony through dancing under the stars.'
+
+const WOMEN_ENCOURAGEMENT = [
+  'Structured cocktail dresses & midi gowns',
+  'Silky or flowy fabrics in soft tones',
+  'Wedges, block heels, or elegant flats (great for lawn terrain)',
+  'Optional accessories: wrap, clutch, classic jewelry',
+]
+
+const MEN_ENCOURAGEMENT = [
+  'Suits in navy, charcoal, light gray, or seasonal tones',
+  'Linen-blend or lightweight wool',
+  'Ties optional but welcome',
+  'Loafers or classic dress shoes',
+]
+
+const WOMEN_INSPIRATION_CARDS: InspirationCard[] = [
   {
-    id: 'garden-formal-meaning',
-    title: 'What does Garden Formal mean?',
-    body:
-      'Our wedding will take place at the historic Fenway Hotel in Dunedin, Florida — with both the ceremony and reception held outdoors on the Front Lawn (grass). Think: elegant historic hotel, romantic evening energy, sunset ceremony, and a lawn setting. Garden Formal blends classic formalwear with outdoor ease. It’s polished and elevated — but comfortable enough for a Florida evening outside.',
+    id: 'women-garden-formal',
+    title: 'Garden-Formal Guest Dresses',
+    query: 'garden formal wedding guest dress Pinterest',
+    href: buildPinterestSearchUrl('garden formal wedding guest dress Pinterest'),
+    section: 'women',
   },
   {
-    id: 'for-women',
-    title: 'For Women',
-    bullets: [
-      'Floor-length gowns, midi dresses, or elevated cocktail dresses',
-      'Soft romantic fabrics (chiffon, satin, silk, crepe)',
-      'Structured silhouettes are welcome',
-      'Florals and spring tones are beautiful',
-      'Statement earrings? Yes please.',
-    ],
+    id: 'women-midi',
+    title: 'Elegant Midi Dresses',
+    query: 'elegant midi dress garden wedding',
+    href: buildPinterestSearchUrl('elegant midi dress garden wedding'),
+    section: 'women',
   },
   {
-    id: 'for-men',
-    title: 'For Men',
-    bullets: [
-      'Suits in navy, charcoal, light gray, or seasonal tones',
-      'Lightweight wool or linen-blend fabrics',
-      'Dress shirts (tie optional but welcome)',
-      'Loafers or dress shoes',
-    ],
-    body: 'If you love a pocket square moment — this is your event.',
+    id: 'women-flowing-formal',
+    title: 'Flowing Formal Looks',
+    query: 'flowing formal wedding guest dress',
+    href: buildPinterestSearchUrl('flowing formal wedding guest dress'),
+    section: 'women',
   },
   {
-    id: 'footwear-on-grass',
-    title: 'Footwear on Grass (important)',
-    callout: {
-      title: GRASS_CALLOUT.title,
-      body: GRASS_CALLOUT.body,
-      tone: 'info',
-    },
+    id: 'women-wedges',
+    title: 'Wedges for Outdoor Weddings',
+    query: 'wedges for outdoor wedding shoes style',
+    href: buildPinterestSearchUrl('wedges for outdoor wedding shoes style'),
+    section: 'women',
   },
   {
-    id: 'florida-in-march',
-    title: 'Florida in March',
-    body:
-      'Mid-March in Dunedin is typically warm during the day and mild in the evening. You may want a light layer for later at night.',
+    id: 'women-block-heels',
+    title: 'Block Heel Inspiration',
+    query: 'block heel wedding guest inspiration',
+    href: buildPinterestSearchUrl('block heel wedding guest inspiration'),
+    section: 'women',
   },
 ]
 
-const QUICK_FAQ_ITEMS: FaqAccordionItem[] = [
+const MEN_INSPIRATION_CARDS: InspirationCard[] = [
   {
-    id: 'is-this-black-tie',
-    title: 'Is this black tie?',
-    body: 'No — this is formal, but not black tie.',
+    id: 'men-navy-suit',
+    title: 'Navy Wedding Guest Suit',
+    query: 'navy suit wedding guest Pinterest',
+    href: buildPinterestSearchUrl('navy suit wedding guest Pinterest'),
+    section: 'men',
   },
   {
-    id: 'bold-colors-or-prints',
-    title: 'Can I wear bold colors or prints?',
-    body: 'Absolutely. Spring tones and tasteful prints are welcome.',
+    id: 'men-light-gray',
+    title: 'Light Gray Suit Styling',
+    query: 'light gray suit wedding guest',
+    href: buildPinterestSearchUrl('light gray suit wedding guest'),
+    section: 'men',
   },
   {
-    id: 'will-there-be-shade',
-    title: 'Will there be shade?',
-    body: 'Portions of the event will be outdoors. Sunglasses are fair game for arrival and cocktail hour.',
+    id: 'men-linen-blend',
+    title: 'Linen-Blend Suit Looks',
+    query: 'linen blend suit wedding guest',
+    href: buildPinterestSearchUrl('linen blend suit wedding guest'),
+    section: 'men',
   },
   {
-    id: 'entire-evening-on-grass',
-    title: 'Is the entire evening on grass?',
-    body: 'Yes — both the ceremony and reception take place on the Front Lawn (grass).',
+    id: 'men-pocket-square',
+    title: 'Pocket Square Inspiration',
+    query: 'pocket square wedding style inspiration',
+    href: buildPinterestSearchUrl('pocket square wedding style inspiration'),
+    section: 'men',
+  },
+  {
+    id: 'men-loafers',
+    title: 'Loafers & Dress Shoes',
+    query: 'men wedding guest loafers dress shoes',
+    href: buildPinterestSearchUrl('men wedding guest loafers dress shoes'),
+    section: 'men',
   },
 ]
 
-const INSPIRATION_TILES = [
-  'Midi Dress',
-  'Floor-Length Gown',
-  'Elevated Cocktail Dress',
-  'Navy Suit',
-  'Charcoal Suit',
-  'Linen-Blend Suit',
-]
+function buildPinterestSearchUrl(query: string): string {
+  return `https://www.pinterest.com/search/pins/?q=${encodeURIComponent(query)}`
+}
 
-function trackAnalyticsEvent(eventName: string, params?: Record<string, string>) {
+function trackAnalyticsEvent(eventName: string, params?: Record<string, unknown>) {
   if (typeof window === 'undefined') return
 
   if (typeof window.gtag === 'function') {
@@ -140,21 +162,19 @@ export function OotdPage() {
     return () => window.clearTimeout(timer)
   }, [copyMessage])
 
-  function handleAccordionExpand(title: string) {
-    trackAnalyticsEvent('expand_faq_item', { title })
-  }
-
   async function handleCopyLink() {
     const deepLink = `${window.location.origin}/ootd`
 
     try {
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(deepLink)
+        trackAnalyticsEvent('click_copy_ootd')
         setCopyMessage('Link copied')
         return
       }
 
       if (copyTextFallback(deepLink)) {
+        trackAnalyticsEvent('click_copy_ootd')
         setCopyMessage('Link copied')
         return
       }
@@ -165,13 +185,23 @@ export function OotdPage() {
     setCopyMessage('Could not copy link')
   }
 
+  function handleInspirationClick(card: InspirationCard) {
+    trackAnalyticsEvent('click_ootd_inspiration', {
+      section: card.section,
+      title: card.title,
+      query: card.query,
+      href: card.href,
+    })
+  }
+
   return (
     <section className="stack ootd-page">
       <PageIntro
         eyebrow="#OOTD"
         title="#OOTD"
-        description="Garden Formal Attire FAQ"
+        description="Garden-Formal Outfit Inspiration"
       >
+        <p className="ootd-intro-paragraph">{INTRO_PARAGRAPH}</p>
         <div className="ootd-intro-actions">
           <button type="button" className="secondary-button" onClick={handleCopyLink}>
             Copy Link
@@ -182,30 +212,62 @@ export function OotdPage() {
         </div>
       </PageIntro>
 
-      <InfoCallout title={GRASS_CALLOUT.title} body={GRASS_CALLOUT.body} className="ootd-grass-callout reveal" />
-
-      <article className="card reveal ootd-faq-card">
-        <h3>Attire FAQ</h3>
-        <FaqAccordion items={FAQ_ITEMS} onExpand={handleAccordionExpand} />
-      </article>
-
-      <article className="card reveal ootd-faq-card">
-        <h3>Quick FAQs</h3>
-        <FaqAccordion items={QUICK_FAQ_ITEMS} onExpand={handleAccordionExpand} />
-      </article>
-
-      <article className="card reveal ootd-inspiration-card">
-        <h3>Outfit Inspiration</h3>
-        <p className="muted">
-          A few polished silhouettes to set the tone. Real imagery can be swapped in later.
-        </p>
-        <div className="ootd-inspiration-grid" aria-label="Outfit inspiration placeholders">
-          {INSPIRATION_TILES.map((tileLabel) => (
-            <div key={tileLabel} className="ootd-inspiration-tile">
-              <p>{tileLabel}</p>
-            </div>
+      <article className="card reveal ootd-style-section ootd-style-section-women">
+        <h3>Women&rsquo;s Style Gallery</h3>
+        <div className="ootd-inspiration-grid" aria-label="Women's style inspiration">
+          {WOMEN_INSPIRATION_CARDS.map((card) => (
+            <a
+              key={card.id}
+              className="ootd-inspiration-tile"
+              href={card.href}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={`${card.title} inspiration`}
+              onClick={() => handleInspirationClick(card)}
+            >
+              <span className="ootd-inspiration-pill">Inspiration</span>
+              <p>{card.title}</p>
+            </a>
           ))}
         </div>
+        <div className="ootd-encourage-block" aria-label="Encouragement for women's attire">
+          <p className="ootd-encourage-title">Encourage:</p>
+          <ul className="ootd-encourage-list">
+            {WOMEN_ENCOURAGEMENT.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+        </div>
+        <p className="ootd-grass-highlight">{GRASS_CALLOUT.body}</p>
+      </article>
+
+      <article className="card reveal ootd-style-section ootd-style-section-men">
+        <h3>Men&rsquo;s Style Gallery</h3>
+        <div className="ootd-inspiration-grid" aria-label="Men's style inspiration">
+          {MEN_INSPIRATION_CARDS.map((card) => (
+            <a
+              key={card.id}
+              className="ootd-inspiration-tile"
+              href={card.href}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={`${card.title} inspiration`}
+              onClick={() => handleInspirationClick(card)}
+            >
+              <span className="ootd-inspiration-pill">Inspiration</span>
+              <p>{card.title}</p>
+            </a>
+          ))}
+        </div>
+        <div className="ootd-encourage-block" aria-label="Encouragement for men's attire">
+          <p className="ootd-encourage-title">Encourage:</p>
+          <ul className="ootd-encourage-list">
+            {MEN_ENCOURAGEMENT.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+        </div>
+        <p className="ootd-style-cue">If you love a pocket square moment — this is your event.</p>
       </article>
     </section>
   )
