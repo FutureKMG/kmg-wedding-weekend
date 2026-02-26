@@ -670,6 +670,19 @@ button:disabled {
   gap: 0.65rem;
 }
 
+.morning-section-head {
+  display: grid;
+  gap: 0.35rem;
+  border-color: rgba(120, 88, 58, 0.25);
+  background:
+    linear-gradient(150deg, rgba(255, 252, 246, 0.96), rgba(244, 236, 229, 0.9));
+}
+
+.morning-section-head h3 {
+  color: #2f4f5d;
+  font-size: var(--fs-h2);
+}
+
 .morning-assignment-card {
   display: grid;
   gap: 0.45rem;
@@ -721,6 +734,41 @@ button:disabled {
 .morning-assignment-card-full {
   background:
     linear-gradient(150deg, rgba(255, 252, 246, 0.9), rgba(238, 235, 243, 0.88));
+}
+
+.morning-full-table-wrap {
+  overflow-x: auto;
+}
+
+.morning-full-table {
+  width: 100%;
+  min-width: 520px;
+  border-collapse: collapse;
+  color: var(--text-primary);
+}
+
+.morning-full-table th {
+  text-align: left;
+  padding: 0.7rem 0.65rem;
+  font-size: var(--fs-caption);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #6f2f57;
+  border-bottom: 1px solid rgba(120, 88, 58, 0.32);
+}
+
+.morning-full-table td {
+  padding: 0.72rem 0.65rem;
+  border-bottom: 1px solid rgba(120, 88, 58, 0.16);
+  color: #2f4f5d;
+}
+
+.morning-full-table tbody tr {
+  transition: background var(--motion-fast) ease;
+}
+
+.morning-full-table tbody tr:hover {
+  background: rgba(162, 200, 231, 0.14);
 }
 
 .event-calendar-card {
@@ -2215,6 +2263,55 @@ button:disabled {
   .morning-assignment-head {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .morning-full-table {
+    min-width: 0;
+  }
+
+  .morning-full-table thead {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+  }
+
+  .morning-full-table,
+  .morning-full-table tbody,
+  .morning-full-table tr,
+  .morning-full-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .morning-full-table tr {
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-s);
+    background: rgba(255, 250, 245, 0.84);
+    padding: 0.2rem 0.1rem;
+    margin-bottom: 0.55rem;
+  }
+
+  .morning-full-table td {
+    border: 0;
+    padding: 0.48rem 0.6rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.65rem;
+  }
+
+  .morning-full-table td::before {
+    content: attr(data-label);
+    font-size: var(--fs-caption);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: #6f2f57;
+    font-weight: 700;
   }
 
   .home-feed-preview-head {
