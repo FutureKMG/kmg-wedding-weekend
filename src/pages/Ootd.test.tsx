@@ -6,45 +6,60 @@ import { OotdPage } from './Ootd'
 describe('OotdPage', () => {
   afterEach(() => cleanup())
 
-  test('renders editorial header, intro, section headings, and encouragement copy', () => {
+  test('renders curated hero, women guidance, men guidance, and all visual card titles', () => {
     render(<OotdPage />)
 
-    expect(screen.getByRole('heading', { name: '#OOTD' })).toBeInTheDocument()
-    expect(screen.getByText('Garden-Formal Outfit Inspiration')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'Garden-Formal Attire' })).toBeInTheDocument()
     expect(
       screen.getByText(
-        'Our wedding will be on the lawn and terrace of the Fenway Hotel — a historic, jazz-age inspired venue in Dunedin, Florida. With waterfront views and a refined garden-formal setting, we want everyone to look and feel great from ceremony through dancing under the stars.',
+        'The ceremony and reception will take place on the lawn and terrace of the Fenway Hotel — a historic, jazz-age inspired waterfront setting in Dunedin, Florida.',
       ),
     ).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Women’s Style Gallery' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Men’s Style Gallery' })).toBeInTheDocument()
-    expect(screen.getByText('Structured cocktail dresses & midi gowns')).toBeInTheDocument()
-    expect(screen.getByText('Ties optional but welcome')).toBeInTheDocument()
     expect(
       screen.getByText(
-        'Grass considerations ➤ Wedges & block heels photograph and perform beautifully on lawns.',
+        'Think refined, effortless, and comfortable from ceremony through dancing under the stars.',
       ),
     ).toBeInTheDocument()
-    expect(screen.getByText('If you love a pocket square moment — this is your event.')).toBeInTheDocument()
+
+    expect(screen.getByRole('heading', { level: 2, name: 'Garden-Formal for Women' })).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Structured silhouettes, flowing fabrics, and elevated simplicity feel right at home in this setting.',
+      ),
+    ).toBeInTheDocument()
+
+    expect(screen.getByRole('heading', { level: 2, name: 'Garden-Formal for Gentlemen' })).toBeInTheDocument()
+    expect(screen.getByText('Think tailored, effortless, and seasonally refined.')).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Ties encouraged, but not required — choose what feels most like you.',
+      ),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Dress shoes with stable soles are recommended for lawn and terrace surfaces.',
+      ),
+    ).toBeInTheDocument()
+
+    expect(screen.getByText('Structured Midi Dress')).toBeInTheDocument()
+    expect(screen.getByText('Flowing Maxi or Soft Gown')).toBeInTheDocument()
+    expect(screen.getByText('Tailored Cocktail Dress')).toBeInTheDocument()
+    expect(screen.getByText('Elegant Flats, Wedges, or Block Heels')).toBeInTheDocument()
+    expect(screen.getByText('Navy or Charcoal Suit')).toBeInTheDocument()
+    expect(screen.getByText('Light Gray or Seasonal Tone')).toBeInTheDocument()
+    expect(screen.getByText('Lightweight Fabrics')).toBeInTheDocument()
+
+    expect(screen.getByRole('status')).toHaveAttribute('aria-live', 'polite')
   })
 
-  test('renders all inspiration links with encoded Pinterest URLs and safe external attrs', () => {
+  test('removes pinterest links, duplicate #OOTD header text, and pocket square references', () => {
     render(<OotdPage />)
 
-    const links = screen.getAllByRole('link', { name: /inspiration$/i })
-    expect(links).toHaveLength(10)
-    expect(links[0]).toHaveAttribute(
-      'href',
-      'https://www.pinterest.com/search/pins/?q=garden%20formal%20wedding%20guest%20dress%20Pinterest',
-    )
-    expect(links[9]).toHaveAttribute(
-      'href',
-      'https://www.pinterest.com/search/pins/?q=men%20wedding%20guest%20loafers%20dress%20shoes',
-    )
-    for (const link of links) {
-      expect(link).toHaveAttribute('target', '_blank')
-      expect(link).toHaveAttribute('rel', 'noreferrer')
-    }
+    expect(screen.queryByRole('heading', { name: '#OOTD' })).not.toBeInTheDocument()
+    expect(screen.queryByText(/#OOTD/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/pinterest/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/pocket square/i)).not.toBeInTheDocument()
+    expect(screen.queryAllByRole('link')).toHaveLength(0)
   })
 
   test('copy link button uses clipboard API and updates live status text', async () => {
@@ -64,13 +79,11 @@ describe('OotdPage', () => {
     expect(screen.getByRole('status')).toHaveTextContent('Link copied')
   })
 
-  test('inspiration links are keyboard focusable with clear accessible names', async () => {
+  test('copy link control is keyboard focusable', async () => {
     const user = userEvent.setup()
     render(<OotdPage />)
 
     await user.tab()
     expect(screen.getByRole('button', { name: 'Copy Link' })).toHaveFocus()
-    await user.tab()
-    expect(screen.getByRole('link', { name: 'Garden-Formal Guest Dresses inspiration' })).toHaveFocus()
   })
 })
