@@ -37,10 +37,15 @@
 16. Optional RSVP enrichment import (attending-only login population + meal/diet fields):
    - `npm run rsvp:check-conflicts`
    - `npm run rsvp:import`
-17. Optional vendor bootstrap:
+17. Optional reception seating assignment from your Excel export:
+   - Dry-run validation + reports:
+     - `npm run seating:apply-plan -- --input "/Users/kara/Desktop/Seating Groups.xlsx"`
+   - Apply labels to Supabase guests table:
+     - `npm run seating:apply-plan -- --input "/Users/kara/Desktop/Seating Groups.xlsx" --apply`
+18. Optional vendor bootstrap:
    - `npm run vendors:seed`
-18. Manually fix any table labels or name spelling issues.
-19. Validate duplicates:
+19. Manually fix any table labels or name spelling issues.
+20. Validate duplicates:
    - `select full_name_norm, count(*) from guests group by full_name_norm having count(*) > 1;`
    - Ensure zero duplicates before launch.
 

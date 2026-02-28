@@ -69,9 +69,12 @@ Frontend:
 4. Optional RSVP enrichment import:
    - `npm run rsvp:check-conflicts`
    - `npm run rsvp:import`
-5. Optional vendor bootstrap:
+5. Optional reception seating assignment from Excel:
+   - Dry-run validation: `npm run seating:apply-plan -- --input "/Users/kara/Desktop/Seating Groups.xlsx"`
+   - Apply to Supabase: `npm run seating:apply-plan -- --input "/Users/kara/Desktop/Seating Groups.xlsx" --apply`
+6. Optional vendor bootstrap:
    - `npm run vendors:seed`
-6. Create storage bucket `wedding-photos` (private).
+7. Create storage bucket `wedding-photos` (private).
 
 Detailed steps: `docs/supabase-setup.md`
 
