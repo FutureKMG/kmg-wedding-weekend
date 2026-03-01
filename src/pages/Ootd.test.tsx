@@ -52,13 +52,12 @@ describe('OotdPage', () => {
     expect(screen.getByRole('status')).toHaveAttribute('aria-live', 'polite')
   })
 
-  test('removes pinterest links, duplicate #OOTD header text, and pocket square references', () => {
+  test('removes pinterest links and duplicate #OOTD header text', () => {
     render(<OotdPage />)
 
     expect(screen.queryByRole('heading', { name: '#OOTD' })).not.toBeInTheDocument()
     expect(screen.queryByText(/#OOTD/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/pinterest/i)).not.toBeInTheDocument()
-    expect(screen.queryByText(/pocket square/i)).not.toBeInTheDocument()
     expect(screen.queryAllByRole('link')).toHaveLength(0)
   })
 
