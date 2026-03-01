@@ -1,6 +1,5 @@
 import { cleanup, render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { afterEach, describe, expect, test, vi } from 'vitest'
+import { afterEach, describe, expect, test } from 'vitest'
 import { OotdPage } from './Ootd'
 
 describe('OotdPage', () => {
@@ -41,22 +40,20 @@ describe('OotdPage', () => {
       ),
     ).toBeInTheDocument()
 
-    expect(screen.getByText('Structured Midi Dress')).toBeInTheDocument()
-    expect(screen.getByText('Flowing Maxi or Soft Gown')).toBeInTheDocument()
-    expect(
-      screen.getByText('Light movement and breathable fabrics complement the waterfront backdrop.'),
-    ).toBeInTheDocument()
-    expect(screen.getByText('Tailored Cocktail Dress')).toBeInTheDocument()
-    expect(screen.getByText('Elegant Flats, Wedges, or Block Heels')).toBeInTheDocument()
-    expect(
-      screen.getByText('Lawn Setting: Wedges, block heels, or elegant flats perform beautifully on grass.'),
-    ).toBeInTheDocument()
-    expect(screen.getByText('A light wrap is encouraged for the evening breeze.')).toBeInTheDocument()
+    expect(screen.getByText('Structured Midi')).toBeInTheDocument()
+    expect(screen.getByText('Polished, refined, and lawn-friendly.')).toBeInTheDocument()
+    expect(screen.getByText('Flowing Maxi')).toBeInTheDocument()
+    expect(screen.getByText('Soft movement for a waterfront setting.')).toBeInTheDocument()
+    expect(screen.getByText('Pair with: block heels, elegant flats, or wedges.')).toBeInTheDocument()
+    expect(screen.getByText('Pair with: low block heels or refined sandals.')).toBeInTheDocument()
     expect(screen.getByText('Navy or Charcoal Suit')).toBeInTheDocument()
+    expect(screen.getByText('Timeless and well-suited for lawn + terrace.')).toBeInTheDocument()
+    expect(screen.getByText('Pair with: brown loafers or classic oxfords.')).toBeInTheDocument()
     expect(screen.getByText('Light Gray or Seasonal Tone')).toBeInTheDocument()
-    expect(screen.getByText('Lightweight Fabrics')).toBeInTheDocument()
+    expect(screen.getByText('Breathable and refined for Florida evenings.')).toBeInTheDocument()
+    expect(screen.getByText('Pair with: suede loafers or leather dress shoes.')).toBeInTheDocument()
 
-    expect(screen.getByRole('status')).toHaveAttribute('aria-live', 'polite')
+    expect(screen.getByText('Dunedin Weather')).toBeInTheDocument()
   })
 
   test('shows pinterest source links while removing duplicate #OOTD header text and pocket square references', () => {
@@ -66,37 +63,17 @@ describe('OotdPage', () => {
     expect(screen.queryByText(/#OOTD/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/pocket square/i)).not.toBeInTheDocument()
 
-    const links = screen.getAllByRole('link', { name: /inspiration on pinterest$/i })
-    expect(links).toHaveLength(7)
+    const links = screen.getAllByRole('link')
+    expect(links).toHaveLength(4)
     for (const link of links) {
-      expect(link).toHaveAttribute('href', expect.stringContaining('pinterest.com/pin/'))
+      expect(link).toHaveAttribute('href', expect.stringContaining('pinterest.com'))
       expect(link).toHaveAttribute('target', '_blank')
-      expect(link).toHaveAttribute('rel', 'noreferrer')
+      expect(link).toHaveAttribute('rel', expect.stringMatching(/noreferrer|noopener/))
     }
   })
 
-  test('copy link button uses clipboard API and updates live status text', async () => {
-    const user = userEvent.setup()
-    const writeText = vi.fn().mockResolvedValue(undefined)
-    Object.defineProperty(navigator, 'clipboard', {
-      value: { writeText },
-      configurable: true,
-    })
-
+  test('does not render a Copy Link button in the header', () => {
     render(<OotdPage />)
-
-    const copyButton = screen.getByRole('button', { name: 'Copy Link' })
-    await user.click(copyButton)
-
-    expect(writeText).toHaveBeenCalledWith('http://localhost:3000/ootd')
-    expect(screen.getByRole('status')).toHaveTextContent('Link copied')
-  })
-
-  test('copy link control is keyboard focusable', async () => {
-    const user = userEvent.setup()
-    render(<OotdPage />)
-
-    await user.tab()
-    expect(screen.getByRole('button', { name: 'Copy Link' })).toHaveFocus()
+    expect(screen.queryByRole('button', { name: 'Copy Link' })).not.toBeInTheDocument()
   })
 })

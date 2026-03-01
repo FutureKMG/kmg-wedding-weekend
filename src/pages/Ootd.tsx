@@ -7,13 +7,24 @@ declare global {
   }
 }
 
-type VisualCard = {
+type WomenPinterestCard = {
   id: string
+  href: string
+  imageSrc: string
+  imageAlt: string
   title: string
   description: string
-  pinUrl: string
+  shoeNote: string
+}
+
+type MenPinterestCard = {
+  id: string
+  href: string
+  imageSrc: string
   imageAlt: string
-  terrainNote?: string
+  title: string
+  description: string
+  shoeNote: string
 }
 
 const dunedinWeatherUrl =
@@ -28,63 +39,47 @@ type OotdWeather = {
   condition: string
 }
 
-const WOMEN_VISUAL_CARDS: VisualCard[] = [
+const WOMEN_PINTEREST_CARDS: WomenPinterestCard[] = [
   {
-    id: 'women-structured-midi',
-    title: 'Structured Midi Dress',
-    description: 'Elegant and polished while remaining comfortable for outdoor settings.',
-    pinUrl: 'https://www.pinterest.com/pin/299982025193459276/',
-    imageAlt: 'Structured midi dress styling inspiration',
+    id: 'women-structured-midi-card',
+    href: 'https://www.pinterest.com/search/pins/?q=garden%20formal%20midi%20dress',
+    imageSrc: 'https://i.pinimg.com/564x/39/a9/96/39a996f4f9092a6456bf23f5894cd7e0.jpg',
+    imageAlt: 'Garden formal structured midi dress inspiration',
+    title: 'Structured Midi',
+    description: 'Polished, refined, and lawn-friendly.',
+    shoeNote: 'Pair with: block heels, elegant flats, or wedges.',
   },
   {
-    id: 'women-flowing-maxi',
-    title: 'Flowing Maxi or Soft Gown',
-    description: 'Light movement and breathable fabrics complement the waterfront backdrop.',
-    pinUrl: 'https://www.pinterest.com/pin/490118371969778072/',
-    imageAlt: 'Flowing maxi gown inspiration in soft evening light',
-  },
-  {
-    id: 'women-tailored-cocktail',
-    title: 'Tailored Cocktail Dress',
-    description: 'Refined and celebratory without feeling overdone.',
-    pinUrl: 'https://www.pinterest.com/pin/839006605586130875/',
-    imageAlt: 'Tailored cocktail dress inspiration',
-  },
-  {
-    id: 'women-footwear',
-    title: 'Elegant Flats, Wedges, or Block Heels',
-    description: 'Ideal for lawn terrain while maintaining a formal finish.',
-    pinUrl: 'https://www.pinterest.com/pin/755197431306231922/',
-    imageAlt: 'Elegant footwear styling for outdoor formal events',
-    terrainNote: 'Terrain note: Supportive styles transition smoothly between lawn and terrace.',
+    id: 'women-flowing-maxi-card',
+    href: 'https://www.pinterest.com/search/pins/?q=garden%20formal%20maxi%20dress',
+    imageSrc: 'https://i.pinimg.com/564x/ee/eb/65/eeeb65ea89f6915fd6c53f8f6f76fb0f.jpg',
+    imageAlt: 'Flowing garden formal maxi gown inspiration',
+    title: 'Flowing Maxi',
+    description: 'Soft movement for a waterfront setting.',
+    shoeNote: 'Pair with: low block heels or refined sandals.',
   },
 ]
 
-const MEN_VISUAL_CARDS: VisualCard[] = [
+const MEN_PINTEREST_CARDS: MenPinterestCard[] = [
   {
-    id: 'men-navy-charcoal',
+    id: 'men-navy-charcoal-card',
+    href: 'https://www.pinterest.com/search/pins/?q=garden%20formal%20navy%20suit',
+    imageSrc: 'https://i.pinimg.com/564x/2f/74/0e/2f740e45f2c7a39f0ad2c08744ca78a4.jpg',
+    imageAlt: 'Navy garden formal suit inspiration',
     title: 'Navy or Charcoal Suit',
-    description: 'Timeless and well-suited for garden-formal settings.',
-    pinUrl: 'https://www.pinterest.com/pin/376613587573168956/',
-    imageAlt: 'Navy or charcoal tailored suit inspiration',
+    description: 'Timeless and well-suited for lawn + terrace.',
+    shoeNote: 'Pair with: brown loafers or classic oxfords.',
   },
   {
-    id: 'men-light-gray-seasonal',
+    id: 'men-light-gray-linen-card',
+    href: 'https://www.pinterest.com/search/pins/?q=light%20gray%20linen%20suit',
+    imageSrc: 'https://i.pinimg.com/564x/7e/e4/c3/7ee4c31a599dca393e4f39c4dde3ff0e.jpg',
+    imageAlt: 'Light gray linen suit inspiration',
     title: 'Light Gray or Seasonal Tone',
-    description: 'A softer palette complements the waterfront venue.',
-    pinUrl: 'https://www.pinterest.com/pin/102034747802698490/',
-    imageAlt: 'Light gray and seasonal tone suit inspiration',
-  },
-  {
-    id: 'men-lightweight-fabrics',
-    title: 'Lightweight Fabrics',
-    description: 'Linen-blend or lightweight wool for Florida comfort.',
-    pinUrl: 'https://www.pinterest.com/pin/176414510379092795/',
-    imageAlt: 'Lightweight suiting fabric inspiration',
+    description: 'Breathable and refined for Florida evenings.',
+    shoeNote: 'Pair with: suede loafers or leather dress shoes.',
   },
 ]
-
-const ALL_VISUAL_CARDS = [...WOMEN_VISUAL_CARDS, ...MEN_VISUAL_CARDS]
 
 function weatherLabel(code: number, isDay: number): string {
   if (code === 0) return isDay ? 'Clear skies' : 'Clear night'
@@ -109,31 +104,9 @@ function trackAnalyticsEvent(eventName: string, params?: Record<string, unknown>
   }
 }
 
-function copyTextFallback(value: string): boolean {
-  const textArea = document.createElement('textarea')
-  textArea.value = value
-  textArea.setAttribute('readonly', '')
-  textArea.style.position = 'fixed'
-  textArea.style.opacity = '0'
-  document.body.appendChild(textArea)
-  textArea.select()
-  textArea.setSelectionRange(0, value.length)
-
-  let copied = false
-  try {
-    copied = document.execCommand('copy')
-  } finally {
-    textArea.remove()
-  }
-
-  return copied
-}
-
 export function OotdPage() {
-  const [copyMessage, setCopyMessage] = useState('')
   const [weather, setWeather] = useState<OotdWeather | null>(null)
   const [weatherError, setWeatherError] = useState('')
-  const [pinterestThumbnails, setPinterestThumbnails] = useState<Record<string, string>>({})
 
   const loadWeather = useCallback(async (signal?: AbortSignal) => {
     try {
@@ -178,42 +151,9 @@ export function OotdPage() {
     }
   }, [])
 
-  const loadPinterestThumbnails = useCallback(async (signal?: AbortSignal) => {
-    const entries = await Promise.all(
-      ALL_VISUAL_CARDS.map(async (card) => {
-        try {
-          const response = await fetch(
-            `https://www.pinterest.com/oembed.json?url=${encodeURIComponent(card.pinUrl)}`,
-            {
-              cache: 'force-cache',
-              signal,
-            },
-          )
-          if (!response.ok) return [card.id, ''] as const
-          const payload = (await response.json()) as { thumbnail_url?: string }
-          return [card.id, payload.thumbnail_url ?? ''] as const
-        } catch {
-          return [card.id, ''] as const
-        }
-      }),
-    )
-
-    if (signal?.aborted) return
-
-    setPinterestThumbnails(
-      Object.fromEntries(entries.filter((entry) => Boolean(entry[1]))),
-    )
-  }, [])
-
   useEffect(() => {
     trackAnalyticsEvent('view_ootd')
   }, [])
-
-  useEffect(() => {
-    if (!copyMessage) return
-    const timer = window.setTimeout(() => setCopyMessage(''), 2200)
-    return () => window.clearTimeout(timer)
-  }, [copyMessage])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -231,35 +171,6 @@ export function OotdPage() {
     }
   }, [loadWeather])
 
-  useEffect(() => {
-    const controller = new AbortController()
-    void loadPinterestThumbnails(controller.signal)
-    return () => controller.abort()
-  }, [loadPinterestThumbnails])
-
-  async function handleCopyLink() {
-    const deepLink = `${window.location.origin}/ootd`
-
-    try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(deepLink)
-        trackAnalyticsEvent('click_copy_ootd')
-        setCopyMessage('Link copied')
-        return
-      }
-
-      if (copyTextFallback(deepLink)) {
-        trackAnalyticsEvent('click_copy_ootd')
-        setCopyMessage('Link copied')
-        return
-      }
-    } catch {
-      // Fall through to user-facing failure state.
-    }
-
-    setCopyMessage('Could not copy link')
-  }
-
   return (
     <section className="stack ootd-page">
       <article className="card reveal ootd-hero">
@@ -271,14 +182,6 @@ export function OotdPage() {
         <p className="ootd-hero-clarity">
           Think refined, effortless, and comfortable from ceremony through dancing under the stars.
         </p>
-        <div className="ootd-intro-actions">
-          <button type="button" className="secondary-button" onClick={handleCopyLink}>
-            Copy Link
-          </button>
-          <p className="muted small-text ootd-copy-feedback" role="status" aria-live="polite">
-            {copyMessage}
-          </p>
-        </div>
         <div className="ootd-weather-widget" aria-live="polite">
           <p className="ootd-weather-eyebrow">Dunedin Weather</p>
           {weather ? (
@@ -305,33 +208,23 @@ export function OotdPage() {
             this setting.
           </p>
         </div>
-        <div className="ootd-visual-grid" aria-label="Women's curated style guidance">
-          {WOMEN_VISUAL_CARDS.map((card) => (
-            <article key={card.id} className="ootd-visual-card">
-              <a
-                className="ootd-visual-link"
-                href={card.pinUrl}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={`${card.title} inspiration on Pinterest`}
-              >
-                <div className="ootd-visual-image">
-                  {pinterestThumbnails[card.id] ? (
-                    <img
-                      src={pinterestThumbnails[card.id]}
-                      alt={card.imageAlt}
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  ) : (
-                    <div className="ootd-visual-placeholder" aria-hidden="true" />
-                  )}
-                </div>
-              </a>
-              <h3>{card.title}</h3>
-              <p>{card.description}</p>
-              {card.terrainNote ? <p className="ootd-terrain-note">{card.terrainNote}</p> : null}
-            </article>
+        <div className="ootd-grid" aria-label="Women's curated style guidance">
+          {WOMEN_PINTEREST_CARDS.map((card) => (
+            <a
+              key={card.id}
+              href={card.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ootd-card"
+              aria-label={`${card.title} Pinterest inspiration`}
+            >
+              <img src={card.imageSrc} alt={card.imageAlt} loading="lazy" decoding="async" />
+              <div className="card-content">
+                <h3>{card.title}</h3>
+                <p>{card.description}</p>
+                <p className="shoe-note">{card.shoeNote}</p>
+              </div>
+            </a>
           ))}
         </div>
         <p className="ootd-terrain-callout">
@@ -357,32 +250,23 @@ export function OotdPage() {
           Complete the look with loafers or classic dress shoes well-suited for lawn and terrace
           settings.
         </p>
-        <div className="ootd-visual-grid ootd-visual-grid-men" aria-label="Men's curated style guidance">
-          {MEN_VISUAL_CARDS.map((card) => (
-            <article key={card.id} className="ootd-visual-card">
-              <a
-                className="ootd-visual-link"
-                href={card.pinUrl}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={`${card.title} inspiration on Pinterest`}
-              >
-                <div className="ootd-visual-image">
-                  {pinterestThumbnails[card.id] ? (
-                    <img
-                      src={pinterestThumbnails[card.id]}
-                      alt={card.imageAlt}
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  ) : (
-                    <div className="ootd-visual-placeholder" aria-hidden="true" />
-                  )}
-                </div>
-              </a>
-              <h3>{card.title}</h3>
-              <p>{card.description}</p>
-            </article>
+        <div className="ootd-grid" aria-label="Men's curated style guidance">
+          {MEN_PINTEREST_CARDS.map((card) => (
+            <a
+              key={card.id}
+              href={card.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ootd-card"
+              aria-label={`${card.title} Pinterest inspiration`}
+            >
+              <img src={card.imageSrc} alt={card.imageAlt} loading="lazy" decoding="async" />
+              <div className="card-content">
+                <h3>{card.title}</h3>
+                <p>{card.description}</p>
+                <p className="shoe-note">{card.shoeNote}</p>
+              </div>
+            </a>
           ))}
         </div>
         <p className="ootd-terrain-note">
