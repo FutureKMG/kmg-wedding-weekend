@@ -146,11 +146,10 @@ export function OotdPage() {
       <article className="card reveal ootd-hero">
         <div className="ootd-hero-inner">
           <h1 className="ootd-hero-title">Garden Formal</h1>
-          <p className="ootd-hero-subtitle">Whimsical. Chic. Comfortable.</p>
+          <p className="ootd-hero-subtitle">Whimsical. Chic. Ready to Celebrate</p>
           <p className="ootd-hero-copy">
-            We’ll be celebrating on the lawn and terrace overlooking the water. We want you to feel
-            confident, polished, and completely at ease from ceremony through dancing under the
-            stars.
+            We want you to feel relaxed, confident, and ready to celebrate from ceremony through
+            dancing under the stars.
           </p>
         </div>
 
@@ -206,9 +205,8 @@ export function OotdPage() {
           <section>
             <h2>For Men</h2>
             <p>
-              Seasonal tones like navy, tan, light gray, and soft green pair beautifully with linen
-              blends. Ties are optional, and stable-soled dress shoes are ideal for lawn and
-              terrace surfaces.
+              Lightweight suiting and linen blends are a natural fit for the setting. Ties are
+              optional, and stable-soled dress shoes work best for lawn and terrace surfaces.
             </p>
           </section>
         </div>

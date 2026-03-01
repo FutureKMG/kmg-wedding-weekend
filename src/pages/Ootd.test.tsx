@@ -9,10 +9,10 @@ describe('OotdPage', () => {
     render(<OotdPage />)
 
     expect(screen.getByRole('heading', { level: 1, name: 'Garden Formal' })).toBeInTheDocument()
-    expect(screen.getByText('Whimsical. Chic. Comfortable.')).toBeInTheDocument()
+    expect(screen.getByText('Whimsical. Chic. Ready to Celebrate')).toBeInTheDocument()
     expect(
       screen.getByText(
-        'We’ll be celebrating on the lawn and terrace overlooking the water. We want you to feel confident, polished, and completely at ease from ceremony through dancing under the stars.',
+        'We want you to feel relaxed, confident, and ready to celebrate from ceremony through dancing under the stars.',
       ),
     ).toBeInTheDocument()
   })
@@ -45,7 +45,7 @@ describe('OotdPage', () => {
 
     expect(screen.getByRole('heading', { level: 2, name: 'For Men' })).toBeInTheDocument()
     expect(
-      screen.getByText(/Seasonal tones like navy, tan, light gray, and soft green/),
+      screen.getByText(/Lightweight suiting and linen blends are a natural fit for the setting/),
     ).toBeInTheDocument()
 
     expect(screen.getByText('Dunedin Weather')).toBeInTheDocument()
