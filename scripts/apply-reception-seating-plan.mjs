@@ -60,6 +60,13 @@ const EXPECTED_GROUP_COUNTS = {
   Katie: 4,
 }
 
+const POPULATION_NAME_ALIASES = {
+  'katie margraf': ['katie jaffe'],
+  'katie jaffe': ['katie margraf'],
+  "elle' tallent": ['elle schacter'],
+  'elle schacter': ["elle' tallent"],
+}
+
 function getRequiredEnv(name) {
   const value = process.env[name]
   if (!value) {
@@ -457,6 +464,23 @@ function chunk(items, size) {
   return batches
 }
 
+function resolveGuestByName(guestByFullName, fullNameNorm) {
+  const normalized = cleanString(fullNameNorm)
+  const directGuest = guestByFullName.get(normalized)
+  if (directGuest) {
+    return directGuest
+  }
+
+  for (const alias of POPULATION_NAME_ALIASES[normalized] ?? []) {
+    const aliasGuest = guestByFullName.get(alias)
+    if (aliasGuest) {
+      return aliasGuest
+    }
+  }
+
+  return null
+}
+
 async function applyToSupabase(assignments) {
   await loadEnvFile()
   const supabase = createClient(
@@ -476,7 +500,14 @@ async function applyToSupabase(assignments) {
   }
 
   const guestByFullName = new Map((data ?? []).map((row) => [cleanString(row.full_name_norm), row]))
-  const unmatched = assignments.filter((assignment) => !guestByFullName.has(assignment.fullNameNorm))
+  const resolvedAssignments = assignments.map((assignment) => ({
+    assignment,
+    guest: resolveGuestByName(guestByFullName, assignment.fullNameNorm),
+  }))
+
+  const unmatched = resolvedAssignments
+    .filter((item) => !item.guest)
+    .map((item) => item.assignment)
   if (unmatched.length > 0) {
     const preview = unmatched.slice(0, 10).map((item) => item.fullNameNorm).join(', ')
     throw new Error(
@@ -485,8 +516,8 @@ async function applyToSupabase(assignments) {
     )
   }
 
-  const upsertPayload = assignments.map((assignment) => ({
-    id: guestByFullName.get(assignment.fullNameNorm).id,
+  const upsertPayload = resolvedAssignments.map(({ assignment, guest }) => ({
+    id: guest.id,
     table_label: assignment.tableLabel,
   }))
 

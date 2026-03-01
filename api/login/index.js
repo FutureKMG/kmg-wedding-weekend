@@ -15,7 +15,10 @@ const FULL_GUEST_SELECT =
   'id, first_name, last_name, table_label, can_upload, is_admin, account_type, vendor_name, can_access_vendor_forum, rsvp_reception'
 const LEGACY_GUEST_SELECT = 'id, first_name, last_name, table_label, can_upload, is_admin, rsvp_reception'
 const FALLBACK_LOGIN_ALIASES = {
-  'katie margraf': 'katie jaffe',
+  'katie margraf': ['katie jaffe'],
+  'katie jaffe': ['katie margraf'],
+  "elle' tallent": ['elle schacter'],
+  'elle schacter': ["elle' tallent"],
 }
 
 async function getGuestByField(supabase, field, value) {
@@ -99,11 +102,16 @@ export default async function handler(req, res) {
       }
 
       if (!data && FALLBACK_LOGIN_ALIASES[fullNameNorm]) {
-        const fallbackAlias = await getGuestByField(supabase, 'full_name_norm', FALLBACK_LOGIN_ALIASES[fullNameNorm])
-        if (fallbackAlias.error) {
-          return sendJson(res, 500, { message: 'Could not validate guest list' })
+        for (const aliasFullName of FALLBACK_LOGIN_ALIASES[fullNameNorm]) {
+          const fallbackAlias = await getGuestByField(supabase, 'full_name_norm', aliasFullName)
+          if (fallbackAlias.error) {
+            return sendJson(res, 500, { message: 'Could not validate guest list' })
+          }
+          if (fallbackAlias.data) {
+            data = fallbackAlias.data
+            break
+          }
         }
-        data = fallbackAlias.data
       }
     }
 

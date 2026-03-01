@@ -16,7 +16,7 @@ const TIMEZONE_OFFSET = '-04:00'
 const LOCATION = 'Fenway Hotel'
 const BRIDE_FULL_NAME_NORM = 'kara margraf'
 const FIRST_NAME_OVERRIDES = {
-  katie: 'katie jaffe',
+  katie: ['katie margraf', 'katie jaffe'],
 }
 
 const MORNING_ROWS = [
@@ -145,9 +145,9 @@ async function main() {
     }
 
     const firstNameKey = normalizeNamePart(row.guestFirstName)
-    const overrideFullName = FIRST_NAME_OVERRIDES[firstNameKey]
-    if (overrideFullName) {
-      const overrideGuest = byFullName.get(overrideFullName)
+    const overrideFullNames = FIRST_NAME_OVERRIDES[firstNameKey]
+    if (overrideFullNames) {
+      const overrideGuest = overrideFullNames.map((name) => byFullName.get(name)).find(Boolean)
       if (!overrideGuest) {
         unresolvedRows.push({
           guest_first_name: row.guestFirstName,
@@ -155,7 +155,7 @@ async function main() {
           artist_name: row.artistName,
           time: row.time,
           reason: 'override_guest_not_found',
-          candidate_guests: '',
+          candidate_guests: overrideFullNames.join(' | '),
         })
         continue
       }
