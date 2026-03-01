@@ -11,9 +11,8 @@ type VisualCard = {
   id: string
   title: string
   description: string
-  imageSrc: string
+  pinUrl: string
   imageAlt: string
-  imageFallbackSrc?: string
   terrainNote?: string
 }
 
@@ -34,32 +33,28 @@ const WOMEN_VISUAL_CARDS: VisualCard[] = [
     id: 'women-structured-midi',
     title: 'Structured Midi Dress',
     description: 'Elegant and polished while remaining comfortable for outdoor settings.',
-    imageSrc: '/theme/invite-hero.webp',
-    imageFallbackSrc: '/theme/invite-hero.png',
+    pinUrl: 'https://www.pinterest.com/pin/299982025193459276/',
     imageAlt: 'Structured midi dress styling inspiration',
   },
   {
     id: 'women-flowing-maxi',
     title: 'Flowing Maxi or Soft Gown',
     description: 'Light movement and breathable fabrics complement the waterfront backdrop.',
-    imageSrc: '/theme/home-lounge-portrait-one.webp',
-    imageFallbackSrc: '/theme/home-lounge-portrait-one.png',
+    pinUrl: 'https://www.pinterest.com/pin/490118371969778072/',
     imageAlt: 'Flowing maxi gown inspiration in soft evening light',
   },
   {
     id: 'women-tailored-cocktail',
     title: 'Tailored Cocktail Dress',
     description: 'Refined and celebratory without feeling overdone.',
-    imageSrc: '/theme/welcome-party-hero.webp',
-    imageFallbackSrc: '/theme/welcome-party-hero.png',
+    pinUrl: 'https://www.pinterest.com/pin/839006605586130875/',
     imageAlt: 'Tailored cocktail dress inspiration',
   },
   {
     id: 'women-footwear',
     title: 'Elegant Flats, Wedges, or Block Heels',
     description: 'Ideal for lawn terrain while maintaining a formal finish.',
-    imageSrc: '/theme/home-lounge-portrait-two.webp',
-    imageFallbackSrc: '/theme/home-lounge-portrait-two.png',
+    pinUrl: 'https://www.pinterest.com/pin/755197431306231922/',
     imageAlt: 'Elegant footwear styling for outdoor formal events',
     terrainNote: 'Terrain note: Supportive styles transition smoothly between lawn and terrace.',
   },
@@ -70,27 +65,26 @@ const MEN_VISUAL_CARDS: VisualCard[] = [
     id: 'men-navy-charcoal',
     title: 'Navy or Charcoal Suit',
     description: 'Timeless and well-suited for garden-formal settings.',
-    imageSrc: '/theme/home-lounge-hero.webp',
-    imageFallbackSrc: '/theme/home-lounge-hero.png',
+    pinUrl: 'https://www.pinterest.com/pin/376613587573168956/',
     imageAlt: 'Navy or charcoal tailored suit inspiration',
   },
   {
     id: 'men-light-gray-seasonal',
     title: 'Light Gray or Seasonal Tone',
     description: 'A softer palette complements the waterfront venue.',
-    imageSrc: '/theme/welcome-party-hero-mobile.webp',
-    imageFallbackSrc: '/theme/welcome-party-hero-mobile.png',
+    pinUrl: 'https://www.pinterest.com/pin/102034747802698490/',
     imageAlt: 'Light gray and seasonal tone suit inspiration',
   },
   {
     id: 'men-lightweight-fabrics',
     title: 'Lightweight Fabrics',
     description: 'Linen-blend or lightweight wool for Florida comfort.',
-    imageSrc: '/theme/invite-hero-mobile.webp',
-    imageFallbackSrc: '/theme/invite-hero-mobile.png',
+    pinUrl: 'https://www.pinterest.com/pin/176414510379092795/',
     imageAlt: 'Lightweight suiting fabric inspiration',
   },
 ]
+
+const ALL_VISUAL_CARDS = [...WOMEN_VISUAL_CARDS, ...MEN_VISUAL_CARDS]
 
 function weatherLabel(code: number, isDay: number): string {
   if (code === 0) return isDay ? 'Clear skies' : 'Clear night'
@@ -139,6 +133,7 @@ export function OotdPage() {
   const [copyMessage, setCopyMessage] = useState('')
   const [weather, setWeather] = useState<OotdWeather | null>(null)
   const [weatherError, setWeatherError] = useState('')
+  const [pinterestThumbnails, setPinterestThumbnails] = useState<Record<string, string>>({})
 
   const loadWeather = useCallback(async (signal?: AbortSignal) => {
     try {
@@ -183,6 +178,33 @@ export function OotdPage() {
     }
   }, [])
 
+  const loadPinterestThumbnails = useCallback(async (signal?: AbortSignal) => {
+    const entries = await Promise.all(
+      ALL_VISUAL_CARDS.map(async (card) => {
+        try {
+          const response = await fetch(
+            `https://www.pinterest.com/oembed.json?url=${encodeURIComponent(card.pinUrl)}`,
+            {
+              cache: 'force-cache',
+              signal,
+            },
+          )
+          if (!response.ok) return [card.id, ''] as const
+          const payload = (await response.json()) as { thumbnail_url?: string }
+          return [card.id, payload.thumbnail_url ?? ''] as const
+        } catch {
+          return [card.id, ''] as const
+        }
+      }),
+    )
+
+    if (signal?.aborted) return
+
+    setPinterestThumbnails(
+      Object.fromEntries(entries.filter((entry) => Boolean(entry[1]))),
+    )
+  }, [])
+
   useEffect(() => {
     trackAnalyticsEvent('view_ootd')
   }, [])
@@ -208,6 +230,12 @@ export function OotdPage() {
       window.clearInterval(timer)
     }
   }, [loadWeather])
+
+  useEffect(() => {
+    const controller = new AbortController()
+    void loadPinterestThumbnails(controller.signal)
+    return () => controller.abort()
+  }, [loadPinterestThumbnails])
 
   async function handleCopyLink() {
     const deepLink = `${window.location.origin}/ootd`
@@ -280,17 +308,26 @@ export function OotdPage() {
         <div className="ootd-visual-grid" aria-label="Women's curated style guidance">
           {WOMEN_VISUAL_CARDS.map((card) => (
             <article key={card.id} className="ootd-visual-card">
-              <div className="ootd-visual-image">
-                <picture>
-                  <source srcSet={card.imageSrc} type="image/webp" />
-                  <img
-                    src={card.imageFallbackSrc ?? card.imageSrc}
-                    alt={card.imageAlt}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </picture>
-              </div>
+              <a
+                className="ootd-visual-link"
+                href={card.pinUrl}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`${card.title} inspiration on Pinterest`}
+              >
+                <div className="ootd-visual-image">
+                  {pinterestThumbnails[card.id] ? (
+                    <img
+                      src={pinterestThumbnails[card.id]}
+                      alt={card.imageAlt}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : (
+                    <div className="ootd-visual-placeholder" aria-hidden="true" />
+                  )}
+                </div>
+              </a>
               <h3>{card.title}</h3>
               <p>{card.description}</p>
               {card.terrainNote ? <p className="ootd-terrain-note">{card.terrainNote}</p> : null}
@@ -323,17 +360,26 @@ export function OotdPage() {
         <div className="ootd-visual-grid ootd-visual-grid-men" aria-label="Men's curated style guidance">
           {MEN_VISUAL_CARDS.map((card) => (
             <article key={card.id} className="ootd-visual-card">
-              <div className="ootd-visual-image">
-                <picture>
-                  <source srcSet={card.imageSrc} type="image/webp" />
-                  <img
-                    src={card.imageFallbackSrc ?? card.imageSrc}
-                    alt={card.imageAlt}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </picture>
-              </div>
+              <a
+                className="ootd-visual-link"
+                href={card.pinUrl}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={`${card.title} inspiration on Pinterest`}
+              >
+                <div className="ootd-visual-image">
+                  {pinterestThumbnails[card.id] ? (
+                    <img
+                      src={pinterestThumbnails[card.id]}
+                      alt={card.imageAlt}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : (
+                    <div className="ootd-visual-placeholder" aria-hidden="true" />
+                  )}
+                </div>
+              </a>
               <h3>{card.title}</h3>
               <p>{card.description}</p>
             </article>

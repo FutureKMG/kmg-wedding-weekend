@@ -59,14 +59,20 @@ describe('OotdPage', () => {
     expect(screen.getByRole('status')).toHaveAttribute('aria-live', 'polite')
   })
 
-  test('removes pinterest links, duplicate #OOTD header text, and pocket square references', () => {
+  test('shows pinterest source links while removing duplicate #OOTD header text and pocket square references', () => {
     render(<OotdPage />)
 
     expect(screen.queryByRole('heading', { name: '#OOTD' })).not.toBeInTheDocument()
     expect(screen.queryByText(/#OOTD/i)).not.toBeInTheDocument()
-    expect(screen.queryByText(/pinterest/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/pocket square/i)).not.toBeInTheDocument()
-    expect(screen.queryAllByRole('link')).toHaveLength(0)
+
+    const links = screen.getAllByRole('link', { name: /inspiration on pinterest$/i })
+    expect(links).toHaveLength(7)
+    for (const link of links) {
+      expect(link).toHaveAttribute('href', expect.stringContaining('pinterest.com/pin/'))
+      expect(link).toHaveAttribute('target', '_blank')
+      expect(link).toHaveAttribute('rel', 'noreferrer')
+    }
   })
 
   test('copy link button uses clipboard API and updates live status text', async () => {
