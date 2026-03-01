@@ -23,7 +23,7 @@ const WOMEN_VISUAL_CARDS: VisualCard[] = [
   {
     id: 'women-flowing-maxi',
     title: 'Flowing Maxi or Soft Gown',
-    description: 'Light movement and breathable fabrics suit waterfront evenings beautifully.',
+    description: 'Light movement and breathable fabrics complement the waterfront backdrop.',
   },
   {
     id: 'women-tailored-cocktail',
@@ -166,10 +166,9 @@ export function OotdPage() {
           ))}
         </div>
         <p className="ootd-terrain-callout">
-          Lawn Setting: Wedges, block heels, or elegant flats perform best on grass and photograph
-          beautifully.
+          Lawn Setting: Wedges, block heels, or elegant flats perform beautifully on grass.
         </p>
-        <p className="ootd-accessories-line">Wraps are encouraged for the evening breeze.</p>
+        <p className="ootd-accessories-line">A light wrap is encouraged for the evening breeze.</p>
       </article>
 
       <div className="ootd-divider" aria-hidden="true" />
@@ -199,7 +198,7 @@ export function OotdPage() {
           ))}
         </div>
         <p className="ootd-terrain-note">
-          Dress shoes with stable soles are recommended for lawn and terrace surfaces.
+          Stable-soled dress shoes are recommended for lawn and terrace surfaces.
         </p>
       </article>
     </section>

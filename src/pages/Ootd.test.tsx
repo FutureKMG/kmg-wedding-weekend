@@ -37,14 +37,21 @@ describe('OotdPage', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByText(
-        'Dress shoes with stable soles are recommended for lawn and terrace surfaces.',
+        'Stable-soled dress shoes are recommended for lawn and terrace surfaces.',
       ),
     ).toBeInTheDocument()
 
     expect(screen.getByText('Structured Midi Dress')).toBeInTheDocument()
     expect(screen.getByText('Flowing Maxi or Soft Gown')).toBeInTheDocument()
+    expect(
+      screen.getByText('Light movement and breathable fabrics complement the waterfront backdrop.'),
+    ).toBeInTheDocument()
     expect(screen.getByText('Tailored Cocktail Dress')).toBeInTheDocument()
     expect(screen.getByText('Elegant Flats, Wedges, or Block Heels')).toBeInTheDocument()
+    expect(
+      screen.getByText('Lawn Setting: Wedges, block heels, or elegant flats perform beautifully on grass.'),
+    ).toBeInTheDocument()
+    expect(screen.getByText('A light wrap is encouraged for the evening breeze.')).toBeInTheDocument()
     expect(screen.getByText('Navy or Charcoal Suit')).toBeInTheDocument()
     expect(screen.getByText('Light Gray or Seasonal Tone')).toBeInTheDocument()
     expect(screen.getByText('Lightweight Fabrics')).toBeInTheDocument()
@@ -52,12 +59,13 @@ describe('OotdPage', () => {
     expect(screen.getByRole('status')).toHaveAttribute('aria-live', 'polite')
   })
 
-  test('removes pinterest links and duplicate #OOTD header text', () => {
+  test('removes pinterest links, duplicate #OOTD header text, and pocket square references', () => {
     render(<OotdPage />)
 
     expect(screen.queryByRole('heading', { name: '#OOTD' })).not.toBeInTheDocument()
     expect(screen.queryByText(/#OOTD/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/pinterest/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/pocket square/i)).not.toBeInTheDocument()
     expect(screen.queryAllByRole('link')).toHaveLength(0)
   })
 
