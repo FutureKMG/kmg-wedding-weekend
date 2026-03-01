@@ -396,6 +396,23 @@ button:disabled {
   color: var(--text-primary);
 }
 
+.tab-link-utility {
+  margin-inline-start: 0.8rem;
+  position: relative;
+  border-color: rgba(162, 200, 231, 0.35);
+  background: rgba(255, 250, 245, 0.86);
+}
+
+.tab-link-utility::before {
+  content: '';
+  position: absolute;
+  left: -0.55rem;
+  top: 22%;
+  bottom: 22%;
+  width: 1px;
+  background: rgba(130, 103, 81, 0.28);
+}
+
 .content-shell,
 .stack {
   display: grid;

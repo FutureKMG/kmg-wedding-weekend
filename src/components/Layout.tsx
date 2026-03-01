@@ -5,6 +5,12 @@ import { apiRequest } from '../lib/apiClient'
 import { useAuth } from '../lib/auth'
 import { DecoDivider } from './DecoDivider'
 
+type NavTab = {
+  to: string
+  label: string
+  className?: string
+}
+
 export function Layout() {
   const { guest, logout } = useAuth()
   const navigate = useNavigate()
@@ -31,16 +37,16 @@ export function Layout() {
   const headerTitle = text['layout.title'].replace('{GuestFirstName}', headerGuestName)
 
   const links = useMemo(() => {
-    const baseLinks = [
+    const baseLinks: NavTab[] = [
       { to: '/', label: 'Home' },
+      { to: '/weekend', label: 'Weekend' },
+      { to: '/morning-schedule', label: 'Morning Schedule' },
+      { to: '/seating', label: 'Seating' },
+      { to: '/songs', label: 'Songs' },
       { to: '/gallery', label: 'Feed' },
+      { to: '/ootd', label: '#OOTD' },
       { to: '/girls-room', label: 'Girls Room' },
       { to: '/vendor-forum', label: 'Vendor Forum' },
-      { to: '/seating', label: 'Seating' },
-      { to: '/morning-schedule', label: 'Morning Schedule' },
-      { to: '/weekend', label: 'Weekend' },
-      { to: '/ootd', label: '#OOTD' },
-      { to: '/songs', label: 'Songs' },
     ]
 
     if (!guest?.canAccessGirlsRoom) {
@@ -65,7 +71,7 @@ export function Layout() {
     }
 
     if (guest?.canEditContent) {
-      baseLinks.push({ to: '/content-editor', label: 'Edit Content' })
+      baseLinks.push({ to: '/content-editor', label: 'Edit Content', className: 'tab-link-utility' })
     }
 
     return baseLinks
@@ -97,9 +103,10 @@ export function Layout() {
           <NavLink
             key={link.to}
             to={link.to}
-            className={({ isActive }) =>
-              isActive ? 'tab-link tab-link-active' : 'tab-link'
-            }
+            className={({ isActive }) => {
+              const stateClass = isActive ? 'tab-link tab-link-active' : 'tab-link'
+              return link.className ? `${stateClass} ${link.className}` : stateClass
+            }}
           >
             {link.label}
           </NavLink>
