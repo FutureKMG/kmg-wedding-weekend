@@ -7,29 +7,6 @@ declare global {
   }
 }
 
-type WomenPinterestCard = {
-  id: string
-  href: string
-  imageSrc: string
-  imageAlt: string
-  title: string
-  description: string
-  shoeNote: string
-}
-
-type MenPinterestCard = {
-  id: string
-  href: string
-  imageSrc: string
-  imageAlt: string
-  title: string
-  description: string
-  shoeNote: string
-}
-
-const dunedinWeatherUrl =
-  'https://api.open-meteo.com/v1/forecast?latitude=28.0259&longitude=-82.7759&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,is_day&daily=temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FNew_York&forecast_days=1'
-
 type OotdWeather = {
   tempF: number
   feelsLikeF: number
@@ -39,45 +16,38 @@ type OotdWeather = {
   condition: string
 }
 
-const WOMEN_PINTEREST_CARDS: WomenPinterestCard[] = [
-  {
-    id: 'women-structured-midi-card',
-    href: 'https://pin.it/1NPb5Jx0D',
-    imageSrc: 'https://i.pinimg.com/564x/39/a9/96/39a996f4f9092a6456bf23f5894cd7e0.jpg',
-    imageAlt: 'Garden formal structured midi dress inspiration',
-    title: 'Structured Midi',
-    description: 'Polished, refined, and lawn-friendly.',
-    shoeNote: 'Pair with: block heels, elegant flats, or wedges.',
-  },
-  {
-    id: 'women-flowing-maxi-card',
-    href: 'https://www.pinterest.com/search/pins/?q=garden%20formal%20maxi%20dress',
-    imageSrc: 'https://i.pinimg.com/564x/ee/eb/65/eeeb65ea89f6915fd6c53f8f6f76fb0f.jpg',
-    imageAlt: 'Flowing garden formal maxi gown inspiration',
-    title: 'Flowing Maxi',
-    description: 'Soft movement for a waterfront setting.',
-    shoeNote: 'Pair with: low block heels or refined sandals.',
-  },
-]
+type InspirationCard = {
+  id: string
+  title: string
+  href: string
+  imageSrc: string
+  alt: string
+}
 
-const MEN_PINTEREST_CARDS: MenPinterestCard[] = [
+const dunedinWeatherUrl =
+  'https://api.open-meteo.com/v1/forecast?latitude=28.0259&longitude=-82.7759&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,is_day&daily=temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FNew_York&forecast_days=1'
+
+const INSPIRATION_CARDS: InspirationCard[] = [
   {
-    id: 'men-navy-charcoal-card',
-    href: 'https://www.pinterest.com/search/pins/?q=garden%20formal%20navy%20suit',
-    imageSrc: 'https://i.pinimg.com/564x/2f/74/0e/2f740e45f2c7a39f0ad2c08744ca78a4.jpg',
-    imageAlt: 'Navy garden formal suit inspiration',
-    title: 'Navy or Charcoal Suit',
-    description: 'Timeless and well-suited for lawn + terrace.',
-    shoeNote: 'Pair with: brown loafers or classic oxfords.',
+    id: 'women-outfit',
+    title: "Women's Outfit Inspiration",
+    href: 'https://www.pinterest.com/search/pins/?q=garden%20formal%20wedding%20guest%20dress%20Pinterest&rs=rs&source_id=rs_4UaKqiZ6&top_pin_ids=895231232201171150&eq=&etslf=5113',
+    imageSrc: '/theme/ootd-women.jpg',
+    alt: "Women's garden formal outfit inspiration collage",
   },
   {
-    id: 'men-light-gray-linen-card',
-    href: 'https://www.pinterest.com/search/pins/?q=light%20gray%20linen%20suit',
-    imageSrc: 'https://i.pinimg.com/564x/7e/e4/c3/7ee4c31a599dca393e4f39c4dde3ff0e.jpg',
-    imageAlt: 'Light gray linen suit inspiration',
-    title: 'Light Gray or Seasonal Tone',
-    description: 'Breathable and refined for Florida evenings.',
-    shoeNote: 'Pair with: suede loafers or leather dress shoes.',
+    id: 'women-shoes',
+    title: "Women's Shoe Inspiration (Grass-Friendly)",
+    href: 'https://www.pinterest.com/search/pins/?q=grass%20friendly%20wedding%20guest%20shoes&rs=typed',
+    imageSrc: '/theme/ootd-shoes.jpg',
+    alt: "Grass-friendly women's wedding shoe inspiration",
+  },
+  {
+    id: 'men-outfit',
+    title: "Men's Outfit Inspiration",
+    href: 'https://www.pinterest.com/search/pins/?q=garden%20formal%20wedding%20guest%20men&rs=typed',
+    imageSrc: '/theme/ootd-men.jpg',
+    alt: "Men's garden formal outfit inspiration collage",
   },
 ]
 
@@ -174,14 +144,16 @@ export function OotdPage() {
   return (
     <section className="stack ootd-page">
       <article className="card reveal ootd-hero">
-        <h1 className="ootd-hero-title">Garden-Formal Attire</h1>
-        <p className="ootd-hero-subhead">
-          The ceremony and reception will take place on the lawn and terrace of the Fenway Hotel
-          {' '}— a historic, jazz-age inspired waterfront setting in Dunedin, Florida.
-        </p>
-        <p className="ootd-hero-clarity">
-          Think refined, effortless, and comfortable from ceremony through dancing under the stars.
-        </p>
+        <div className="ootd-hero-inner">
+          <h1 className="ootd-hero-title">Garden Formal</h1>
+          <p className="ootd-hero-subtitle">Whimsical. Chic. Comfortable.</p>
+          <p className="ootd-hero-copy">
+            We’ll be celebrating on the lawn and terrace overlooking the water. We want you to feel
+            confident, polished, and completely at ease from ceremony through dancing under the
+            stars.
+          </p>
+        </div>
+
         <div className="ootd-weather-widget" aria-live="polite">
           <p className="ootd-weather-eyebrow">Dunedin Weather</p>
           {weather ? (
@@ -189,7 +161,8 @@ export function OotdPage() {
               <p className="ootd-weather-temp">{weather.tempF}°F</p>
               <p>{weather.condition}</p>
               <p className="muted small-text">
-                Feels like {weather.feelsLikeF}° • H {weather.highF}° / L {weather.lowF}° • Wind {weather.windMph} mph
+                Feels like {weather.feelsLikeF}° • H {weather.highF}° / L {weather.lowF}° • Wind{' '}
+                {weather.windMph} mph
               </p>
             </div>
           ) : (
@@ -198,80 +171,47 @@ export function OotdPage() {
         </div>
       </article>
 
-      <div className="ootd-divider" aria-hidden="true" />
-
-      <article className="card reveal ootd-section">
-        <div className="ootd-section-head">
-          <h2>Garden-Formal for Women</h2>
-          <p>
-            Structured silhouettes, flowing fabrics, and elevated simplicity feel right at home in
-            this setting.
-          </p>
-        </div>
-        <div className="ootd-grid" aria-label="Women's curated style guidance">
-          {WOMEN_PINTEREST_CARDS.map((card) => (
+      <article className="card reveal ootd-inspiration-section">
+        <div className="ootd-inspiration-grid" aria-label="Garden formal inspiration cards">
+          {INSPIRATION_CARDS.map((card) => (
             <a
               key={card.id}
               href={card.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="ootd-card"
-              aria-label={`${card.title} Pinterest inspiration`}
+              className="ootd-inspiration-card"
+              aria-label={card.title}
             >
-              <img src={card.imageSrc} alt={card.imageAlt} loading="lazy" decoding="async" />
-              <div className="card-content">
-                <h3>{card.title}</h3>
-                <p>{card.description}</p>
-                <p className="shoe-note">{card.shoeNote}</p>
+              <div className="ootd-inspiration-media">
+                <img src={card.imageSrc} alt={card.alt} loading="lazy" decoding="async" />
+                <div className="ootd-inspiration-overlay" aria-hidden="true">
+                  <span className="ootd-inspiration-title">{card.title}</span>
+                </div>
               </div>
             </a>
           ))}
         </div>
-        <p className="ootd-terrain-callout">
-          Lawn Setting: Wedges, block heels, or elegant flats perform beautifully on grass.
-        </p>
-        <p className="ootd-accessories-line">A light wrap is encouraged for the evening breeze.</p>
       </article>
 
-      <div className="ootd-divider" aria-hidden="true" />
-
-      <article className="card reveal ootd-section">
-        <div className="ootd-section-head">
-          <h2>Garden-Formal for Gentlemen</h2>
+      <article className="card reveal ootd-guidance-section">
+        <div className="ootd-guidance-grid">
+          <section>
+            <h2>For Women</h2>
+            <p>
+              Flowing silhouettes, midi-to-floor lengths, florals, and soft texture feel right at
+              home here. Wedges, block heels, or elegant flats are ideal for grass and terrace
+              comfort.
+            </p>
+          </section>
+          <section>
+            <h2>For Men</h2>
+            <p>
+              Seasonal tones like navy, tan, light gray, and soft green pair beautifully with linen
+              blends. Ties are optional, and stable-soled dress shoes are ideal for lawn and
+              terrace surfaces.
+            </p>
+          </section>
         </div>
-        <p>Think tailored, effortless, and seasonally refined.</p>
-        <p>
-          Suits in navy, charcoal, light gray, or soft seasonal tones feel right at home against
-          the waterfront backdrop. Lightweight wool or linen-blend fabrics will keep you
-          comfortable from ceremony through dancing under the stars.
-        </p>
-        <p>Ties encouraged, but not required — choose what feels most like you.</p>
-        <p>
-          Complete the look with loafers or classic dress shoes well-suited for lawn and terrace
-          settings.
-        </p>
-        <div className="ootd-grid" aria-label="Men's curated style guidance">
-          {MEN_PINTEREST_CARDS.map((card) => (
-            <a
-              key={card.id}
-              href={card.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ootd-card"
-              aria-label={`${card.title} Pinterest inspiration`}
-            >
-              <img src={card.imageSrc} alt={card.imageAlt} loading="lazy" decoding="async" />
-              <div className="card-content">
-                <h3>{card.title}</h3>
-                <p>{card.description}</p>
-                <p className="shoe-note">{card.shoeNote}</p>
-              </div>
-            </a>
-          ))}
-        </div>
-        <p className="ootd-terrain-note">
-          Stable-soled dress shoes are recommended for lawn and terrace surfaces.
-        </p>
       </article>
     </section>
   )

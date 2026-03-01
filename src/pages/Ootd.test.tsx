@@ -5,75 +5,56 @@ import { OotdPage } from './Ootd'
 describe('OotdPage', () => {
   afterEach(() => cleanup())
 
-  test('renders curated hero, women guidance, men guidance, and all visual card titles', () => {
+  test('renders the editorial hero copy', () => {
     render(<OotdPage />)
 
-    expect(screen.getByRole('heading', { level: 1, name: 'Garden-Formal Attire' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'Garden Formal' })).toBeInTheDocument()
+    expect(screen.getByText('Whimsical. Chic. Comfortable.')).toBeInTheDocument()
     expect(
       screen.getByText(
-        'The ceremony and reception will take place on the lawn and terrace of the Fenway Hotel — a historic, jazz-age inspired waterfront setting in Dunedin, Florida.',
+        'We’ll be celebrating on the lawn and terrace overlooking the water. We want you to feel confident, polished, and completely at ease from ceremony through dancing under the stars.',
       ),
     ).toBeInTheDocument()
+  })
+
+  test('renders exactly three pinterest inspiration cards with safe external link attributes', () => {
+    render(<OotdPage />)
+
+    expect(screen.getByText("Women's Outfit Inspiration")).toBeInTheDocument()
+    expect(screen.getByText("Women's Shoe Inspiration (Grass-Friendly)")).toBeInTheDocument()
+    expect(screen.getByText("Men's Outfit Inspiration")).toBeInTheDocument()
+
+    const links = screen.getAllByRole('link')
+    expect(links).toHaveLength(3)
+    for (const link of links) {
+      expect(link.getAttribute('href')).toMatch(/pinterest\.com/)
+      expect(link).toHaveAttribute('target', '_blank')
+      const rel = link.getAttribute('rel') ?? ''
+      expect(rel).toContain('noopener')
+      expect(rel).toContain('noreferrer')
+    }
+  })
+
+  test('renders concise guidance columns and keeps the weather module', () => {
+    render(<OotdPage />)
+
+    expect(screen.getByRole('heading', { level: 2, name: 'For Women' })).toBeInTheDocument()
     expect(
-      screen.getByText(
-        'Think refined, effortless, and comfortable from ceremony through dancing under the stars.',
-      ),
+      screen.getByText(/Flowing silhouettes, midi-to-floor lengths, florals, and soft texture/),
     ).toBeInTheDocument()
 
-    expect(screen.getByRole('heading', { level: 2, name: 'Garden-Formal for Women' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: 'For Men' })).toBeInTheDocument()
     expect(
-      screen.getByText(
-        'Structured silhouettes, flowing fabrics, and elevated simplicity feel right at home in this setting.',
-      ),
+      screen.getByText(/Seasonal tones like navy, tan, light gray, and soft green/),
     ).toBeInTheDocument()
-
-    expect(screen.getByRole('heading', { level: 2, name: 'Garden-Formal for Gentlemen' })).toBeInTheDocument()
-    expect(screen.getByText('Think tailored, effortless, and seasonally refined.')).toBeInTheDocument()
-    expect(
-      screen.getByText(
-        'Ties encouraged, but not required — choose what feels most like you.',
-      ),
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText(
-        'Stable-soled dress shoes are recommended for lawn and terrace surfaces.',
-      ),
-    ).toBeInTheDocument()
-
-    expect(screen.getByText('Structured Midi')).toBeInTheDocument()
-    expect(screen.getByText('Polished, refined, and lawn-friendly.')).toBeInTheDocument()
-    expect(screen.getByText('Flowing Maxi')).toBeInTheDocument()
-    expect(screen.getByText('Soft movement for a waterfront setting.')).toBeInTheDocument()
-    expect(screen.getByText('Pair with: block heels, elegant flats, or wedges.')).toBeInTheDocument()
-    expect(screen.getByText('Pair with: low block heels or refined sandals.')).toBeInTheDocument()
-    expect(screen.getByText('Navy or Charcoal Suit')).toBeInTheDocument()
-    expect(screen.getByText('Timeless and well-suited for lawn + terrace.')).toBeInTheDocument()
-    expect(screen.getByText('Pair with: brown loafers or classic oxfords.')).toBeInTheDocument()
-    expect(screen.getByText('Light Gray or Seasonal Tone')).toBeInTheDocument()
-    expect(screen.getByText('Breathable and refined for Florida evenings.')).toBeInTheDocument()
-    expect(screen.getByText('Pair with: suede loafers or leather dress shoes.')).toBeInTheDocument()
 
     expect(screen.getByText('Dunedin Weather')).toBeInTheDocument()
   })
 
-  test('shows pinterest source links while removing duplicate #OOTD header text and pocket square references', () => {
+  test('does not render duplicate #OOTD text or pocket square references', () => {
     render(<OotdPage />)
 
-    expect(screen.queryByRole('heading', { name: '#OOTD' })).not.toBeInTheDocument()
     expect(screen.queryByText(/#OOTD/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/pocket square/i)).not.toBeInTheDocument()
-
-    const links = screen.getAllByRole('link')
-    expect(links).toHaveLength(4)
-    for (const link of links) {
-      expect(link.getAttribute('href')).toMatch(/(pinterest\.com|pin\.it)/)
-      expect(link).toHaveAttribute('target', '_blank')
-      expect(link).toHaveAttribute('rel', expect.stringMatching(/noreferrer|noopener/))
-    }
-  })
-
-  test('does not render a Copy Link button in the header', () => {
-    render(<OotdPage />)
-    expect(screen.queryByRole('button', { name: 'Copy Link' })).not.toBeInTheDocument()
   })
 })
