@@ -42,7 +42,7 @@ type OotdWeather = {
 const WOMEN_PINTEREST_CARDS: WomenPinterestCard[] = [
   {
     id: 'women-structured-midi-card',
-    href: 'https://www.pinterest.com/search/pins/?q=garden%20formal%20midi%20dress',
+    href: 'https://pin.it/1NPb5Jx0D',
     imageSrc: 'https://i.pinimg.com/564x/39/a9/96/39a996f4f9092a6456bf23f5894cd7e0.jpg',
     imageAlt: 'Garden formal structured midi dress inspiration',
     title: 'Structured Midi',

@@ -66,7 +66,7 @@ describe('OotdPage', () => {
     const links = screen.getAllByRole('link')
     expect(links).toHaveLength(4)
     for (const link of links) {
-      expect(link).toHaveAttribute('href', expect.stringContaining('pinterest.com'))
+      expect(link.getAttribute('href')).toMatch(/(pinterest\.com|pin\.it)/)
       expect(link).toHaveAttribute('target', '_blank')
       expect(link).toHaveAttribute('rel', expect.stringMatching(/noreferrer|noopener/))
     }
