@@ -2,6 +2,7 @@ export type GuestProfile = {
   id: string
   firstName: string
   lastName: string
+  role?: 'bridal_party' | 'guest'
   tableLabel: string | null
   canUpload: boolean
   canEditContent: boolean

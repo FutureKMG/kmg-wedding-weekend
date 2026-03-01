@@ -1,5 +1,6 @@
 import { formatDistanceStrict } from 'date-fns'
 import { useEffect, useMemo, useState } from 'react'
+import { Navigate } from 'react-router-dom'
 import { DecoDivider } from '../components/DecoDivider'
 import { PageIntro } from '../components/PageIntro'
 import {
@@ -9,6 +10,7 @@ import {
   toWeddingStartAtIso,
 } from '../content/morningSchedule'
 import { useAuth } from '../lib/auth'
+import { isBridalPartyGuest } from '../lib/guestRole'
 
 function getNextAssignmentCountdown(times: string[], now: Date): string | null {
   if (times.length === 0) {
@@ -26,6 +28,10 @@ function getNextAssignmentCountdown(times: string[], now: Date): string | null {
 export function MorningSchedulePage() {
   const { guest } = useAuth()
   const [now, setNow] = useState(() => new Date())
+
+  if (!isBridalPartyGuest(guest)) {
+    return <Navigate to="/" replace />
+  }
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 30_000)

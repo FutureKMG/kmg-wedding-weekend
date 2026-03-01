@@ -1,5 +1,6 @@
 import { cleanup, render, screen, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
 import { MorningSchedulePage } from './MorningSchedule'
 
@@ -33,6 +34,17 @@ function mockGuest(firstName: string, lastName: string) {
   })
 }
 
+function renderMorningSchedule() {
+  render(
+    <MemoryRouter initialEntries={['/morning-schedule']}>
+      <Routes>
+        <Route path="/" element={<div>Home</div>} />
+        <Route path="/morning-schedule" element={<MorningSchedulePage />} />
+      </Routes>
+    </MemoryRouter>,
+  )
+}
+
 describe('MorningSchedulePage', () => {
   beforeEach(() => {
     vi.useFakeTimers()
@@ -46,7 +58,7 @@ describe('MorningSchedulePage', () => {
 
   test('filters Your Schedule for Kara Margraf and shows bride services', () => {
     mockGuest('Kara', 'Margraf')
-    render(<MorningSchedulePage />)
+    renderMorningSchedule()
 
     const yourScheduleRegion = screen.getByRole('region', { name: 'Your Schedule' })
     expect(within(yourScheduleRegion).getByText('Bride Makeup')).toBeInTheDocument()
@@ -58,7 +70,7 @@ describe('MorningSchedulePage', () => {
 
   test('filters Your Schedule for Katie Jaffe and shows two 8:30 services', () => {
     mockGuest('Katie', 'Jaffe')
-    render(<MorningSchedulePage />)
+    renderMorningSchedule()
 
     const yourScheduleRegion = screen.getByRole('region', { name: 'Your Schedule' })
     expect(within(yourScheduleRegion).getByText('Hair')).toBeInTheDocument()
@@ -71,7 +83,7 @@ describe('MorningSchedulePage', () => {
 
   test('filters Your Schedule for Ainsley Lang and shows one junior hair service', () => {
     mockGuest('Ainsley', 'Lang')
-    render(<MorningSchedulePage />)
+    renderMorningSchedule()
 
     const yourScheduleRegion = screen.getByRole('region', { name: 'Your Schedule' })
     expect(within(yourScheduleRegion).getByText('Junior Hair')).toBeInTheDocument()
@@ -80,31 +92,11 @@ describe('MorningSchedulePage', () => {
     expect(within(yourScheduleRegion).queryByText(/^Makeup$/)).not.toBeInTheDocument()
   })
 
-  test('shows empty-state for unknown user and full schedule table sorted by time', () => {
+  test('redirects non-bridal-party guests to home when accessing morning schedule directly', () => {
     mockGuest('Unknown', 'Guest')
-    render(<MorningSchedulePage />)
+    renderMorningSchedule()
 
-    const yourScheduleRegion = screen.getByRole('region', { name: 'Your Schedule' })
-    expect(
-      within(yourScheduleRegion).getByText('You do not have hair or makeup scheduled.'),
-    ).toBeInTheDocument()
-
-    const fullTable = screen.getByRole('table', { name: 'Full Morning Schedule' })
-    const rows = within(fullTable).getAllByRole('row')
-    expect(rows).toHaveLength(23)
-
-    const firstRow = rows[1]
-    expect(within(firstRow).getByText('8:30 AM')).toBeInTheDocument()
-    expect(within(firstRow).getByText('Hair')).toBeInTheDocument()
-    expect(within(firstRow).getByText('Katie Jaffe')).toBeInTheDocument()
-    expect(within(firstRow).getByText('Maddie')).toBeInTheDocument()
-
-    const lastRow = rows[22]
-    expect(within(lastRow).getByText('1:15 PM')).toBeInTheDocument()
-    expect(within(lastRow).getByText('Hair')).toBeInTheDocument()
-    expect(within(lastRow).getByText('Ekaterina Scorcia')).toBeInTheDocument()
-    expect(within(lastRow).getByText('Ayla')).toBeInTheDocument()
-
-    expect(screen.queryByText(/Fenway Hotel/i)).not.toBeInTheDocument()
+    expect(screen.getByText('Home')).toBeInTheDocument()
+    expect(screen.queryByText('Wedding Morning Schedule')).not.toBeInTheDocument()
   })
 })

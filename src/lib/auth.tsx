@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from 'react'
 import { apiRequest } from './apiClient'
+import { inferGuestRole } from './guestRole'
 import type { GuestProfile } from '../types'
 
 type AuthContextValue = {
@@ -22,6 +23,13 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
+function withGuestRole(guest: GuestProfile): GuestProfile {
+  return {
+    ...guest,
+    role: inferGuestRole(guest),
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [guest, setGuest] = useState<GuestProfile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -29,7 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshGuest = useCallback(async () => {
     try {
       const payload = await apiRequest<{ guest: GuestProfile }>('/api/me')
-      setGuest(payload.guest)
+      setGuest(withGuestRole(payload.guest))
     } catch {
       setGuest(null)
     } finally {
@@ -47,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       body: JSON.stringify({ firstName, lastName }),
     })
 
-    setGuest(payload.guest)
+    setGuest(withGuestRole(payload.guest))
   }, [])
 
   const loginVendor = useCallback(async (vendorName: string) => {
@@ -56,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       body: JSON.stringify({ vendorName }),
     })
 
-    setGuest(payload.guest)
+    setGuest(withGuestRole(payload.guest))
   }, [])
 
   const logout = useCallback(async () => {
