@@ -11,6 +11,8 @@ type VisualCard = {
   id: string
   title: string
   description: string
+  imageSrc: string
+  imageAlt: string
   terrainNote?: string
 }
 
@@ -19,21 +21,29 @@ const WOMEN_VISUAL_CARDS: VisualCard[] = [
     id: 'women-structured-midi',
     title: 'Structured Midi Dress',
     description: 'Elegant and polished while remaining comfortable for outdoor settings.',
+    imageSrc: '/theme/invite-hero.avif',
+    imageAlt: 'Structured midi dress styling inspiration',
   },
   {
     id: 'women-flowing-maxi',
     title: 'Flowing Maxi or Soft Gown',
     description: 'Light movement and breathable fabrics complement the waterfront backdrop.',
+    imageSrc: '/theme/home-lounge-portrait-one.avif',
+    imageAlt: 'Flowing maxi gown inspiration in soft evening light',
   },
   {
     id: 'women-tailored-cocktail',
     title: 'Tailored Cocktail Dress',
     description: 'Refined and celebratory without feeling overdone.',
+    imageSrc: '/theme/welcome-party-hero.avif',
+    imageAlt: 'Tailored cocktail dress inspiration',
   },
   {
     id: 'women-footwear',
     title: 'Elegant Flats, Wedges, or Block Heels',
     description: 'Ideal for lawn terrain while maintaining a formal finish.',
+    imageSrc: '/theme/home-lounge-portrait-two.avif',
+    imageAlt: 'Elegant footwear styling for outdoor formal events',
     terrainNote: 'Terrain note: Supportive styles transition smoothly between lawn and terrace.',
   },
 ]
@@ -43,16 +53,22 @@ const MEN_VISUAL_CARDS: VisualCard[] = [
     id: 'men-navy-charcoal',
     title: 'Navy or Charcoal Suit',
     description: 'Timeless and well-suited for garden-formal settings.',
+    imageSrc: '/theme/home-lounge-hero.avif',
+    imageAlt: 'Navy or charcoal tailored suit inspiration',
   },
   {
     id: 'men-light-gray-seasonal',
     title: 'Light Gray or Seasonal Tone',
     description: 'A softer palette complements the waterfront venue.',
+    imageSrc: '/theme/welcome-party-hero-mobile.avif',
+    imageAlt: 'Light gray and seasonal tone suit inspiration',
   },
   {
     id: 'men-lightweight-fabrics',
     title: 'Lightweight Fabrics',
     description: 'Linen-blend or lightweight wool for Florida comfort.',
+    imageSrc: '/theme/invite-hero-mobile.avif',
+    imageAlt: 'Lightweight suiting fabric inspiration',
   },
 ]
 
@@ -158,7 +174,9 @@ export function OotdPage() {
         <div className="ootd-visual-grid" aria-label="Women's curated style guidance">
           {WOMEN_VISUAL_CARDS.map((card) => (
             <article key={card.id} className="ootd-visual-card">
-              <div className="ootd-visual-image" aria-hidden="true" />
+              <div className="ootd-visual-image">
+                <img src={card.imageSrc} alt={card.imageAlt} loading="lazy" decoding="async" />
+              </div>
               <h3>{card.title}</h3>
               <p>{card.description}</p>
               {card.terrainNote ? <p className="ootd-terrain-note">{card.terrainNote}</p> : null}
@@ -191,7 +209,9 @@ export function OotdPage() {
         <div className="ootd-visual-grid ootd-visual-grid-men" aria-label="Men's curated style guidance">
           {MEN_VISUAL_CARDS.map((card) => (
             <article key={card.id} className="ootd-visual-card">
-              <div className="ootd-visual-image" aria-hidden="true" />
+              <div className="ootd-visual-image">
+                <img src={card.imageSrc} alt={card.imageAlt} loading="lazy" decoding="async" />
+              </div>
               <h3>{card.title}</h3>
               <p>{card.description}</p>
             </article>
