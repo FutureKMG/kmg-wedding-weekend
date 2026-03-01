@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { assertRequiredEnv } from '../_lib/env.js'
 import { methodNotAllowed, readJson, sendJson } from '../_lib/http.js'
+import { isKaraMargraf } from '../_lib/moderation.js'
 import { normalizeFullName } from '../_lib/nameNormalization.js'
 import { canAccessPhilliesWelcome } from '../_lib/rsvpAccess.js'
 import { createSessionToken, setSessionCookie } from '../_lib/session.js'
@@ -54,6 +55,11 @@ function mapGuestPayload(data) {
     rsvpReception: data.rsvp_reception ?? null,
     canAccessPhilliesWelcome: false,
   }
+
+  if (!guest.canEditContent && isKaraMargraf(guest)) {
+    guest.canEditContent = true
+  }
+
   guest.canAccessPhilliesWelcome = canAccessPhilliesWelcome(guest)
   return guest
 }

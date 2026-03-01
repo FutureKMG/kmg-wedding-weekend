@@ -1,5 +1,6 @@
 import { getSupabaseAdminClient } from './supabaseAdmin.js'
 import { getSessionFromRequest } from './session.js'
+import { isKaraMargraf } from './moderation.js'
 import { canAccessPhilliesWelcome } from './rsvpAccess.js'
 
 export async function requireGuest(req) {
@@ -42,6 +43,10 @@ export async function requireGuest(req) {
     canAccessVendorForum: Boolean(data.can_access_vendor_forum),
     rsvpReception: data.rsvp_reception ?? null,
     canAccessPhilliesWelcome: false,
+  }
+
+  if (!guest.canEditContent && isKaraMargraf(guest)) {
+    guest.canEditContent = true
   }
 
   guest.canAccessPhilliesWelcome = canAccessPhilliesWelcome(guest)

@@ -62,6 +62,9 @@ export default async function handler(req, res) {
       rsvpReception: match.rsvp_reception ?? null,
       canAccessPhilliesWelcome: false,
     }
+    if (!guest.canEditContent && isKaraMargraf(guest)) {
+      guest.canEditContent = true
+    }
     if (guest.canEditContent || isKaraMargraf(guest)) {
       guest.canAccessPhilliesWelcome = true
     }
