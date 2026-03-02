@@ -68,8 +68,8 @@ describe('MorningSchedulePage', () => {
     expect(within(yourScheduleRegion).getAllByText('with Maddie')).toHaveLength(2)
   })
 
-  test('filters Your Schedule for Katie Jaffe and shows two 8:30 services', () => {
-    mockGuest('Katie', 'Jaffe')
+  test('filters Your Schedule for Katie Margraf and shows two 8:30 services', () => {
+    mockGuest('Katie', 'Margraf')
     renderMorningSchedule()
 
     const yourScheduleRegion = screen.getByRole('region', { name: 'Your Schedule' })

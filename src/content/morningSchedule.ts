@@ -10,8 +10,8 @@ const WEDDING_OFFSET = '-04:00'
 const TIME_PATTERN = /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i
 
 export const MORNING_SCHEDULE_SOURCE: MorningScheduleEntry[] = [
-  { time: '8:30 AM', service: 'Hair', name: 'Katie Jaffe', artist: 'Maddie' },
-  { time: '8:30 AM', service: 'Makeup', name: 'Katie Jaffe', artist: 'Hollie' },
+  { time: '8:30 AM', service: 'Hair', name: 'Katie Margraf', artist: 'Maddie' },
+  { time: '8:30 AM', service: 'Makeup', name: 'Katie Margraf', artist: 'Hollie' },
   { time: '9:00 AM', service: 'Hair', name: 'McKenna Magriples', artist: 'Maddie' },
   { time: '9:15 AM', service: 'Makeup', name: 'McKenna Magriples', artist: 'Hollie' },
   { time: '9:30 AM', service: 'Hair', name: 'Nina Sennott', artist: 'Maddie' },
