@@ -10,7 +10,7 @@ import {
 } from '../content/weekendEvents'
 import { buildCalendarDataUri, buildCalendarFilename } from '../lib/calendar'
 
-const PRIMARY_HERO_IMAGE = '/theme/phanatic-300x.png'
+const PRIMARY_HERO_IMAGE = '/theme/phanatic-300x.png?v=20260310'
 const FALLBACK_HERO_IMAGE = '/theme/welcome-party-hero.png'
 
 function buildDirectionsUrl(): string {

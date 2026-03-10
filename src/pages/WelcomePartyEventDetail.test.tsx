@@ -36,7 +36,7 @@ describe('WelcomePartyEventDetailPage', () => {
     const heroImage = screen.getByRole('img', {
       name: 'Phillies-themed illustration for the Welcome Party spring training game.',
     }) as HTMLImageElement
-    expect(heroImage.getAttribute('src')).toBe('/theme/phanatic-300x.png')
+    expect(heroImage.getAttribute('src')).toBe('/theme/phanatic-300x.png?v=20260310')
 
     fireEvent.error(heroImage)
 
