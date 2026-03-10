@@ -1,4 +1,4 @@
-import { MORNING_SCHEDULE_SOURCE, normalizeScheduleName } from '../content/morningSchedule'
+import { normalizeScheduleName } from '../content/morningSchedule'
 
 export type GuestRole = 'bridal_party' | 'guest'
 
@@ -8,23 +8,34 @@ type GuestLike = {
   role?: GuestRole
 } | null
 
-const BRIDAL_PARTY_NAMES = new Set(
-  MORNING_SCHEDULE_SOURCE.map((entry) => normalizeScheduleName(entry.name)),
+const MORNING_SCHEDULE_ALLOWED_NAMES = new Set(
+  [
+    'Nina Sennott',
+    'Katie Margraf',
+    'McKenna Magriples',
+    'Alissa Murphy',
+    'Carley Maleri',
+    'Fatima Asis',
+    'Ainsley Lang',
+    'Ekaterina Scorcia',
+    'Heather Margraf',
+    'Kara Margraf',
+  ].map((name) => normalizeScheduleName(name)),
 )
 
-export function inferGuestRole(guest: GuestLike): GuestRole {
+export function canAccessMorningSchedule(guest: GuestLike): boolean {
   if (!guest) {
-    return 'guest'
-  }
-
-  if (guest.role === 'bridal_party' || guest.role === 'guest') {
-    return guest.role
+    return false
   }
 
   const fullName = normalizeScheduleName(`${guest.firstName ?? ''} ${guest.lastName ?? ''}`)
-  return BRIDAL_PARTY_NAMES.has(fullName) ? 'bridal_party' : 'guest'
+  return MORNING_SCHEDULE_ALLOWED_NAMES.has(fullName)
+}
+
+export function inferGuestRole(guest: GuestLike): GuestRole {
+  return canAccessMorningSchedule(guest) ? 'bridal_party' : 'guest'
 }
 
 export function isBridalPartyGuest(guest: GuestLike): boolean {
-  return inferGuestRole(guest) === 'bridal_party'
+  return canAccessMorningSchedule(guest)
 }

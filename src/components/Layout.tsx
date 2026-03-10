@@ -3,7 +3,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { mergeDashboardText } from '../content/dashboardText'
 import { apiRequest } from '../lib/apiClient'
 import { useAuth } from '../lib/auth'
-import { isBridalPartyGuest } from '../lib/guestRole'
+import { canAccessMorningSchedule } from '../lib/guestRole'
 import { DecoDivider } from './DecoDivider'
 
 type NavTab = {
@@ -64,7 +64,7 @@ export function Layout() {
       }
     }
 
-    if (!isBridalPartyGuest(guest)) {
+    if (!canAccessMorningSchedule(guest)) {
       const morningScheduleIndex = baseLinks.findIndex((link) => link.to === '/morning-schedule')
       if (morningScheduleIndex >= 0) {
         baseLinks.splice(morningScheduleIndex, 1)
@@ -80,7 +80,6 @@ export function Layout() {
     guest?.canAccessGirlsRoom,
     guest?.canAccessVendorForum,
     guest?.canEditContent,
-    guest?.role,
     guest?.firstName,
     guest?.lastName,
   ])

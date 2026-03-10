@@ -84,19 +84,19 @@ describe('MorningSchedulePage', () => {
     expect(within(yourScheduleRegion).queryByText('Bride Hair')).not.toBeInTheDocument()
   })
 
-  test('filters Your Schedule for Ainsley Lang and shows one junior hair service', () => {
+  test('filters Your Schedule for Ainsley Lang and shows one JR hair-only service', () => {
     mockGuest('Ainsley', 'Lang')
     renderMorningSchedule()
 
     const yourScheduleRegion = screen.getByRole('region', { name: 'Your Schedule' })
-    expect(within(yourScheduleRegion).getByText('Junior Hair')).toBeInTheDocument()
+    expect(within(yourScheduleRegion).getByText('JR Hair only')).toBeInTheDocument()
     expect(within(yourScheduleRegion).getByText('11:15 AM')).toBeInTheDocument()
     expect(within(yourScheduleRegion).getByText('with Ayla')).toBeInTheDocument()
     expect(within(yourScheduleRegion).queryByText(/^Makeup$/)).not.toBeInTheDocument()
   })
 
-  test('redirects non-bridal-party guests to home when accessing morning schedule directly', () => {
-    mockGuest('Unknown', 'Guest')
+  test('redirects Gabrielle Jackson to home when accessing morning schedule directly', () => {
+    mockGuest('Gabrielle', 'Jackson')
     renderMorningSchedule()
 
     expect(screen.getByText('Home')).toBeInTheDocument()

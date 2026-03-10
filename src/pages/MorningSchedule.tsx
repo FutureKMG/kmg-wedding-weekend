@@ -10,7 +10,7 @@ import {
   toWeddingStartAtIso,
 } from '../content/morningSchedule'
 import { useAuth } from '../lib/auth'
-import { isBridalPartyGuest } from '../lib/guestRole'
+import { canAccessMorningSchedule } from '../lib/guestRole'
 
 function getNextAssignmentCountdown(times: string[], now: Date): string | null {
   if (times.length === 0) {
@@ -29,7 +29,7 @@ export function MorningSchedulePage() {
   const { guest } = useAuth()
   const [now, setNow] = useState(() => new Date())
 
-  if (!isBridalPartyGuest(guest)) {
+  if (!canAccessMorningSchedule(guest)) {
     return <Navigate to="/" replace />
   }
 
