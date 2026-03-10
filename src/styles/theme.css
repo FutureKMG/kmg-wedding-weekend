@@ -46,6 +46,7 @@
 
   --font-display: 'Marcellus', serif;
   --font-body: 'Source Sans 3', sans-serif;
+  --font-ballpark-script: 'Ballpark Script', 'Pinellas Brush', 'Brush Script MT', cursive;
   --font-script: 'Pinellas Brush', 'Brush Script MT', cursive;
 
   --fs-display: clamp(2.1rem, 6vw, 3.4rem);

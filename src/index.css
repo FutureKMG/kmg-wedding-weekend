@@ -1,16 +1,22 @@
 @font-face {
+  font-family: 'Ballpark Script';
+  src: url('/fonts/BallparkScript-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'Pinellas Brush';
-  src:
-    url('/fonts/PinellasBrush-Regular.woff2') format('woff2'),
-    url('/fonts/PinellasBrush-Regular.ttf') format('truetype');
-  font-weight: 400;
+  src: url('/fonts/BallparkScript-Bold.ttf') format('truetype');
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
 .script-brand {
-  font-family: 'Pinellas Brush', 'Brush Script MT', cursive;
-  font-weight: 400;
+  font-family: 'Ballpark Script', 'Pinellas Brush', 'Brush Script MT', cursive;
+  font-weight: 700;
   letter-spacing: 0.01em;
 }
 
@@ -515,6 +521,15 @@ button:disabled {
   font-size: clamp(1.9rem, 4vw, 2.7rem);
 }
 
+.weekend-phillies-wordmark {
+  margin-top: 0.2rem;
+  margin-bottom: 0.58rem;
+}
+
+.weekend-phillies-wordmark .ballpark-script-tail {
+  width: min(100%, 18rem);
+}
+
 .weekend-phillies-hero p {
   color: #2f3f57;
   max-width: 70ch;
@@ -969,6 +984,99 @@ button:disabled {
   stroke-linecap: round;
 }
 
+.ballpark-script {
+  --ballpark-red: #e81828;
+  --ballpark-blue: #0057b8;
+  display: grid;
+  gap: 0.15rem;
+  width: fit-content;
+}
+
+.ballpark-script-word {
+  position: relative;
+  width: fit-content;
+  margin: 0;
+  color: var(--ballpark-red);
+  font-family: var(--font-ballpark-script);
+  font-weight: 700;
+  font-size: clamp(2.2rem, 7vw, 4.6rem);
+  line-height: 0.9;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.56);
+}
+
+.ballpark-script-text {
+  display: inline-block;
+}
+
+.ballpark-script-star {
+  position: absolute;
+  top: 0.18em;
+  font-size: 0.26em;
+  line-height: 1;
+  color: var(--ballpark-blue);
+}
+
+.ballpark-script-star-left {
+  left: -0.95em;
+}
+
+.ballpark-script-star-right {
+  right: -0.95em;
+}
+
+.ballpark-script-subtitle {
+  margin: 0;
+  color: rgba(0, 45, 114, 0.9);
+  font-size: var(--fs-caption);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.ballpark-script-tail {
+  position: relative;
+  width: min(100%, 16rem);
+  height: 0.42rem;
+  border-radius: 999px;
+  background: var(--ballpark-red);
+}
+
+.ballpark-script-tail::after {
+  content: '';
+  position: absolute;
+  right: -0.45rem;
+  top: 50%;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+  background: var(--ballpark-red);
+  transform: translateY(-50%);
+}
+
+.ballpark-script-compact .ballpark-script-word {
+  font-size: clamp(1.75rem, 6vw, 2.8rem);
+}
+
+.ballpark-script-compact .ballpark-script-star-left {
+  left: -0.8em;
+}
+
+.ballpark-script-compact .ballpark-script-star-right {
+  right: -0.8em;
+}
+
+.ballpark-script-compact .ballpark-script-tail {
+  width: min(100%, 12.5rem);
+  height: 0.33rem;
+}
+
+.ballpark-script-compact .ballpark-script-tail::after {
+  width: 0.74rem;
+  height: 0.74rem;
+  right: -0.36rem;
+}
+
 .welcome-feature-card {
   text-decoration: none;
   border-left: 4px solid #e81828;
@@ -990,6 +1098,10 @@ button:disabled {
   display: flex;
   align-items: center;
   gap: 0.58rem;
+}
+
+.welcome-feature-wordmark {
+  margin-top: 0.1rem;
 }
 
 .welcome-feature-icon {

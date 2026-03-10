@@ -62,23 +62,25 @@ describe('MorningSchedulePage', () => {
 
     const yourScheduleRegion = screen.getByRole('region', { name: 'Your Schedule' })
     expect(within(yourScheduleRegion).getByText('Bride Makeup')).toBeInTheDocument()
-    expect(within(yourScheduleRegion).getByText('Bride Hair')).toBeInTheDocument()
-    expect(within(yourScheduleRegion).getByText('12:15 PM')).toBeInTheDocument()
-    expect(within(yourScheduleRegion).getByText('1:00 PM')).toBeInTheDocument()
-    expect(within(yourScheduleRegion).getAllByText('with Maddie')).toHaveLength(2)
+    expect(within(yourScheduleRegion).getAllByText(/^Bride Hair/)).toHaveLength(2)
+    expect(within(yourScheduleRegion).getByText('10:00 AM')).toBeInTheDocument()
+    expect(within(yourScheduleRegion).getByText('11:45 AM')).toBeInTheDocument()
+    expect(within(yourScheduleRegion).getByText('12:45 PM')).toBeInTheDocument()
+    expect(within(yourScheduleRegion).getAllByText('with Ayla')).toHaveLength(2)
+    expect(within(yourScheduleRegion).getByText('with Hollie')).toBeInTheDocument()
   })
 
-  test('filters Your Schedule for Katie Margraf and shows makeup at 8:30 and hair at 9:30', () => {
+  test('filters Your Schedule for Katie Margraf and shows hair at 8:15 and makeup at 10:15', () => {
     mockGuest('Katie', 'Margraf')
     renderMorningSchedule()
 
     const yourScheduleRegion = screen.getByRole('region', { name: 'Your Schedule' })
     expect(within(yourScheduleRegion).getByText('Hair')).toBeInTheDocument()
     expect(within(yourScheduleRegion).getByText('Makeup')).toBeInTheDocument()
-    expect(within(yourScheduleRegion).getByText('8:30 AM')).toBeInTheDocument()
-    expect(within(yourScheduleRegion).getByText('9:30 AM')).toBeInTheDocument()
+    expect(within(yourScheduleRegion).getByText('8:15 AM')).toBeInTheDocument()
+    expect(within(yourScheduleRegion).getByText('10:15 AM')).toBeInTheDocument()
     expect(within(yourScheduleRegion).getByText('with Ayla')).toBeInTheDocument()
-    expect(within(yourScheduleRegion).getByText('with Holly')).toBeInTheDocument()
+    expect(within(yourScheduleRegion).getByText('with Hollie')).toBeInTheDocument()
     expect(within(yourScheduleRegion).queryByText('Bride Hair')).not.toBeInTheDocument()
   })
 
@@ -88,7 +90,7 @@ describe('MorningSchedulePage', () => {
 
     const yourScheduleRegion = screen.getByRole('region', { name: 'Your Schedule' })
     expect(within(yourScheduleRegion).getByText('Junior Hair')).toBeInTheDocument()
-    expect(within(yourScheduleRegion).getByText('12:15 PM')).toBeInTheDocument()
+    expect(within(yourScheduleRegion).getByText('11:15 AM')).toBeInTheDocument()
     expect(within(yourScheduleRegion).getByText('with Ayla')).toBeInTheDocument()
     expect(within(yourScheduleRegion).queryByText(/^Makeup$/)).not.toBeInTheDocument()
   })

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getWelcomePartyGoogleCalendarUrl, getWelcomePartyIcsText, welcomePartyContent } from '../content/welcomeParty'
+import { BallparkScriptWordmark } from '../components/BallparkScriptWordmark'
 import { fetchPhilliesWelcomeSection, type PhilliesWelcomeSection } from '../lib/philliesWelcome'
 
 function downloadWelcomePartyIcs() {
@@ -102,7 +103,7 @@ export function WelcomePartyPage() {
 
       <article className="card weekend-phillies-hero reveal">
         <p className="weekend-phillies-label">{section.label}</p>
-        <h2>{section.hero.title}</h2>
+        <BallparkScriptWordmark title="Game Before" subtitle={section.hero.title} className="weekend-phillies-wordmark" />
         <p>{section.hero.body}</p>
       </article>
 
@@ -127,6 +128,9 @@ export function WelcomePartyPage() {
           </button>
           <a href={googleCalendarUrl} target="_blank" rel="noreferrer" className="button-link secondary-button-link">
             Google Calendar
+          </a>
+          <a href="/fonts/BallparkScript-Bold.ttf" download="BallparkScript-Bold.ttf" className="button-link secondary-button-link">
+            Download Script Font (TTF)
           </a>
         </div>
       </article>
