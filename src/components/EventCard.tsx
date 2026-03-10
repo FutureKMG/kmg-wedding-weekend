@@ -18,11 +18,13 @@ export function EventCard({
   event,
   isCurrent,
   detailPath,
+  subtitle,
   agendaItems = [],
 }: {
   event: WeddingEvent
   isCurrent: boolean
   detailPath?: string
+  subtitle?: string
   agendaItems?: Array<{ label: string; time: string }>
 }) {
   const eventMonth = formatEventDate(event.startAt, 'MMM', 'TBD').toUpperCase()
@@ -43,6 +45,7 @@ export function EventCard({
         <div className="event-calendar-copy">
           <p className="eyebrow">{eventDayName}</p>
           <h3>{event.title}</h3>
+          {subtitle ? <p className="event-calendar-subtitle">{subtitle}</p> : null}
           <p className="muted">
             {eventDateLabel} · {formatEventClock(event.startAt)} - {formatEventClock(event.endAt)}
           </p>

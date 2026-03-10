@@ -851,6 +851,12 @@ button:disabled {
   font-size: var(--fs-h2);
 }
 
+.event-calendar-subtitle {
+  margin: 0;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
 .event-card-agenda {
   margin: 0;
   padding: 0;
@@ -888,6 +894,18 @@ button:disabled {
   gap: 0.75rem;
 }
 
+.welcome-party-event-hero-card {
+  padding: 0.5rem;
+}
+
+.welcome-party-event-hero-image {
+  width: 100%;
+  display: block;
+  border-radius: var(--radius-s);
+  object-fit: cover;
+  max-height: 360px;
+}
+
 .event-detail-grid {
   display: grid;
   gap: 0.65rem;
@@ -923,6 +941,10 @@ button:disabled {
 .event-detail-agenda li span:first-child {
   font-weight: 700;
   color: var(--text-primary);
+}
+
+.welcome-party-event-description {
+  gap: 0.5rem;
 }
 
 .button-link {

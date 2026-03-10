@@ -13,6 +13,7 @@ import { SongsPage } from './pages/Songs'
 import { VendorForumPage } from './pages/VendorForum'
 import { WeekendPage } from './pages/Weekend'
 import { WeekendEventDetailPage } from './pages/WeekendEventDetail'
+import { WelcomePartyEventDetailPage } from './pages/WelcomePartyEventDetail'
 import { WelcomePartyPage } from './pages/WelcomeParty'
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
       >
         <Route path="/" element={<HomePage />} />
         <Route path="/weekend" element={<WeekendPage />} />
+        <Route path="/weekend/events/welcome-party" element={<WelcomePartyEventDetailPage />} />
         <Route path="/weekend/events/:eventId" element={<WeekendEventDetailPage />} />
         <Route path="/welcome-party" element={<WelcomePartyPage />} />
         <Route path="/seating" element={<SeatingPage />} />

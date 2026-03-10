@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { EventCard } from '../components/EventCard'
 import { PageIntro } from '../components/PageIntro'
 import { WeekendMapCard } from '../components/WeekendMapCard'
+import { WELCOME_PARTY_EVENT, WELCOME_PARTY_SUBTITLE } from '../content/weekendEvents'
 import { apiRequest } from '../lib/apiClient'
-import { useAuth } from '../lib/auth'
 import { formatEventClock, getTimelineState } from '../lib/time'
 import type { WeddingEvent } from '../types'
 
@@ -31,7 +31,6 @@ function formatCountdown(target: Date, now: Date): string | null {
 }
 
 export function WeekendPage() {
-  const { guest } = useAuth()
   const [events, setEvents] = useState<WeddingEvent[]>([])
   const [eventsError, setEventsError] = useState('')
   const [now, setNow] = useState(() => new Date())
@@ -54,13 +53,14 @@ export function WeekendPage() {
     return () => window.clearInterval(timer)
   }, [])
 
-  const timelineState = useMemo(() => getTimelineState(events, now), [events, now])
+  const timelineEvents = useMemo(
+    () => [WELCOME_PARTY_EVENT, ...events.filter((event) => event.id !== WELCOME_PARTY_EVENT.id)],
+    [events],
+  )
+  const timelineState = useMemo(() => getTimelineState(timelineEvents, now), [timelineEvents, now])
 
   const weddingCountdown = useMemo(() => formatCountdown(WEDDING_START, now), [now])
-  const welcomePartyCountdown = useMemo(
-    () => (guest?.canAccessPhilliesWelcome ? formatCountdown(WELCOME_PARTY_START, now) : null),
-    [guest, now],
-  )
+  const welcomePartyCountdown = useMemo(() => formatCountdown(WELCOME_PARTY_START, now), [now])
 
   const weddingDayEvents = useMemo(
     () => events.filter((event) => isWeddingDayCoreEvent(event.title)),
@@ -100,12 +100,14 @@ export function WeekendPage() {
   }, [timelineState.currentEvent, weddingDayEvents])
 
   const individualEvents = useMemo(
-    () => events.filter((event) => !isWeddingDayCoreEvent(event.title)),
+    () => events.filter((event) => !isWeddingDayCoreEvent(event.title) && event.id !== WELCOME_PARTY_EVENT.id),
     [events],
   )
 
   const weekendCards = useMemo(() => {
-    const combined = combinedWeddingDayEvent ? [combinedWeddingDayEvent, ...individualEvents] : individualEvents
+    const combined = combinedWeddingDayEvent
+      ? [WELCOME_PARTY_EVENT, combinedWeddingDayEvent, ...individualEvents]
+      : [WELCOME_PARTY_EVENT, ...individualEvents]
     return [...combined].sort((a, b) => a.sortOrder - b.sortOrder)
   }, [combinedWeddingDayEvent, individualEvents])
 
@@ -163,7 +165,14 @@ export function WeekendPage() {
             isCurrent={
               event.id === 'wedding-day' ? weddingDayIsCurrent : timelineState.currentEvent?.id === event.id
             }
-            detailPath={event.id === 'wedding-day' ? '/weekend/events/wedding-day' : undefined}
+            detailPath={
+              event.id === WELCOME_PARTY_EVENT.id
+                ? '/weekend/events/welcome-party'
+                : event.id === 'wedding-day'
+                  ? '/weekend/events/wedding-day'
+                  : undefined
+            }
+            subtitle={event.id === WELCOME_PARTY_EVENT.id ? WELCOME_PARTY_SUBTITLE : undefined}
             agendaItems={event.id === 'wedding-day' ? weddingDayAgenda : undefined}
           />
         ))}
