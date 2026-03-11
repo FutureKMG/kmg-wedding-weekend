@@ -3,6 +3,7 @@ import { normalizeScheduleName } from '../content/morningSchedule'
 export type GuestRole = 'bridal_party' | 'guest'
 
 type GuestLike = {
+  name?: string | null
   firstName?: string | null
   lastName?: string | null
   role?: GuestRole
@@ -10,16 +11,19 @@ type GuestLike = {
 
 const MORNING_SCHEDULE_ALLOWED_NAMES = new Set(
   [
+    'Kara Margraf',
+    'Katie Jaffe',
     'Nina Sennott',
-    'Katie Margraf',
     'McKenna Magriples',
     'Alissa Murphy',
-    'Carley Maleri',
-    'Fatima Asis',
-    'Ainsley Lang',
-    'Ekaterina Scorcia',
     'Heather Margraf',
-    'Kara Margraf',
+    'Gabrielle Jackson',
+    'Laine Kenny',
+    'Fatima Asis',
+    'Carley Maleri',
+    'Ekaterina Scorcia',
+    'Ainsley Lang',
+    'Jennifer Lang',
   ].map((name) => normalizeScheduleName(name)),
 )
 
@@ -28,7 +32,9 @@ export function canAccessMorningSchedule(guest: GuestLike): boolean {
     return false
   }
 
-  const fullName = normalizeScheduleName(`${guest.firstName ?? ''} ${guest.lastName ?? ''}`)
+  const fullName = normalizeScheduleName(
+    guest.name?.trim() ? guest.name : `${guest.firstName ?? ''} ${guest.lastName ?? ''}`,
+  )
   return MORNING_SCHEDULE_ALLOWED_NAMES.has(fullName)
 }
 

@@ -70,18 +70,18 @@ describe('MorningSchedulePage', () => {
     expect(within(yourScheduleRegion).getByText('with Hollie')).toBeInTheDocument()
   })
 
-  test('filters Your Schedule for Katie Margraf and shows hair at 8:15 and makeup at 10:15', () => {
-    mockGuest('Katie', 'Margraf')
+  test('filters Your Schedule for Gabrielle Jackson and shows makeup at 8:45 and hair at 10:30', () => {
+    mockGuest('Gabrielle', 'Jackson')
     renderMorningSchedule()
 
     const yourScheduleRegion = screen.getByRole('region', { name: 'Your Schedule' })
     expect(within(yourScheduleRegion).getByText('Hair')).toBeInTheDocument()
     expect(within(yourScheduleRegion).getByText('Makeup')).toBeInTheDocument()
-    expect(within(yourScheduleRegion).getByText('8:15 AM')).toBeInTheDocument()
-    expect(within(yourScheduleRegion).getByText('10:15 AM')).toBeInTheDocument()
-    expect(within(yourScheduleRegion).getByText('with Ayla')).toBeInTheDocument()
+    expect(within(yourScheduleRegion).getByText('8:45 AM')).toBeInTheDocument()
+    expect(within(yourScheduleRegion).getByText('10:30 AM')).toBeInTheDocument()
     expect(within(yourScheduleRegion).getByText('with Hollie')).toBeInTheDocument()
-    expect(within(yourScheduleRegion).queryByText('Bride Hair')).not.toBeInTheDocument()
+    expect(within(yourScheduleRegion).getByText('with Maddie')).toBeInTheDocument()
+    expect(within(yourScheduleRegion).queryByText('Bride Makeup')).not.toBeInTheDocument()
   })
 
   test('filters Your Schedule for Ainsley Lang and shows one JR hair-only service', () => {
@@ -95,8 +95,8 @@ describe('MorningSchedulePage', () => {
     expect(within(yourScheduleRegion).queryByText(/^Makeup$/)).not.toBeInTheDocument()
   })
 
-  test('redirects Gabrielle Jackson to home when accessing morning schedule directly', () => {
-    mockGuest('Gabrielle', 'Jackson')
+  test('redirects Shelby Turner to home when accessing morning schedule directly', () => {
+    mockGuest('Shelby', 'Turner')
     renderMorningSchedule()
 
     expect(screen.getByText('Home')).toBeInTheDocument()

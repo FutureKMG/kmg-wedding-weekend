@@ -75,7 +75,7 @@ describe('Layout morning schedule tab visibility', () => {
   })
 
   test('hides Morning Schedule tab for non-allowlisted guests', () => {
-    mockAuthGuest(buildGuest('Gabrielle', 'Jackson'))
+    mockAuthGuest(buildGuest('Shelby', 'Turner'))
     renderLayout()
 
     expect(screen.queryByRole('link', { name: 'Morning Schedule' })).not.toBeInTheDocument()
