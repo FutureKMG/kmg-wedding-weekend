@@ -1,6 +1,7 @@
 import { formatDistanceToNow } from 'date-fns'
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
+import { NotificationToggle } from '../components/NotificationToggle'
 import { WeekendMapCard } from '../components/WeekendMapCard'
 import { mergeDashboardText } from '../content/dashboardText'
 import { apiRequest } from '../lib/apiClient'
@@ -392,6 +393,8 @@ export function HomePage() {
           </article>
         </div>
       </article>
+
+      <NotificationToggle />
 
       <WeekendMapCard ctaTo="/weekend#weekend-map" ctaLabel="Open Weekend Map" />
 

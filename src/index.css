@@ -1398,6 +1398,29 @@ button:disabled {
   justify-self: flex-start;
 }
 
+.notifications-toggle-card {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.notifications-enable-button {
+  justify-self: flex-start;
+}
+
+.notifications-settings-card {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.notifications-toggle-list {
+  display: grid;
+  gap: 0.42rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-s);
+  background: rgba(255, 250, 245, 0.82);
+  padding: 0.8rem;
+}
+
 .home-utility-grid {
   display: grid;
   gap: 0.8rem;

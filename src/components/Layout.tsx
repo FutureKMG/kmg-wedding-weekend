@@ -4,6 +4,7 @@ import { mergeDashboardText } from '../content/dashboardText'
 import { apiRequest } from '../lib/apiClient'
 import { useAuth } from '../lib/auth'
 import { canAccessMorningSchedule } from '../lib/guestRole'
+import { initializeNotificationReminders, registerNotificationServiceWorker } from '../lib/notifications'
 import { DecoDivider } from './DecoDivider'
 
 type NavTab = {
@@ -28,6 +29,11 @@ export function Layout() {
     }
 
     void loadContentText()
+  }, [])
+
+  useEffect(() => {
+    void registerNotificationServiceWorker()
+    initializeNotificationReminders()
   }, [])
 
   const text = useMemo(
