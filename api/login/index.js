@@ -20,6 +20,8 @@ const FALLBACK_LOGIN_ALIASES = {
   'katie jaffe': ['katie margraf'],
   "elle' tallent": ['elle schacter'],
   'elle schacter': ["elle' tallent"],
+  'jake inglehearn': ['jake inglehern'],
+  'jake inglehern': ['jake inglehearn'],
 }
 
 async function getGuestByField(supabase, field, value) {
