@@ -4,7 +4,11 @@ async function parseJson<T>(response: Response): Promise<T> {
     return {} as T
   }
 
-  return JSON.parse(text) as T
+  try {
+    return JSON.parse(text) as T
+  } catch {
+    return {} as T
+  }
 }
 
 export async function apiRequest<T>(
@@ -22,7 +26,14 @@ export async function apiRequest<T>(
 
   if (!response.ok) {
     const payload = await parseJson<{ message?: string }>(response)
-    throw new Error(payload.message ?? 'Request failed')
+    const apiRouteMissing =
+      path.startsWith('/api/') &&
+      response.status === 404 &&
+      (!payload.message || payload.message === 'Request failed')
+    const message = apiRouteMissing
+      ? 'Local API route not found. Run the app with `npm run dev` (Vercel dev) instead of Vite-only mode.'
+      : (payload.message ?? 'Request failed')
+    throw new Error(message)
   }
 
   return parseJson<T>(response)

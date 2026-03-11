@@ -35,6 +35,9 @@ Mobile-first React app for an immersive wedding weekend companion with name-base
 3. Fill required values in `.env.local`.
 4. Run app:
    - `npm run dev`
+   - Opens Vercel dev with API routes at `http://localhost:3000`
+5. Optional frontend-only mode (no `/api` routes):
+   - `npm run dev:vite`
 
 ## Environment Variables
 Server/API:

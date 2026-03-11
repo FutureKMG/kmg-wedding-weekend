@@ -51,10 +51,17 @@ export function LoginPage() {
     try {
       await login(firstName, lastName)
       navigate(redirectPath, { replace: true })
-    } catch {
-      setError(
-        'We could not find that name on the guest list. Please check spelling or contact Kara and Kevin.',
-      )
+    } catch (caughtError) {
+      const message = caughtError instanceof Error ? caughtError.message : 'Request failed'
+      if (message === 'Name not found') {
+        setError(
+          'We could not find that name on the guest list. Please check spelling or contact Kara and Kevin.',
+        )
+      } else if (message.includes('Local API route not found')) {
+        setError('Local API is not running. Start with `npm run dev` and open http://localhost:3000.')
+      } else {
+        setError('Unable to log in right now. Please try again in a moment.')
+      }
     } finally {
       setIsSubmitting(false)
     }
